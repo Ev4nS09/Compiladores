@@ -4,12 +4,10 @@ public class Instruction {
 
     private final OpCode instruction;
     private final int[] instructionArguments;
-    private final int numberOfArguments;
 
     public Instruction(OpCode instruction, int[] instructionArguments){
         this.instruction = instruction;
         this.instructionArguments = instructionArguments;
-        this.numberOfArguments = instructionArguments.length;
     }
 
     public Instruction(OpCode instruction){
@@ -22,10 +20,6 @@ public class Instruction {
 
     public int[] getInstructionArguments(){
         return this.instructionArguments;
-    }
-
-    public int getNumberOfArguments(){
-        return this.numberOfArguments;
     }
 
     @Override

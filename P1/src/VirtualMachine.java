@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.*;
-import java.math.*;
 
 public class VirtualMachine {
 
@@ -10,46 +9,37 @@ public class VirtualMachine {
         this.stack = new Stack<>();
     }
 
+    private void doInstruction(OpCode instruction, DataInputStream inputStream) throws Exception{
+
+        switch (instruction) {
+
+            case iconst -> iconst(inputStream.readInt());
+
+            case iadd -> iadd();
+
+            case imult -> imult();
+
+            case idiv -> idiv();
+
+            case isub -> isub();
+
+            case iuminus -> iuminus();
+
+            case ipow -> ipow();
+
+            case iprint -> iprint();
+        }
+    }
+
     public void execute(String file) throws Exception{
 
         DataInputStream inputStream = new DataInputStream(new FileInputStream(file));
+
         while(inputStream.available() > 0) {
             OpCode instruction = OpCode.values()[inputStream.readByte()];
-
-            switch (instruction) {
-                case iconst:
-                    iconst(inputStream.readInt());
-                    break;
-
-                case iadd:
-                    iadd();
-                    break;
-
-                case imult:
-                    imult();
-                    break;
-
-                case idiv:
-                    idiv();
-                    break;
-
-                case isub:
-                    isub();
-                    break;
-
-                case iuminus:
-                    iuminus();
-                    break;
-
-                case ipow:
-                    ipow();
-                    break;
-
-                case iprint:
-                    iprint();
-                    break;
-            }
+            doInstruction(instruction, inputStream);
         }
+
         inputStream.close();
         stack.clear();
     }
