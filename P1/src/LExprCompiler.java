@@ -6,10 +6,27 @@ import java.util.*;
 
 import antlr.*;
 
-
 public class LExprCompiler {
 
-    public void generateByteCode(LinkedList<Instruction> instructions, String outputFile) throws Exception {
+    private final boolean asm;
+
+    public LExprCompiler(boolean asm){
+        this.asm = asm;
+    }
+
+    public LExprCompiler(){
+        this(false);
+    }
+
+    private LExprParser generateParser(InputStream inputStream) throws Exception{
+
+        LExprLexer lexer = new LExprLexer(CharStreams.fromStream(inputStream));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        return new LExprParser(tokens);
+    }
+
+    private void generateByteCode(LinkedList<Instruction> instructions, String outputFile) throws Exception {
 
         DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(outputFile));
         for (Instruction instruction : instructions) {
@@ -21,23 +38,26 @@ public class LExprCompiler {
         outputStream.close();
     }
 
-    public void compile(String inputFile, String outputFile) throws Exception{
-        InputStream is = System.in;
-        if (inputFile != null)
-            is = new FileInputStream(inputFile);
+    private void asm(LinkedList<Instruction> instructions){
+        for(int i = 0; i < instructions.size(); i++)
+            System.out.println(STR."\{i}: \{instructions.get(i).toString()}");
+    }
 
-        CharStream input = CharStreams.fromStream(is);
-        LExprLexer lexer = new LExprLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        LExprParser parser = new LExprParser(tokens);
+    public void compile(String inputFile, String outputFile) throws Exception{
+        InputStream inputStream = inputFile == null ? System.in : new FileInputStream(inputFile);
+
+        LExprParser parser = generateParser(inputStream);
 
         ParseTree tree = parser.s();
         ParseTreeWalker walker = new ParseTreeWalker();
 
-        InstructionThree instructionThree = new InstructionThree();
-        walker.walk(instructionThree, tree);
+        InstructionTree instructionTree = new InstructionTree();
+        walker.walk(instructionTree, tree);
 
-        generateByteCode(instructionThree.instructions, outputFile);
+        generateByteCode(instructionTree.getInstructions(), outputFile);
+
+        if(this.asm)
+            asm(instructionTree.getInstructions());
 
     }
 }

@@ -1,10 +1,10 @@
 import java.util.LinkedList;
+import antlr.*;
+public class InstructionTree extends LExprBaseListener{
 
-public class InstructionThree extends LExprBaseListener{
+    private final LinkedList<Instruction> instructions;
 
-    protected LinkedList<Instruction> instructions;
-
-    public InstructionThree(){
+    public InstructionTree(){
         this.instructions = new LinkedList<>();
     }
 
@@ -38,6 +38,10 @@ public class InstructionThree extends LExprBaseListener{
     public void exitInstruction(LExprParser.InstructionContext ctx){
         if(ctx.ins.getText().equals("print"))
             instructions.add(new Instruction(OpCode.iprint));
+    }
+
+    public LinkedList<Instruction> getInstructions(){
+        return this.instructions;
     }
 
     @Override

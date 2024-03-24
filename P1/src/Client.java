@@ -1,12 +1,39 @@
+import java.nio.ByteBuffer;
+
 public class Client {
     public static void main(String[] args) throws Exception{
-        String inputFile = args.length > 0 ? args[0] : null;
-        String outputFile = "byteCodes/data.bin";
 
-        LExprCompiler compiler = new LExprCompiler();
-        VirtualMachine virtualMachine= new VirtualMachine();
+        String inputFile = null;
+
+        boolean trace = false;
+        boolean asm = false;
+
+        for(String arg : args){
+
+            if(arg.equals("-trace") || arg.equals("-t"))
+                trace = true;
+            else if(arg.equals("-asm") || arg.equals("-a"))
+                asm = true;
+            else
+                inputFile = arg;
+        }
+
+        String outputFile = inputFile != null ? STR."\{inputFile.split("\\.")[0]}.bc" : "output.bc";
+
+
+
+        LExprCompiler compiler = new LExprCompiler(asm);
+        VirtualMachine virtualMachine= new VirtualMachine(trace);
 
         compiler.compile(inputFile, outputFile);
         virtualMachine.execute(outputFile);
+
+        byte[] bytes = new byte[]{0, 0, 0, 100, 12, 56, 0, 0, 0, 23};
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        System.out.println(byteBuffer.limit());
+
+
+
     }
+
 }

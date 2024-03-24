@@ -1,17 +1,15 @@
-// Generated from /home/rio/Uni/3_ano/2_semestre/CP/PL5/Calculator-Listener/LExpr.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P1/src/antlr/LExpr.g4 by ANTLR 4.13.1
 package antlr;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-
 /**
  * This class provides an empty implementation of {@link LExprListener},
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
-
 @SuppressWarnings("CheckReturnValue")
 public class LExprBaseListener implements LExprListener {
 	/**

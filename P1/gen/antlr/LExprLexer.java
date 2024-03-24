@@ -1,7 +1,5 @@
-// Generated from /home/rio/Uni/3_ano/2_semestre/CP/PL5/Calculator-Listener/LExpr.g4 by ANTLR 4.13.1
-
+// Generated from /home/rio/Compiladores/P1/src/antlr/LExpr.g4 by ANTLR 4.13.1
 package antlr;
-
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

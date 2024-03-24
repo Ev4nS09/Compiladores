@@ -22,6 +22,18 @@ public class Instruction {
         return this.instructionArguments;
     }
 
+    private String integerToByte(int integer){
+        return STR."\{(integer >> 24) & 0xFF} \{(integer >> 16) & 0xFF} \{(integer >> 8) & 0xFF} \{integer & 0xFF} ";
+    }
+
+    public String toStringBytes(){
+        StringBuilder result = new StringBuilder(String.valueOf(this.instruction.ordinal()));
+        for(int instructionArgument : this.instructionArguments)
+            result.append(" ").append(integerToByte(instructionArgument));
+
+        return result.toString();
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder(this.instruction.toString());
