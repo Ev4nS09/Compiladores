@@ -2,6 +2,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.*;
 
 import antlr.*;
@@ -38,9 +39,13 @@ public class LExprCompiler {
         outputStream.close();
     }
 
-    private void asm(LinkedList<Instruction> instructions){
+    private void asm(LinkedList<Instruction> instructions, String outputFile){
+        System.out.println("Generated code in assembly format");
+
         for(int i = 0; i < instructions.size(); i++)
             System.out.println(STR."\{i}: \{instructions.get(i).toString()}");
+
+        System.out.println(STR."Saving the bytecodes to \{outputFile}");
     }
 
     public void compile(String inputFile, String outputFile) throws Exception{
@@ -57,7 +62,7 @@ public class LExprCompiler {
         generateByteCode(instructionTree.getInstructions(), outputFile);
 
         if(this.asm)
-            asm(instructionTree.getInstructions());
+            asm(instructionTree.getInstructions(), outputFile);
 
     }
 }

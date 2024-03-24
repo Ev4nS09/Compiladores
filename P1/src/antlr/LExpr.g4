@@ -10,7 +10,7 @@ e : LPAREN e RPAREN         # LRParen
   | e op=(MULT|DIV) e 		# MultDiv
   | e op=(ADD|SUB) e 		# AddSub
   | DOUBLE        		    # Double
-  | e NEWLINE                 # NewLine
+  | e NEWLINE               # NewLine
   ;
 
 POW : '^' ;

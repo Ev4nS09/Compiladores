@@ -5,7 +5,7 @@ public class Instruction {
     private final OpCode instruction;
     private final int[] instructionArguments;
 
-    public Instruction(OpCode instruction, int[] instructionArguments){
+    public Instruction(OpCode instruction, int...instructionArguments){
         this.instruction = instruction;
         this.instructionArguments = instructionArguments;
     }
@@ -22,14 +22,17 @@ public class Instruction {
         return this.instructionArguments;
     }
 
-    private String integerToByte(int integer){
-        return STR."\{(integer >> 24) & 0xFF} \{(integer >> 16) & 0xFF} \{(integer >> 8) & 0xFF} \{integer & 0xFF} ";
+    private String integerToBytes(int integer){
+        return String.format("%02X", (integer >> 24) & 0xFF) + " " +
+        String.format("%02X", (integer >> 16) & 0xFF) +  " " +
+        String.format("%02X", (integer >> 8) & 0xFF) + " " +
+        String.format("%02X", integer & 0xFF);
     }
 
     public String toStringBytes(){
-        StringBuilder result = new StringBuilder(String.valueOf(this.instruction.ordinal()));
+        StringBuilder result = new StringBuilder(String.valueOf(String.format("%02X", this.instruction.ordinal())));
         for(int instructionArgument : this.instructionArguments)
-            result.append(" ").append(integerToByte(instructionArgument));
+            result.append(" ").append(integerToBytes(instructionArgument));
 
         return result.toString();
     }
