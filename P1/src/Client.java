@@ -1,18 +1,18 @@
 import java.nio.ByteBuffer;
 
 public class Client {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
         String inputFile = null;
 
         boolean trace = false;
         boolean asm = false;
 
-        for(String arg : args){
+        for (String arg : args) {
 
-            if(arg.equals("-trace") || arg.equals("-t"))
+            if (arg.equals("-trace") || arg.equals("-t"))
                 trace = true;
-            else if(arg.equals("-asm") || arg.equals("-a"))
+            else if (arg.equals("-asm") || arg.equals("-a"))
                 asm = true;
             else
                 inputFile = arg;
@@ -21,19 +21,11 @@ public class Client {
         String outputFile = inputFile != null ? STR."\{inputFile.split("\\.")[0]}.bc" : "output.bc";
 
 
-
         LExprCompiler compiler = new LExprCompiler(asm);
-        VirtualMachine virtualMachine= new VirtualMachine(trace);
+        VirtualMachine virtualMachine = new VirtualMachine(trace);
 
         compiler.compile(inputFile, outputFile);
         virtualMachine.execute(outputFile);
 
-        byte[] bytes = new byte[]{0, 0, 0, 100, 12, 56, 0, 0, 0, 23};
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        System.out.println(byteBuffer.limit());
-
-
-
     }
-
 }

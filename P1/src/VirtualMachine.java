@@ -7,16 +7,17 @@ public class VirtualMachine {
 
     private final static int TAB_SIZE = 30;
 
+    private ByteCodeBuffer byteCodeBuffer;
     private final Stack<Integer> stack;
     private final LinkedList<String> stackIterations;
     private final LinkedList<Instruction> instructions;
 
     private final boolean trace;
 
-    private DataInputStream bytes;
     private int instructionPointer;
 
     public VirtualMachine(boolean trace) throws IOException {
+        this.byteCodeBuffer = null;
         this.stack = new Stack<>();
         this.trace = trace;
 
@@ -33,24 +34,13 @@ public class VirtualMachine {
         this(false);
     }
 
-    private void generateInstructions() throws IOException {
-        this.bytes.mark(this.bytes.available());
-        while(this.bytes.available() > 0){
-            OpCode instruction = OpCode.values()[this.bytes.readByte()];
+    private void doInstruction(OpCode instruction) throws Exception
+    {
+        if(this.trace)
+            traceInstruction();
 
-            if(instruction == OpCode.iconst)
-                this.instructions.add(new Instruction(instruction, this.bytes.readInt()));
-            else
-                this.instructions.add(new Instruction(instruction));
-        }
-        this.bytes.reset();
-    }
-
-
-    private void doInstruction(OpCode instruction) throws Exception{
-
-        switch (instruction) {
-
+        switch (instruction)
+        {
             case iconst -> iconst();
 
             case iadd -> iadd();
@@ -68,35 +58,35 @@ public class VirtualMachine {
             case iprint -> iprint();
         }
 
-        if(this.trace)
-            traceInstruction();
-
         this.stackIterations.add(this.stack.toString());
         this.instructionPointer++;
     }
 
-    public void execute(String byteCode) throws Exception{
+    public void execute(String byteCode) throws Exception
+    {
+        this.byteCodeBuffer = new ByteCodeBuffer(byteCode);
 
-        this.bytes = new DataInputStream(new FileInputStream(byteCode));
+        if(this.trace)
+            trace();
 
-        if(this.trace){
-           generateInstructions();
-           trace();
-        }
-
-        while(this.bytes.available() > 0) {
-            OpCode instruction = OpCode.values()[this.bytes.readByte()];
+        while(this.byteCodeBuffer.isAvailable()) {
+            OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
             doInstruction(instruction);
         }
 
-        this.bytes.close();
-        this.stack.clear();
-        this.instructionPointer = 0;
+        reset();
+    }
 
+    private void reset()
+    {
+        this.stack.clear();
+        this.stackIterations.clear();
+        this.instructions.clear();
+        this.instructionPointer = 0;
     }
 
     private void iconst() throws Exception {
-        int integer = this.bytes.readInt();
+        int integer = this.byteCodeBuffer.getInt();
         this.instructions.add(new Instruction(OpCode.iconst, integer));
         this.stack.push(integer);
     }
@@ -143,7 +133,20 @@ public class VirtualMachine {
         System.out.println(this.stack.pop());
     }
 
-    private void traceInstruction(){
+    private void generateInstructions() throws IOException {
+        while (this.byteCodeBuffer.isAvailable()) {
+            OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
+
+            if (instruction == OpCode.iconst)
+                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
+            else
+                this.instructions.add(new Instruction(instruction));
+        }
+        this.byteCodeBuffer.resetPointer();
+    }
+
+    private void traceInstruction()
+    {
         StringBuilder stringBuilder = new StringBuilder();
         Instruction instruction = this.instructions.get(this.instructionPointer);
 
@@ -158,17 +161,18 @@ public class VirtualMachine {
     }
 
 
-    private void trace() {
+    private void trace() throws IOException
+    {
+        generateInstructions();
 
         System.out.println("ByteCodes: ");
-        for(Instruction instruction : instructions)
-            System.out.print(STR."\{instruction.toStringBytes()} ");
+        System.out.print(this.byteCodeBuffer.toString());
 
         System.out.println("\nDisassembled instructions");
-        for(int i = 0; i < instructions.size(); i++) {
+        for(int i = 0; i < instructions.size(); i++)
+        {
             Instruction instruction = instructions.get(i);
             System.out.println(STR."\{i}: \{instruction.toString()}\{" ".repeat(TAB_SIZE - instruction.toString().length())}// \{instruction.toStringBytes()}");
-
         }
         System.out.println("\nTrace while running the code");
         System.out.println("Execution starts at instruction 0\n");

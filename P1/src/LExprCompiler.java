@@ -48,7 +48,8 @@ public class LExprCompiler {
         System.out.println(STR."Saving the bytecodes to \{outputFile}");
     }
 
-    public void compile(String inputFile, String outputFile) throws Exception{
+    public void compile(String inputFile, String outputFile) throws Exception
+    {
         InputStream inputStream = inputFile == null ? System.in : new FileInputStream(inputFile);
 
         LExprParser parser = generateParser(inputStream);
