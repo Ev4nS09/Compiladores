@@ -1,42 +1,16 @@
 import java.util.LinkedList;
-import antlr.*;
-public class InstructionTree extends LExprBaseListener{
+import Antlr.*;
+public class InstructionTree extends TasmBaseListener{
 
-    private final LinkedList<Instruction> instructions;
+    private final Link:w
+    edList<Instruction> instructions;
 
     public InstructionTree(){
         this.instructions = new LinkedList<>();
     }
 
-    public void exitPow(LExprParser.PowContext ctx) {
-        this.instructions.add(new Instruction(OpCode.ipow));
-    }
-
-    public void exitMultDiv(LExprParser.MultDivContext ctx) {
-        if(ctx.op.getText().equals("*"))
-            this.instructions.add(new Instruction(OpCode.imult));
-        else
-            this.instructions.add(new Instruction(OpCode.idiv));
-
-    }
-
-    public void exitAddSub(LExprParser.AddSubContext ctx) {
-        if(ctx.op.getText().equals("+"))
-            instructions.add(new Instruction(OpCode.iadd));
-        else
-            instructions.add(new Instruction(OpCode.isub));
-    }
-
-    public void exitNegation(LExprParser.NegationContext ctx) {
-        instructions.add(new Instruction(OpCode.iuminus));
-    }
-
-    public void exitDouble(LExprParser.DoubleContext ctx) {
-        instructions.add(new Instruction(OpCode.iconst, new int[]{Integer.parseInt(ctx.getText())}));
-    }
-
-    public void exitInstruction(LExprParser.InstructionContext ctx){
-        if(ctx.ins.getText().equals("print"))
+    public void exitPrint(TasmParser.PrintContext ctx){
+        if(ctx.print.getText().equals("iprint"))
             instructions.add(new Instruction(OpCode.iprint));
     }
 

@@ -1,6 +1,9 @@
 import java.nio.ByteBuffer;
 
+
+
 public class Client {
+
     public static void main(String[] args) throws Exception {
 
         String inputFile = null;
@@ -27,5 +30,6 @@ public class Client {
         compiler.compile(inputFile, outputFile);
         virtualMachine.execute(outputFile);
 
+        Instruction<Integer> instruction = new Instruction<Integer>(OpCode.iconst, new Integer[0]);
     }
 }

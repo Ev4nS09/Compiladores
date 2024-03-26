@@ -51,16 +51,7 @@ public class ByteCodeBuffer
         this.byteBufferPointer = 0;
     }
 
-    public void movePointer(int translate)
-    {
-        int newPointerPosition = this.byteBufferPointer + translate;
-        if(newPointerPosition < 0 || newPointerPosition >= this.byteBuffer.length)
-            throw new IndexOutOfBoundsException("Invalid translation for pointer. It should be in range between, 0 and the length of the byte array");
-
-        this.byteBufferPointer = newPointerPosition;
-    }
-
-    public void movePointerToIndex(int index)
+    public void movePointer(int index)
     {
         if(index < 0 || index >= this.byteBuffer.length)
             throw new IndexOutOfBoundsException("Invalid value for pointer. It should be in range between, 0 and the length of the byte array");

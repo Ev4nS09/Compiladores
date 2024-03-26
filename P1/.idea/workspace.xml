@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fbdc6cc6-9a87-4887-b812-f9a1d2872572" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/antlr_4_13_1_complete.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/P1.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/byteCodes/data.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExpr.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExpr.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprBaseListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprBaseVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprLexer.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprLexer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprLexer.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gen/antlr/LExprVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputs/in1.bc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputs/in1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/ByteCodeBuffer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/Calculator-Listener.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/Client.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/ExecuteInstruction.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/Instruction.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/InstructionTree.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/LExprCompiler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/OpCode.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/VirtualMachine$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/VirtualMachine.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExpr.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExpr.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExpr.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprBaseListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprBaseVisitor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprLexer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprLexer.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprLexer.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$AddSubContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$DoubleContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$EContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$InstructionContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$LRParenContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$MultDivContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$NegationContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$NewLineContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$PowContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser$SContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprParser.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/antlr/LExprVisitor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/Calculator-Listener.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/LExpr.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/gen/LExpr.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/gen/LExpr.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/gen/LExprLexer.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/gen/LExprLexer.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/P1/out/production/Calculator-Listener/in1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ByteCodeBuffer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Calculator-Listener.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ExecuteInstruction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Instruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Instruction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/InstructionTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/InstructionTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LExprCompiler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OpCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OpCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/VirtualMachine.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExpr.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExpr.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExpr.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprBaseListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprBaseVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprLexer.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprLexer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprLexer.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/antlr/LExprVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/Calculator-Listener.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExpr.g4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprBaseListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprBaseVisitor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprLexer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprListener.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$AddSubContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$DoubleContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$EContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$LRParenContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$MultDivContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$NegationContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$NewLineContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$NewLineExContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$PowContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser$SContext.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprParser.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/LExprVisitor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/TestLEvaluator$Evaluator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/TestLEvaluator.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/gen/LExpr.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/gen/LExpr.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/gen/LExprLexer.interp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/gen/LExprLexer.tokens" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/out/production/Calculator-Listener/in1.txt" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2eE9K34xvmfYJT54vHVIFenOVOo" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/rio/Compiladores/P1",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-22-openjdk-22-3183f394aec4-75f08976" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fbdc6cc6-9a87-4887-b812-f9a1d2872572" name="Changes" comment="" />
+      <created>1711458804177</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1711458804177</updated>
+    </task>
+    <servers />
+  </component>
+</project>
