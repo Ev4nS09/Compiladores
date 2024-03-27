@@ -1,35 +1,35 @@
 grammar Tasm;
 
-s: instruction+ HALT | HALT
+tasm: (instruction)+ HALT | HALT
 ;
 
-instruction : TAG ':' instruction                                                                        #Tag
+instruction : (ICONST INT | DCONST DOUBLE | SCONST STRING | BCONST BOOL)           '\n'                      #Const
 
-            | (ICONST INT | DCONST DOUBLE | SCONST STRING | BCONST BOOL)                                 #Const
-
-            | alloc=(GALLOC | GLOAD | GSTORE ) INT                                                       #Global
+            | alloc=(GALLOC | GLOAD | GSTORE ) INT                             '\n'                          #Global
 
             | condition=(IEQ | INEQ | ILT | ILEQ | DEQ| DNEQ | DLT | DTOS |
-                         SEQ | SNEQ | BEQ | BNEQ| AND | OR | NOT)                                        #Conditions
+                         SEQ | SNEQ | BEQ | BNEQ| AND | OR | NOT)            '\n'                             #Conditions
 
-            | change=(ITOD | ITOS | DTOS | BTOS)                                                         #Change
+            | change=(ITOD | ITOS | DTOS | BTOS)                     '\n'                                     #Change
 
             | operation=(IUMINUS | IADD | ISUB | IMULT | IDIV | IMOD |
                          DUMINUS| DADD | DSUB | DMULT | DDIV |
-                         SADD)                                                                           #Operations
+                         SADD)                                   '\n'                                         #Operations
 
-            | print=(IPRINT | DPRINT | SPRINT | BPRINT)                                                  #Print
+            | print=(IPRINT | DPRINT | SPRINT | BPRINT)                  '\n'                                 #Print
 
-            | jump=(JUMP | JUMPF | JUMPT) TAG                                                            #Jump
+            | jump=(JUMP | JUMPF | JUMPT) TAG2           '\n'                                                  #Jump
+
+            | tag=TAG instruction                                                                        #Taga
             ;
 
 
-
-TAG: 'beginLoop' | 'endLoop';
+HALT: 'halt';
 BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' .*? '"';
+TAG: [a-zA-Z]([a-zA-Z0-9_-]*)':';
 
 ICONST:'iconst';
 IPRINT:'iprint';
@@ -76,7 +76,7 @@ JUMPF:'jumpf';
 GALLOC:'galloc';
 GLOAD:'gload';
 GSTORE:'gstore';
-HALT: 'halt';
 
+TAG2: [a-zA-Z]([a-zA-Z0-9_-]*);
 
-WS : [ \n\t]+ -> skip ;
+WS : [ \t]+ -> skip ;

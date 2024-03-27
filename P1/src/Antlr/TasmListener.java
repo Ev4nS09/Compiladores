@@ -1,5 +1,5 @@
-// Generated from /home/rio/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
 package Antlr;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -8,27 +8,15 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface TasmListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link TasmParser#s}.
+	 * Enter a parse tree produced by {@link TasmParser#tasm}.
 	 * @param ctx the parse tree
 	 */
-	void enterS(TasmParser.SContext ctx);
+	void enterTasm(TasmParser.TasmContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TasmParser#s}.
+	 * Exit a parse tree produced by {@link TasmParser#tasm}.
 	 * @param ctx the parse tree
 	 */
-	void exitS(TasmParser.SContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code Tag}
-	 * labeled alternative in {@link TasmParser#instruction}.
-	 * @param ctx the parse tree
-	 */
-	void enterTag(TasmParser.TagContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Tag}
-	 * labeled alternative in {@link TasmParser#instruction}.
-	 * @param ctx the parse tree
-	 */
-	void exitTag(TasmParser.TagContext ctx);
+	void exitTasm(TasmParser.TasmContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Const}
 	 * labeled alternative in {@link TasmParser#instruction}.
@@ -113,4 +101,16 @@ public interface TasmListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitJump(TasmParser.JumpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Taga}
+	 * labeled alternative in {@link TasmParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterTaga(TasmParser.TagaContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Taga}
+	 * labeled alternative in {@link TasmParser#instruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitTaga(TasmParser.TagaContext ctx);
 }

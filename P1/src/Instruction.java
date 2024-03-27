@@ -13,7 +13,6 @@ public class Instruction {
         return this.instruction;
     }
 
-
     @Override
     public String toString() {
         return this.instruction.name();
