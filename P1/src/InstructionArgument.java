@@ -15,6 +15,6 @@ public class InstructionArgument<T> extends Instruction{
 
     @Override
     public String toString(){
-        return super.toString() + this.argument;
+        return super.toString() + " " + this.argument;
     }
 }

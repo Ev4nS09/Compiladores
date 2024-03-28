@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -23,6 +23,18 @@ public class TasmBaseListener implements TasmListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTasm(TasmParser.TasmContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInstruction(TasmParser.InstructionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstruction(TasmParser.InstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -100,25 +112,13 @@ public class TasmBaseListener implements TasmListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterJump(TasmParser.JumpContext ctx) { }
+	@Override public void enterJp(TasmParser.JpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitJump(TasmParser.JumpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTaga(TasmParser.TagaContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTaga(TasmParser.TagaContext ctx) { }
+	@Override public void exitJp(TasmParser.JpContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

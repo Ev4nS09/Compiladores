@@ -1,2 +1,23 @@
-iconst 1
-bconst 2
+galloc 5
+iconst 12
+gstore 0
+iconst 5
+gstore 2
+sconst "maria"
+gstore 1
+dconst 3.14159
+gstore 3
+gstore 4
+sconst "ola"
+sconst " "
+gload 1
+sadd
+sadd
+gstore 1
+sconst "ola"
+sconst " "
+sadd
+gload 1
+sadd
+sprint
+halt

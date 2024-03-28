@@ -5,5 +5,6 @@ public enum OpCode
     sconst, sadd, sprint, seq, sneq,
     bconst, bprint, beq, bneq, btos,
     galloc, gload, gstore,
-    jump, jumpt, jumpf
+    jump, jumpt, jumpf,
+    halt
 }

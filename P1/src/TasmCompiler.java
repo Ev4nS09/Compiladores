@@ -1,23 +1,21 @@
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.*;
 
 import Antlr.*;
 
-import javax.swing.text.StyledEditorKit;
-
-public class LExprCompiler {
+public class TasmCompiler {
 
     private final boolean asm;
 
-    public LExprCompiler(boolean asm){
+    public TasmCompiler(boolean asm){
         this.asm = asm;
     }
 
-    public LExprCompiler(){
+    public TasmCompiler(){
         this(false);
     }
 
@@ -37,14 +35,16 @@ public class LExprCompiler {
             OpCode instructionOpCode = instruction.getInstruction();
             outputStream.writeByte(instructionOpCode.ordinal());
 
-            if(instructionOpCode.name().charAt(0) == 'i')
+            if(instructionOpCode.name().equals("iconst"))
                 outputStream.writeInt(((InstructionArgument<Integer>) instruction).getInstructionArguments());
-            else if(instructionOpCode.name().charAt(0) == 'd')
+            else if(instructionOpCode.name().equals("dconst"))
                 outputStream.writeDouble(((InstructionArgument<Double>) instruction).getInstructionArguments());
-            else if(instructionOpCode.name().charAt(0) == 's')
+            else if(instructionOpCode.name().equals("sconst"))
                 outputStream.writeChars(((InstructionArgument<String>) instruction).getInstructionArguments());
-            else if(instructionOpCode.name().charAt(0) == 'b')
+            else if(instructionOpCode.name().equals("bconst"))
                 outputStream.writeBoolean(((InstructionArgument<Boolean>) instruction).getInstructionArguments());
+            else if(instructionOpCode.name().charAt(0) == 'g')
+                outputStream.writeInt(((InstructionArgument<Integer>) instruction).getInstructionArguments());
         }
         outputStream.close();
     }
@@ -62,15 +62,16 @@ public class LExprCompiler {
     {
         InputStream inputStream = inputFile == null ? System.in : new FileInputStream(inputFile);
 
-        LExprParser parser = generateParser(inputStream);
+        TasmParser parser = generateParser(inputStream);
 
-        ParseTree tree = parser.s();
+        ParseTree tree = parser.tasm();
         ParseTreeWalker walker = new ParseTreeWalker();
 
         InstructionTree instructionTree = new InstructionTree();
         walker.walk(instructionTree, tree);
 
         generateByteCode(instructionTree.getInstructions(), outputFile);
+        System.out.println(instructionTree);
 
         if(this.asm)
             asm(instructionTree.getInstructions(), outputFile);

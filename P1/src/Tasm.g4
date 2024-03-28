@@ -1,27 +1,53 @@
 grammar Tasm;
 
-tasm: (instruction)+ HALT | HALT
-;
+tasm: (instruction)+ HALT
+    | HALT
+    | tag=TAG':' instruction (tasm)
+    ;
 
-instruction : (ICONST INT | DCONST DOUBLE | SCONST STRING | BCONST BOOL)           '\n'                      #Const
 
-            | alloc=(GALLOC | GLOAD | GSTORE ) INT                             '\n'                          #Global
 
-            | condition=(IEQ | INEQ | ILT | ILEQ | DEQ| DNEQ | DLT | DTOS |
-                         SEQ | SNEQ | BEQ | BNEQ| AND | OR | NOT)            '\n'                             #Conditions
+instruction : constant '\n'
 
-            | change=(ITOD | ITOS | DTOS | BTOS)                     '\n'                                     #Change
+            | allocation '\n'
 
-            | operation=(IUMINUS | IADD | ISUB | IMULT | IDIV | IMOD |
-                         DUMINUS| DADD | DSUB | DMULT | DDIV |
-                         SADD)                                   '\n'                                         #Operations
+            | condition '\n'
 
-            | print=(IPRINT | DPRINT | SPRINT | BPRINT)                  '\n'                                 #Print
+            | cast '\n'
 
-            | jump=(JUMP | JUMPF | JUMPT) TAG2           '\n'                                                  #Jump
+            | operation '\n'
 
-            | tag=TAG instruction                                                                        #Taga
+            | printf '\n'
+
+            | jump '\n'
+
+            | '\n'
+
             ;
+
+constant: (ICONST INT | DCONST (DOUBLE | INT) | SCONST STRING | BCONST BOOL)                                #Const
+        ;
+
+allocation: alloc=(GALLOC | GLOAD | GSTORE ) INT                                                    #Global
+          ;
+
+condition: cd=(IEQ | INEQ | ILT | ILEQ | DEQ| DNEQ | DLT | DTOS |
+                      SEQ | SNEQ | BEQ | BNEQ| AND | OR | NOT)                                         #Conditions
+         ;
+
+cast: change=(ITOD | ITOS | DTOS | BTOS)                                                                      #Change
+    ;
+
+operation: op=(IUMINUS | IADD | ISUB | IMULT | IDIV | IMOD |
+                DUMINUS| DADD | DSUB | DMULT | DDIV |
+                 SADD)                                                                           #Operations
+         ;
+
+printf: print=(IPRINT | DPRINT | SPRINT | BPRINT)                                                  #Print
+      ;
+
+jump: jp=(JUMP | JUMPF | JUMPT) tag=TAG                                                           #Jp
+    ;
 
 
 HALT: 'halt';
@@ -29,7 +55,6 @@ BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' .*? '"';
-TAG: [a-zA-Z]([a-zA-Z0-9_-]*)':';
 
 ICONST:'iconst';
 IPRINT:'iprint';
@@ -77,6 +102,6 @@ GALLOC:'galloc';
 GLOAD:'gload';
 GSTORE:'gstore';
 
-TAG2: [a-zA-Z]([a-zA-Z0-9_-]*);
+TAG: [a-zA-Z]([a-zA-Z0-9_-]*);
 
-WS : [ \t]+ -> skip ;
+WS : [ \t\r]+ -> skip ;
