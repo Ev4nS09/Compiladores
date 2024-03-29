@@ -1,6 +1,5 @@
 // Generated from C:/Users/afons/Desktop/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
-package Antlr;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
+package Antlr;import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
  * This interface defines a complete listener for a parse tree produced by
@@ -17,6 +16,16 @@ public interface TasmListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTasm(TasmParser.TasmContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link TasmParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void enterLine(TasmParser.LineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link TasmParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void exitLine(TasmParser.LineContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TasmParser#instruction}.
 	 * @param ctx the parse tree

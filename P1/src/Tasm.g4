@@ -1,10 +1,11 @@
 grammar Tasm;
 
-tasm: (instruction)+ HALT
-    | HALT
-    | tag=TAG':' instruction (tasm)
-    ;
+tasm: line+;
 
+line :     instruction
+           | HALT
+           | tag=TAG(',' TAG)* ':' instruction
+           ;
 
 
 instruction : constant '\n'
@@ -25,7 +26,7 @@ instruction : constant '\n'
 
             ;
 
-constant: (ICONST INT | DCONST (DOUBLE | INT) | SCONST STRING | BCONST BOOL)                                #Const
+constant: (ICONST INT | DCONST (DOUBLE | INT) | SCONST STRING | TCONST | FCONST)                                #Const
         ;
 
 allocation: alloc=(GALLOC | GLOAD | GSTORE ) INT                                                    #Global
@@ -87,7 +88,8 @@ SPRINT:'sprint';
 SADD:'sadd';
 SEQ:'seq';
 SNEQ:'sneq';
-BCONST:'bconst';
+TCONST:'tconst';
+FCONST:'fconst';
 BPRINT:'bprint';
 BEQ:'beq';
 BNEQ:'bneq';

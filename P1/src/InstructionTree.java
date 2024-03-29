@@ -13,26 +13,30 @@ public class InstructionTree extends TasmBaseListener{
     {
         if(ctx.ICONST() != null)
         {
-            this.instructions.add(new InstructionArgument<Integer>(OpCode.iconst, Integer.parseInt(ctx.INT().getText())));
+            this.instructions.add(new Instruction(OpCode.iconst, Integer.parseInt(ctx.INT().getText())));
         }
         else if(ctx.DCONST() != null)
         {
             String number = ctx.INT() != null ? ctx.INT().getText() : ctx.DOUBLE().getText();
-            this.instructions.add(new InstructionArgument<Double>(OpCode.dconst, Double.parseDouble(number)));
+            this.instructions.add(new Instruction(OpCode.dconst, Double.parseDouble(number)));
         }
         else if(ctx.SCONST() != null)
         {
-            this.instructions.add(new InstructionArgument<String>(OpCode.sconst, ctx.STRING().getText()));
+            this.instructions.add(new Instruction(OpCode.sconst, ctx.STRING().getText()));
         }
-        else if(ctx.BCONST() != null)
+        else if(ctx.TCONST() != null)
         {
-            this.instructions.add(new InstructionArgument<Boolean>(OpCode.bconst, Boolean.parseBoolean(ctx.BOOL().getText())));
+            this.instructions.add(new Instruction(OpCode.tconst));
+        }
+        else if(ctx.FCONST() != null)
+        {
+            this.instructions.add(new Instruction(OpCode.fconst));
         }
     }
 
     public void exitGlobal(TasmParser.GlobalContext ctx)
     {
-        this.instructions.add(new InstructionArgument<Integer>(OpCode.valueOf(ctx.alloc.getText()), Integer.parseInt(ctx.INT().getText())));
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()), Integer.parseInt(ctx.INT().getText())));
     }
 
     public void exitConditions(TasmParser.ConditionsContext ctx)
@@ -57,10 +61,10 @@ public class InstructionTree extends TasmBaseListener{
 
     public void exitJp(TasmParser.JpContext ctx)
     {
-        this.instructions.add(new InstructionArgument<String>(OpCode.valueOf(ctx.jp.getText()), ctx.TAG().getText()));
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), ctx.TAG().getText()));
     }
 
-    public void exitTasm(TasmParser.TasmContext ctx)
+    public void exitLine(TasmParser.LineContext ctx)
     {
         if(ctx.HALT() != null)
             this.instructions.add(new Instruction(OpCode.halt));

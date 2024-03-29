@@ -16,22 +16,24 @@ public class ByteCodeBuffer
         DataInputStream inputStream = new DataInputStream(new FileInputStream(byteCodeFile));
         this.byteBuffer = new byte[inputStream.available()];
         inputStream.read(this.byteBuffer);
+
+        this.byteBufferPointer = 0;
     }
 
     public byte[] getByteBuffer()
     {
-        return byteBuffer;
+        return this.byteBuffer;
     }
 
     public int getByteBufferPointer()
     {
-        return byteBufferPointer;
+        return this.byteBufferPointer;
 
     }
     public byte getByte()
     {
         if (!isAvailable())
-            throw new IndexOutOfBoundsException("Buffer pointer is at the last position of buffer");
+            throw new IndexOutOfBoundsException("Buffer pointer out of bounds");
 
         return this.byteBuffer[this.byteBufferPointer++];
     }
@@ -40,6 +42,39 @@ public class ByteCodeBuffer
     {
         return (getByte() << 24) + (getByte() << 16) + (getByte() << 8) + (getByte());
     }
+
+    public char getChar()
+    {
+        return (char) ((getByte() << 8) + (getByte()));
+    }
+
+    public String getString()
+    {
+        StringBuilder result = new StringBuilder();
+        int length = getInt();
+        for(int i = 0; i < length; i++)
+        {
+            result.append(getChar());
+        }
+        return result.toString();
+    }
+
+    public Double getDouble()
+    {
+        long current = 0;
+        for(int i = 0; i < 8; i++) //8 is how many bytes a double has.
+        {
+            current = (current << 8) + (getByte() & 0xFF);
+        }
+        return Double.longBitsToDouble(current);
+    }
+
+    public boolean getBoolean()
+    {
+        return getByte() == 1;
+    }
+
+
 
     public boolean isAvailable()
     {

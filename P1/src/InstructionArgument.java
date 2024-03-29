@@ -8,13 +8,14 @@ public class InstructionArgument<T> extends Instruction{
         this.argument = argument;
     }
 
-    public T getInstructionArguments()
+    public T getInstructionArgument()
     {
         return this.argument;
     }
 
     @Override
-    public String toString(){
+    public String toString()
+    {
         return super.toString() + " " + this.argument;
     }
 }

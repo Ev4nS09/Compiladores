@@ -36,15 +36,27 @@ public class TasmCompiler {
             outputStream.writeByte(instructionOpCode.ordinal());
 
             if(instructionOpCode.name().equals("iconst"))
-                outputStream.writeInt(((InstructionArgument<Integer>) instruction).getInstructionArguments());
+                outputStream.writeInt((Integer) instruction.getArgument());
+
             else if(instructionOpCode.name().equals("dconst"))
-                outputStream.writeDouble(((InstructionArgument<Double>) instruction).getInstructionArguments());
+                outputStream.writeDouble((Double) instruction.getArgument());
+
             else if(instructionOpCode.name().equals("sconst"))
-                outputStream.writeChars(((InstructionArgument<String>) instruction).getInstructionArguments());
-            else if(instructionOpCode.name().equals("bconst"))
-                outputStream.writeBoolean(((InstructionArgument<Boolean>) instruction).getInstructionArguments());
+            {
+                String argument = (String) instruction.getArgument();
+                outputStream.writeInt(argument.length());
+                outputStream.writeChars(argument);
+            }
+
             else if(instructionOpCode.name().charAt(0) == 'g')
-                outputStream.writeInt(((InstructionArgument<Integer>) instruction).getInstructionArguments());
+                outputStream.writeInt((Integer) instruction.getArgument());
+
+            else if(instructionOpCode.name().charAt(0) == 'j')
+            {
+                String argument = (String) instruction.getArgument();
+                outputStream.writeInt(argument.length());
+                outputStream.writeChars(argument);
+            }
         }
         outputStream.close();
     }

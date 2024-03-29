@@ -1,6 +1,5 @@
 // Generated from C:/Users/afons/Desktop/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
-package Antlr;
-import org.antlr.v4.runtime.atn.*;
+package Antlr;import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
@@ -17,47 +16,47 @@ public class TasmParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, HALT=3, BOOL=4, INT=5, DOUBLE=6, STRING=7, ICONST=8, IPRINT=9, 
-		IUMINUS=10, IADD=11, ISUB=12, IMULT=13, IDIV=14, IMOD=15, IEQ=16, INEQ=17, 
-		ILT=18, ILEQ=19, ITOD=20, ITOS=21, DCONST=22, DPRINT=23, DUMINUS=24, DADD=25, 
-		DSUB=26, DMULT=27, DDIV=28, DEQ=29, DNEQ=30, DLT=31, DLEQ=32, DTOS=33, 
-		SCONST=34, SPRINT=35, SADD=36, SEQ=37, SNEQ=38, BCONST=39, BPRINT=40, 
-		BEQ=41, BNEQ=42, AND=43, OR=44, NOT=45, BTOS=46, JUMP=47, JUMPT=48, JUMPF=49, 
-		GALLOC=50, GLOAD=51, GSTORE=52, TAG=53, WS=54;
+		T__0=1, T__1=2, T__2=3, HALT=4, BOOL=5, INT=6, DOUBLE=7, STRING=8, ICONST=9, 
+		IPRINT=10, IUMINUS=11, IADD=12, ISUB=13, IMULT=14, IDIV=15, IMOD=16, IEQ=17, 
+		INEQ=18, ILT=19, ILEQ=20, ITOD=21, ITOS=22, DCONST=23, DPRINT=24, DUMINUS=25, 
+		DADD=26, DSUB=27, DMULT=28, DDIV=29, DEQ=30, DNEQ=31, DLT=32, DLEQ=33, 
+		DTOS=34, SCONST=35, SPRINT=36, SADD=37, SEQ=38, SNEQ=39, TCONST=40, FCONST=41, 
+		BPRINT=42, BEQ=43, BNEQ=44, AND=45, OR=46, NOT=47, BTOS=48, JUMP=49, JUMPT=50, 
+		JUMPF=51, GALLOC=52, GLOAD=53, GSTORE=54, TAG=55, WS=56;
 	public static final int
-		RULE_tasm = 0, RULE_instruction = 1, RULE_constant = 2, RULE_allocation = 3, 
-		RULE_condition = 4, RULE_cast = 5, RULE_operation = 6, RULE_printf = 7, 
-		RULE_jump = 8;
+		RULE_tasm = 0, RULE_line = 1, RULE_instruction = 2, RULE_constant = 3, 
+		RULE_allocation = 4, RULE_condition = 5, RULE_cast = 6, RULE_operation = 7, 
+		RULE_printf = 8, RULE_jump = 9;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"tasm", "instruction", "constant", "allocation", "condition", "cast", 
-			"operation", "printf", "jump"
+			"tasm", "line", "instruction", "constant", "allocation", "condition", 
+			"cast", "operation", "printf", "jump"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "':'", "'\\n'", "'halt'", null, null, null, null, "'iconst'", "'iprint'", 
-			"'iuminus'", "'iadd'", "'isub'", "'imult'", "'idiv'", "'imod'", "'ieq'", 
-			"'ineq'", "'ilt'", "'ileq'", "'itod'", "'itos'", "'dconst'", "'dprint'", 
-			"'duminus'", "'dadd'", "'dsub'", "'dmult'", "'ddiv'", "'deq'", "'dneq'", 
-			"'dlt'", "'dleq'", "'dtos'", "'sconst'", "'sprint'", "'sadd'", "'seq'", 
-			"'sneq'", "'bconst'", "'bprint'", "'beq'", "'bneq'", "'and'", "'or'", 
-			"'not'", "'btos'", "'jump'", "'jumpt'", "'jumpf'", "'galloc'", "'gload'", 
-			"'gstore'"
+			null, "','", "':'", "'\\n'", "'halt'", null, null, null, null, "'iconst'", 
+			"'iprint'", "'iuminus'", "'iadd'", "'isub'", "'imult'", "'idiv'", "'imod'", 
+			"'ieq'", "'ineq'", "'ilt'", "'ileq'", "'itod'", "'itos'", "'dconst'", 
+			"'dprint'", "'duminus'", "'dadd'", "'dsub'", "'dmult'", "'ddiv'", "'deq'", 
+			"'dneq'", "'dlt'", "'dleq'", "'dtos'", "'sconst'", "'sprint'", "'sadd'", 
+			"'seq'", "'sneq'", "'tconst'", "'fconst'", "'bprint'", "'beq'", "'bneq'", 
+			"'and'", "'or'", "'not'", "'btos'", "'jump'", "'jumpt'", "'jumpf'", "'galloc'", 
+			"'gload'", "'gstore'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, "HALT", "BOOL", "INT", "DOUBLE", "STRING", "ICONST", 
+			null, null, null, null, "HALT", "BOOL", "INT", "DOUBLE", "STRING", "ICONST", 
 			"IPRINT", "IUMINUS", "IADD", "ISUB", "IMULT", "IDIV", "IMOD", "IEQ", 
 			"INEQ", "ILT", "ILEQ", "ITOD", "ITOS", "DCONST", "DPRINT", "DUMINUS", 
 			"DADD", "DSUB", "DMULT", "DDIV", "DEQ", "DNEQ", "DLT", "DLEQ", "DTOS", 
-			"SCONST", "SPRINT", "SADD", "SEQ", "SNEQ", "BCONST", "BPRINT", "BEQ", 
-			"BNEQ", "AND", "OR", "NOT", "BTOS", "JUMP", "JUMPT", "JUMPF", "GALLOC", 
-			"GLOAD", "GSTORE", "TAG", "WS"
+			"SCONST", "SPRINT", "SADD", "SEQ", "SNEQ", "TCONST", "FCONST", "BPRINT", 
+			"BEQ", "BNEQ", "AND", "OR", "NOT", "BTOS", "JUMP", "JUMPT", "JUMPF", 
+			"GALLOC", "GLOAD", "GSTORE", "TAG", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -113,17 +112,11 @@ public class TasmParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class TasmContext extends ParserRuleContext {
-		public Token tag;
-		public TerminalNode HALT() { return getToken(TasmParser.HALT, 0); }
-		public List<InstructionContext> instruction() {
-			return getRuleContexts(InstructionContext.class);
+		public List<LineContext> line() {
+			return getRuleContexts(LineContext.class);
 		}
-		public InstructionContext instruction(int i) {
-			return getRuleContext(InstructionContext.class,i);
-		}
-		public TerminalNode TAG() { return getToken(TasmParser.TAG, 0); }
-		public TasmContext tasm() {
-			return getRuleContext(TasmContext.class,0);
+		public LineContext line(int i) {
+			return getRuleContext(LineContext.class,i);
 		}
 		public TasmContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -144,10 +137,69 @@ public class TasmParser extends Parser {
 		enterRule(_localctx, 0, RULE_tasm);
 		int _la;
 		try {
-			setState(31);
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(21); 
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			do {
+				{
+				{
+				setState(20);
+				line();
+				}
+				}
+				setState(23); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 72057585447992856L) != 0) );
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class LineContext extends ParserRuleContext {
+		public Token tag;
+		public InstructionContext instruction() {
+			return getRuleContext(InstructionContext.class,0);
+		}
+		public TerminalNode HALT() { return getToken(TasmParser.HALT, 0); }
+		public List<TerminalNode> TAG() { return getTokens(TasmParser.TAG); }
+		public TerminalNode TAG(int i) {
+			return getToken(TasmParser.TAG, i);
+		}
+		public LineContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_line; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterLine(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitLine(this);
+		}
+	}
+
+	public final LineContext line() throws RecognitionException {
+		LineContext _localctx = new LineContext(_ctx, getState());
+		enterRule(_localctx, 2, RULE_line);
+		int _la;
+		try {
+			setState(37);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__1:
+			case T__2:
 			case ICONST:
 			case IPRINT:
 			case IUMINUS:
@@ -178,7 +230,8 @@ public class TasmParser extends Parser {
 			case SADD:
 			case SEQ:
 			case SNEQ:
-			case BCONST:
+			case TCONST:
+			case FCONST:
 			case BPRINT:
 			case BEQ:
 			case BNEQ:
@@ -194,44 +247,42 @@ public class TasmParser extends Parser {
 			case GSTORE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(19); 
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				do {
-					{
-					{
-					setState(18);
-					instruction();
-					}
-					}
-					setState(21); 
-					_errHandler.sync(this);
-					_la = _input.LA(1);
-				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 9007194959773444L) != 0) );
-				setState(23);
-				match(HALT);
+				setState(25);
+				instruction();
 				}
 				break;
 			case HALT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(25);
+				setState(26);
 				match(HALT);
 				}
 				break;
 			case TAG:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(26);
-				((TasmContext)_localctx).tag = match(TAG);
 				setState(27);
-				match(T__0);
-				setState(28);
-				instruction();
-				{
-				setState(29);
-				tasm();
+				((LineContext)_localctx).tag = match(TAG);
+				setState(32);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==T__0) {
+					{
+					{
+					setState(28);
+					match(T__0);
+					setState(29);
+					match(TAG);
+					}
+					}
+					setState(34);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
 				}
+				setState(35);
+				match(T__1);
+				setState(36);
+				instruction();
 				}
 				break;
 			default:
@@ -288,79 +339,79 @@ public class TasmParser extends Parser {
 
 	public final InstructionContext instruction() throws RecognitionException {
 		InstructionContext _localctx = new InstructionContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_instruction);
+		enterRule(_localctx, 4, RULE_instruction);
 		try {
-			setState(55);
+			setState(61);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(33);
+				setState(39);
 				constant();
-				setState(34);
-				match(T__1);
+				setState(40);
+				match(T__2);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(36);
+				setState(42);
 				allocation();
-				setState(37);
-				match(T__1);
+				setState(43);
+				match(T__2);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(39);
+				setState(45);
 				condition();
-				setState(40);
-				match(T__1);
+				setState(46);
+				match(T__2);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(42);
+				setState(48);
 				cast();
-				setState(43);
-				match(T__1);
+				setState(49);
+				match(T__2);
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(45);
+				setState(51);
 				operation();
-				setState(46);
-				match(T__1);
+				setState(52);
+				match(T__2);
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(48);
+				setState(54);
 				printf();
-				setState(49);
-				match(T__1);
+				setState(55);
+				match(T__2);
 				}
 				break;
 			case 7:
 				enterOuterAlt(_localctx, 7);
 				{
-				setState(51);
+				setState(57);
 				jump();
-				setState(52);
-				match(T__1);
+				setState(58);
+				match(T__2);
 				}
 				break;
 			case 8:
 				enterOuterAlt(_localctx, 8);
 				{
-				setState(54);
-				match(T__1);
+				setState(60);
+				match(T__2);
 				}
 				break;
 			}
@@ -393,11 +444,11 @@ public class TasmParser extends Parser {
 		public TerminalNode ICONST() { return getToken(TasmParser.ICONST, 0); }
 		public TerminalNode INT() { return getToken(TasmParser.INT, 0); }
 		public TerminalNode DCONST() { return getToken(TasmParser.DCONST, 0); }
-		public TerminalNode DOUBLE() { return getToken(TasmParser.DOUBLE, 0); }
 		public TerminalNode SCONST() { return getToken(TasmParser.SCONST, 0); }
 		public TerminalNode STRING() { return getToken(TasmParser.STRING, 0); }
-		public TerminalNode BCONST() { return getToken(TasmParser.BCONST, 0); }
-		public TerminalNode BOOL() { return getToken(TasmParser.BOOL, 0); }
+		public TerminalNode TCONST() { return getToken(TasmParser.TCONST, 0); }
+		public TerminalNode FCONST() { return getToken(TasmParser.FCONST, 0); }
+		public TerminalNode DOUBLE() { return getToken(TasmParser.DOUBLE, 0); }
 		public ConstContext(ConstantContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -411,44 +462,57 @@ public class TasmParser extends Parser {
 
 	public final ConstantContext constant() throws RecognitionException {
 		ConstantContext _localctx = new ConstantContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_constant);
+		enterRule(_localctx, 6, RULE_constant);
+		int _la;
 		try {
 			_localctx = new ConstContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(65);
+			setState(71);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ICONST:
 				{
-				setState(57);
+				setState(63);
 				match(ICONST);
-				setState(58);
+				setState(64);
 				match(INT);
 				}
 				break;
 			case DCONST:
 				{
-				setState(59);
+				setState(65);
 				match(DCONST);
-				setState(60);
-				match(DOUBLE);
+				setState(66);
+				_la = _input.LA(1);
+				if ( !(_la==INT || _la==DOUBLE) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
 				}
 				break;
 			case SCONST:
 				{
-				setState(61);
+				setState(67);
 				match(SCONST);
-				setState(62);
+				setState(68);
 				match(STRING);
 				}
 				break;
-			case BCONST:
+			case TCONST:
 				{
-				setState(63);
-				match(BCONST);
-				setState(64);
-				match(BOOL);
+				setState(69);
+				match(TCONST);
+				}
+				break;
+			case FCONST:
+				{
+				setState(70);
+				match(FCONST);
 				}
 				break;
 			default:
@@ -499,16 +563,16 @@ public class TasmParser extends Parser {
 
 	public final AllocationContext allocation() throws RecognitionException {
 		AllocationContext _localctx = new AllocationContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_allocation);
+		enterRule(_localctx, 8, RULE_allocation);
 		int _la;
 		try {
 			_localctx = new GlobalContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(67);
+			setState(73);
 			((GlobalContext)_localctx).alloc = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 7881299347898368L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 31525197391593472L) != 0)) ) {
 				((GlobalContext)_localctx).alloc = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -516,7 +580,7 @@ public class TasmParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(68);
+			setState(74);
 			match(INT);
 			}
 		}
@@ -574,16 +638,16 @@ public class TasmParser extends Parser {
 
 	public final ConditionContext condition() throws RecognitionException {
 		ConditionContext _localctx = new ConditionContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_condition);
+		enterRule(_localctx, 10, RULE_condition);
 		int _la;
 		try {
 			_localctx = new ConditionsContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(70);
+			setState(76);
 			((ConditionsContext)_localctx).cd = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 68594386796544L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 273528215437312L) != 0)) ) {
 				((ConditionsContext)_localctx).cd = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -636,16 +700,16 @@ public class TasmParser extends Parser {
 
 	public final CastContext cast() throws RecognitionException {
 		CastContext _localctx = new CastContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_cast);
+		enterRule(_localctx, 12, RULE_cast);
 		int _la;
 		try {
 			_localctx = new ChangeContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(72);
+			setState(78);
 			((ChangeContext)_localctx).change = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 70377337257984L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 281492162871296L) != 0)) ) {
 				((ChangeContext)_localctx).change = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -706,16 +770,16 @@ public class TasmParser extends Parser {
 
 	public final OperationContext operation() throws RecognitionException {
 		OperationContext _localctx = new OperationContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_operation);
+		enterRule(_localctx, 14, RULE_operation);
 		int _la;
 		try {
 			_localctx = new OperationsContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(74);
+			setState(80);
 			((OperationsContext)_localctx).op = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 69239634944L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 138479269888L) != 0)) ) {
 				((OperationsContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -768,16 +832,16 @@ public class TasmParser extends Parser {
 
 	public final PrintfContext printf() throws RecognitionException {
 		PrintfContext _localctx = new PrintfContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_printf);
+		enterRule(_localctx, 16, RULE_printf);
 		int _la;
 		try {
 			_localctx = new PrintContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(76);
+			setState(82);
 			((PrintContext)_localctx).print = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 1133879755264L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 4466782766080L) != 0)) ) {
 				((PrintContext)_localctx).print = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -831,16 +895,16 @@ public class TasmParser extends Parser {
 
 	public final JumpContext jump() throws RecognitionException {
 		JumpContext _localctx = new JumpContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_jump);
+		enterRule(_localctx, 18, RULE_jump);
 		int _la;
 		try {
 			_localctx = new JpContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(78);
+			setState(84);
 			((JpContext)_localctx).jp = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 985162418487296L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 3940649673949184L) != 0)) ) {
 				((JpContext)_localctx).jp = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -848,7 +912,7 @@ public class TasmParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(79);
+			setState(85);
 			((JpContext)_localctx).tag = match(TAG);
 			}
 		}
@@ -864,57 +928,60 @@ public class TasmParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u00016R\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
+		"\u0004\u00018X\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002\u0002"+
 		"\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002\u0005"+
 		"\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002\b\u0007"+
-		"\b\u0001\u0000\u0004\u0000\u0014\b\u0000\u000b\u0000\f\u0000\u0015\u0001"+
-		"\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001"+
-		"\u0000\u0001\u0000\u0003\u0000 \b\u0000\u0001\u0001\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0003\u00018\b\u0001\u0001\u0002\u0001\u0002\u0001"+
-		"\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0003"+
-		"\u0002B\b\u0002\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0004\u0001"+
-		"\u0004\u0001\u0005\u0001\u0005\u0001\u0006\u0001\u0006\u0001\u0007\u0001"+
-		"\u0007\u0001\b\u0001\b\u0001\b\u0001\b\u0000\u0000\t\u0000\u0002\u0004"+
-		"\u0006\b\n\f\u000e\u0010\u0000\u0006\u0001\u000024\u0005\u0000\u0010\u0013"+
-		"\u001d\u001f!!%&)-\u0003\u0000\u0014\u0015!!..\u0003\u0000\n\u000f\u0018"+
-		"\u001c$$\u0004\u0000\t\t\u0017\u0017##((\u0001\u0000/1U\u0000\u001f\u0001"+
-		"\u0000\u0000\u0000\u00027\u0001\u0000\u0000\u0000\u0004A\u0001\u0000\u0000"+
-		"\u0000\u0006C\u0001\u0000\u0000\u0000\bF\u0001\u0000\u0000\u0000\nH\u0001"+
-		"\u0000\u0000\u0000\fJ\u0001\u0000\u0000\u0000\u000eL\u0001\u0000\u0000"+
-		"\u0000\u0010N\u0001\u0000\u0000\u0000\u0012\u0014\u0003\u0002\u0001\u0000"+
-		"\u0013\u0012\u0001\u0000\u0000\u0000\u0014\u0015\u0001\u0000\u0000\u0000"+
-		"\u0015\u0013\u0001\u0000\u0000\u0000\u0015\u0016\u0001\u0000\u0000\u0000"+
-		"\u0016\u0017\u0001\u0000\u0000\u0000\u0017\u0018\u0005\u0003\u0000\u0000"+
-		"\u0018 \u0001\u0000\u0000\u0000\u0019 \u0005\u0003\u0000\u0000\u001a\u001b"+
-		"\u00055\u0000\u0000\u001b\u001c\u0005\u0001\u0000\u0000\u001c\u001d\u0003"+
-		"\u0002\u0001\u0000\u001d\u001e\u0003\u0000\u0000\u0000\u001e \u0001\u0000"+
-		"\u0000\u0000\u001f\u0013\u0001\u0000\u0000\u0000\u001f\u0019\u0001\u0000"+
-		"\u0000\u0000\u001f\u001a\u0001\u0000\u0000\u0000 \u0001\u0001\u0000\u0000"+
-		"\u0000!\"\u0003\u0004\u0002\u0000\"#\u0005\u0002\u0000\u0000#8\u0001\u0000"+
-		"\u0000\u0000$%\u0003\u0006\u0003\u0000%&\u0005\u0002\u0000\u0000&8\u0001"+
-		"\u0000\u0000\u0000\'(\u0003\b\u0004\u0000()\u0005\u0002\u0000\u0000)8"+
-		"\u0001\u0000\u0000\u0000*+\u0003\n\u0005\u0000+,\u0005\u0002\u0000\u0000"+
-		",8\u0001\u0000\u0000\u0000-.\u0003\f\u0006\u0000./\u0005\u0002\u0000\u0000"+
-		"/8\u0001\u0000\u0000\u000001\u0003\u000e\u0007\u000012\u0005\u0002\u0000"+
-		"\u000028\u0001\u0000\u0000\u000034\u0003\u0010\b\u000045\u0005\u0002\u0000"+
-		"\u000058\u0001\u0000\u0000\u000068\u0005\u0002\u0000\u00007!\u0001\u0000"+
-		"\u0000\u00007$\u0001\u0000\u0000\u00007\'\u0001\u0000\u0000\u00007*\u0001"+
-		"\u0000\u0000\u00007-\u0001\u0000\u0000\u000070\u0001\u0000\u0000\u0000"+
-		"73\u0001\u0000\u0000\u000076\u0001\u0000\u0000\u00008\u0003\u0001\u0000"+
-		"\u0000\u00009:\u0005\b\u0000\u0000:B\u0005\u0005\u0000\u0000;<\u0005\u0016"+
-		"\u0000\u0000<B\u0005\u0006\u0000\u0000=>\u0005\"\u0000\u0000>B\u0005\u0007"+
-		"\u0000\u0000?@\u0005\'\u0000\u0000@B\u0005\u0004\u0000\u0000A9\u0001\u0000"+
-		"\u0000\u0000A;\u0001\u0000\u0000\u0000A=\u0001\u0000\u0000\u0000A?\u0001"+
-		"\u0000\u0000\u0000B\u0005\u0001\u0000\u0000\u0000CD\u0007\u0000\u0000"+
-		"\u0000DE\u0005\u0005\u0000\u0000E\u0007\u0001\u0000\u0000\u0000FG\u0007"+
-		"\u0001\u0000\u0000G\t\u0001\u0000\u0000\u0000HI\u0007\u0002\u0000\u0000"+
-		"I\u000b\u0001\u0000\u0000\u0000JK\u0007\u0003\u0000\u0000K\r\u0001\u0000"+
-		"\u0000\u0000LM\u0007\u0004\u0000\u0000M\u000f\u0001\u0000\u0000\u0000"+
-		"NO\u0007\u0005\u0000\u0000OP\u00055\u0000\u0000P\u0011\u0001\u0000\u0000"+
-		"\u0000\u0004\u0015\u001f7A";
+		"\b\u0002\t\u0007\t\u0001\u0000\u0004\u0000\u0016\b\u0000\u000b\u0000\f"+
+		"\u0000\u0017\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0005\u0001\u001f\b\u0001\n\u0001\f\u0001\"\t\u0001\u0001\u0001\u0001"+
+		"\u0001\u0003\u0001&\b\u0001\u0001\u0002\u0001\u0002\u0001\u0002\u0001"+
+		"\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001"+
+		"\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001"+
+		"\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001"+
+		"\u0002\u0003\u0002>\b\u0002\u0001\u0003\u0001\u0003\u0001\u0003\u0001"+
+		"\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0003\u0003H\b"+
+		"\u0003\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0005\u0001\u0005\u0001"+
+		"\u0006\u0001\u0006\u0001\u0007\u0001\u0007\u0001\b\u0001\b\u0001\t\u0001"+
+		"\t\u0001\t\u0001\t\u0000\u0000\n\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010"+
+		"\u0012\u0000\u0007\u0001\u0000\u0006\u0007\u0001\u000046\u0005\u0000\u0011"+
+		"\u0014\u001e \"\"&\'+/\u0003\u0000\u0015\u0016\"\"00\u0003\u0000\u000b"+
+		"\u0010\u0019\u001d%%\u0004\u0000\n\n\u0018\u0018$$**\u0001\u000013\\\u0000"+
+		"\u0015\u0001\u0000\u0000\u0000\u0002%\u0001\u0000\u0000\u0000\u0004=\u0001"+
+		"\u0000\u0000\u0000\u0006G\u0001\u0000\u0000\u0000\bI\u0001\u0000\u0000"+
+		"\u0000\nL\u0001\u0000\u0000\u0000\fN\u0001\u0000\u0000\u0000\u000eP\u0001"+
+		"\u0000\u0000\u0000\u0010R\u0001\u0000\u0000\u0000\u0012T\u0001\u0000\u0000"+
+		"\u0000\u0014\u0016\u0003\u0002\u0001\u0000\u0015\u0014\u0001\u0000\u0000"+
+		"\u0000\u0016\u0017\u0001\u0000\u0000\u0000\u0017\u0015\u0001\u0000\u0000"+
+		"\u0000\u0017\u0018\u0001\u0000\u0000\u0000\u0018\u0001\u0001\u0000\u0000"+
+		"\u0000\u0019&\u0003\u0004\u0002\u0000\u001a&\u0005\u0004\u0000\u0000\u001b"+
+		" \u00057\u0000\u0000\u001c\u001d\u0005\u0001\u0000\u0000\u001d\u001f\u0005"+
+		"7\u0000\u0000\u001e\u001c\u0001\u0000\u0000\u0000\u001f\"\u0001\u0000"+
+		"\u0000\u0000 \u001e\u0001\u0000\u0000\u0000 !\u0001\u0000\u0000\u0000"+
+		"!#\u0001\u0000\u0000\u0000\" \u0001\u0000\u0000\u0000#$\u0005\u0002\u0000"+
+		"\u0000$&\u0003\u0004\u0002\u0000%\u0019\u0001\u0000\u0000\u0000%\u001a"+
+		"\u0001\u0000\u0000\u0000%\u001b\u0001\u0000\u0000\u0000&\u0003\u0001\u0000"+
+		"\u0000\u0000\'(\u0003\u0006\u0003\u0000()\u0005\u0003\u0000\u0000)>\u0001"+
+		"\u0000\u0000\u0000*+\u0003\b\u0004\u0000+,\u0005\u0003\u0000\u0000,>\u0001"+
+		"\u0000\u0000\u0000-.\u0003\n\u0005\u0000./\u0005\u0003\u0000\u0000/>\u0001"+
+		"\u0000\u0000\u000001\u0003\f\u0006\u000012\u0005\u0003\u0000\u00002>\u0001"+
+		"\u0000\u0000\u000034\u0003\u000e\u0007\u000045\u0005\u0003\u0000\u0000"+
+		"5>\u0001\u0000\u0000\u000067\u0003\u0010\b\u000078\u0005\u0003\u0000\u0000"+
+		"8>\u0001\u0000\u0000\u00009:\u0003\u0012\t\u0000:;\u0005\u0003\u0000\u0000"+
+		";>\u0001\u0000\u0000\u0000<>\u0005\u0003\u0000\u0000=\'\u0001\u0000\u0000"+
+		"\u0000=*\u0001\u0000\u0000\u0000=-\u0001\u0000\u0000\u0000=0\u0001\u0000"+
+		"\u0000\u0000=3\u0001\u0000\u0000\u0000=6\u0001\u0000\u0000\u0000=9\u0001"+
+		"\u0000\u0000\u0000=<\u0001\u0000\u0000\u0000>\u0005\u0001\u0000\u0000"+
+		"\u0000?@\u0005\t\u0000\u0000@H\u0005\u0006\u0000\u0000AB\u0005\u0017\u0000"+
+		"\u0000BH\u0007\u0000\u0000\u0000CD\u0005#\u0000\u0000DH\u0005\b\u0000"+
+		"\u0000EH\u0005(\u0000\u0000FH\u0005)\u0000\u0000G?\u0001\u0000\u0000\u0000"+
+		"GA\u0001\u0000\u0000\u0000GC\u0001\u0000\u0000\u0000GE\u0001\u0000\u0000"+
+		"\u0000GF\u0001\u0000\u0000\u0000H\u0007\u0001\u0000\u0000\u0000IJ\u0007"+
+		"\u0001\u0000\u0000JK\u0005\u0006\u0000\u0000K\t\u0001\u0000\u0000\u0000"+
+		"LM\u0007\u0002\u0000\u0000M\u000b\u0001\u0000\u0000\u0000NO\u0007\u0003"+
+		"\u0000\u0000O\r\u0001\u0000\u0000\u0000PQ\u0007\u0004\u0000\u0000Q\u000f"+
+		"\u0001\u0000\u0000\u0000RS\u0007\u0005\u0000\u0000S\u0011\u0001\u0000"+
+		"\u0000\u0000TU\u0007\u0006\u0000\u0000UV\u00057\u0000\u0000V\u0013\u0001"+
+		"\u0000\u0000\u0000\u0005\u0017 %=G";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
