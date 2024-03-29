@@ -16,6 +16,7 @@ public class ByteCodeBuffer
         DataInputStream inputStream = new DataInputStream(new FileInputStream(byteCodeFile));
         this.byteBuffer = new byte[inputStream.available()];
         inputStream.read(this.byteBuffer);
+        inputStream.close();
 
         this.byteBufferPointer = 0;
     }
@@ -92,6 +93,11 @@ public class ByteCodeBuffer
             throw new IndexOutOfBoundsException("Invalid value for pointer. It should be in range between, 0 and the length of the byte array");
 
         this.byteBufferPointer = index;
+    }
+
+    public void finishPointer()
+    {
+        this.byteBufferPointer = this.byteBuffer.length;
     }
 
     @Override

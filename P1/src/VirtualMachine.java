@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.lang.classfile.FieldBuilder;
 import java.nio.ByteBuffer;
@@ -8,7 +9,7 @@ public class VirtualMachine {
     private final static int TAB_SIZE = 30;
 
     private Stack<Object> stack;
-    private ArrayList<Object> constantPool;
+    private Object[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
     private final LinkedList<String> stackIterations;
     private final LinkedList<Instruction> instructions;
@@ -20,7 +21,6 @@ public class VirtualMachine {
     public VirtualMachine(boolean trace) throws IOException {
         this.byteCodeBuffer = null;
         this.stack = new Stack<>();
-        this.constantPool = new ArrayList<>();
         this.trace = trace;
 
         this.stackIterations = new LinkedList<>();
@@ -42,23 +42,23 @@ public class VirtualMachine {
 
         switch (instruction)
         {
-            case iconst -> iconst(1);
+            case iconst -> iconst(this.byteCodeBuffer.getInt());
 
-            case dconst -> dconst(1);
+            case dconst -> dconst(this.byteCodeBuffer.getDouble());
 
-            case sconst -> sconst(1);
+            case sconst -> sconst(this.byteCodeBuffer.getString());
 
-            case jump -> jump(1);
+            case jump -> jump(null);
 
-            case jumpt -> jumpt(1);
+            case jumpt -> jumpt(null);
 
-            case jumpf -> jumpf(1);
+            case jumpf -> jumpf(null);
 
-            case galloc -> galloc(1);
+            case galloc -> galloc(this.byteCodeBuffer.getInt());
 
-            case gload -> gload(1);
+            case gload -> gload(this.byteCodeBuffer.getInt());
 
-            case gstore -> gstore(1);
+            case gstore -> gstore(this.byteCodeBuffer.getInt());
 
             case tconst -> tconst();
 
@@ -128,8 +128,6 @@ public class VirtualMachine {
 
             case btos -> btos();
 
-            case halt -> halt();
-
         }
 
         this.stackIterations.add(this.stack.toString());
@@ -139,12 +137,18 @@ public class VirtualMachine {
     public void execute(String byteCode) throws Exception
     {
         this.byteCodeBuffer = new ByteCodeBuffer(byteCode);
+        generateInstructions();
 
         if(this.trace)
             trace();
 
-        while(this.byteCodeBuffer.isAvailable()) {
+        while(this.byteCodeBuffer.isAvailable())
+        {
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
+
+            if(instruction == OpCode.halt)
+                break;
+
             doInstruction(instruction);
         }
 
@@ -153,289 +157,350 @@ public class VirtualMachine {
 
     private void reset()
     {
+        this.globalMemory = new Object[0];
         this.stack.clear();
+
         this.stackIterations.clear();
+        this.stackIterations.add("[]");
+
         this.instructions.clear();
         this.instructionPointer = 0;
+
     }
 
-    private void iconst(int n) {
-        stack.push(n);
+    private void iconst(int number)
+    {
+        stack.push(number);
     }
-    private void dconst(int n) {
-        //TODO  ---------------------------------!?!---------------------------
+    private void dconst(double number)
+    {
+        this.stack.push(number);
     }
-    private void sconst(int n) {
-        //TODO  ---------------------------------!?!---------------------------
+    private void sconst(String string)
+    {
+        char x = '"';
+        this.stack.push(string.replaceAll(Character.toString(x), ""));
     }
-    private void tconst() {
-        //TODO  ---------------------------------!?!---------------------------
+    private void tconst()
+    {
+        this.stack.push(true);
     }
-    private void fconst() {
-        //TODO  ---------------------------------!?!---------------------------
+    private void fconst()
+    {
+        this.stack.push(false);
     }
-    private void jump(int addr) {
+    private void jump(String tag)
+    {
         //TODO ----------------------------------!?!---------------------------
     }
-    private void jumpt(int addr) {
+    private void jumpt(String tag)
+    {
         //TODO ----------------------------------!?!---------------------------
     }
-    private void jumpf(int addr) {
+    private void jumpf(String tag)
+    {
         //TODO ----------------------------------!?!---------------------------
     }
-    private void galloc(int n) {
-        //TODO ----------------------------------!?!---------------------------
+    private void galloc(int size)
+    {
+        this.globalMemory = new Object[size];
+        for(int i = 0; i < size; i++)
+            this.globalMemory[i] = "NIL";
     }
-    private void gload(int addr) {
-        //TODO ----------------------------------!?!---------------------------
+    private void gload(int address)
+    {
+        this.stack.push(this.globalMemory[address]);
     }
-    private void gstore(int addr) {
-        //TODO ----------------------------------!?!---------------------------
+    private void gstore(int address)
+    {
+        this.globalMemory[address] = this.stack.pop();
     }
 
     private void iprint() {
-        System.out.println((Integer)stack.pop());
+        System.out.println(stack.pop());
     }
-    private void iuminus() {
-        int negativo= -(Integer)stack.pop();
-        stack.push(negativo);
+    private void iuminus()
+    {
+        stack.push(-(Integer)this.stack.pop());
     }
-    private void iadd() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        int result = esquerda + direita;
-        stack.push(result);
+    private void iadd()
+    {
+        int right = (Integer)stack.pop();
+        int left = (Integer)stack.pop();
+        stack.push(left + right);
     }
-    private void isub() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        int result = esquerda - direita;
-        stack.push(result);
+    private void isub()
+    {
+        int right = (Integer)stack.pop();
+        int left = (Integer)stack.pop();
+        stack.push(left - right);
     }
-    private void imult() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        int result = esquerda * direita;
-        stack.push(result);
+    private void imult()
+    {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+        this.stack.push(left * right);
     }
-    private void idiv() {
-        int direita = (Integer)stack.pop();
-        if(direita != 0) {
-            int esquerda = (Integer)stack.pop();
-            int result = esquerda / direita;
-            stack.push(result);
-        }
-        else System.out.println("Divisor inválido");
+    private void idiv()
+    {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+
+        if(right == 0)
+            throw new ArithmeticException("Divisor mustn't be 0");
+
+        this.stack.push(left / right);
     }
-    private void imod() {
-        int direita = (Integer)stack.pop();
-        if(direita != 0) {
-            int esquerda = (Integer)stack.pop();
-            int result = esquerda % direita;
-            stack.push(result);
-        }
-        else System.out.println("Divisor inválido");
+    private void imod()
+    {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+
+        if(right == 0)
+            throw new ArithmeticException("Divisor mustn't be 0");
+
+        this.stack.push(left % right);
     }
-    private void ieq() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        if (esquerda == direita)
-            stack.push((Boolean)true);
+    private void ieq()
+    {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+
+        if (left == right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
-        ;
+            stack.push(false);
     }
-    private void ineq() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        if (esquerda != direita)
-            stack.push((Boolean)true);
+    private void ineq()
+    {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+
+        if (left != right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void ilt() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        if (esquerda < direita)
-            stack.push((Boolean)true);
+    private void ilt()
+    {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+
+        if (left < right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
-    }
-    private void ileq() {
-        int direita = (Integer)stack.pop();
-        int esquerda = (Integer)stack.pop();
-        if (esquerda <= direita)
-            stack.push((Boolean)true);
-        else
-            stack.push((Boolean)false);
-    }
-    private void itod() {
-        Double real = (Double)stack.pop();
-        stack.push((Double)real);
+            stack.push(false);
 
     }
-    private void itos() {
+    private void ileq() {
+        int right = (Integer) this.stack.pop();
+        int left = (Integer) this.stack.pop();
+
+        if (left <= right)
+            stack.push(true);
+        else
+            stack.push(false);
+
+
+    }
+    private void itod()
+    {
+        Double real = (Double)stack.pop();
+        stack.push(real);
+
+    }
+    private void itos()
+    {
         int inteiro = (Integer)stack.pop();
         stack.push(String.valueOf(inteiro));
     }
-    private void dprint() {
-        System.out.println((Double)stack.pop());
+    private void dprint()
+    {
+        System.out.println(this.stack.pop());
     }
-    private void duminus() {
-        Double negativo = -(Double)stack.pop();
-        stack.push((Double)negativo);
-    }private void dadd() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        Double result = esquerda + direita;
-        stack.push(result);
+    private void duminus()
+    {
+        stack.push(-(Double)this.stack.pop());
     }
-    private void dsub() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        Double result = esquerda - direita;
-        stack.push(result);
+
+    private void dadd()
+    {
+        Double left = (Double)stack.pop();
+        Double right = (Double)stack.pop();
+        stack.push(left + right);
     }
-    private void dmult() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        Double result = esquerda * direita;
-        stack.push(result);
+
+    private void dsub()
+    {
+        Double right = (Double)stack.pop();
+        Double left = (Double)stack.pop();
+        stack.push(left - right);
     }
-    private void ddiv() {
-        Double direita = (Double)stack.pop();
-        if(direita != 0) {
-            Double esquerda = (Double)stack.pop();
-            Double result = esquerda / direita;
-            stack.push(result);
-        }
-        else System.out.println("Divisor inválido");
+
+    private void dmult()
+    {
+        Double right = (Double)stack.pop();
+        Double left = (Double)stack.pop();
+        stack.push(left - right);
     }
-    private void deq() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        if (esquerda == direita)
-            stack.push((Boolean)true);
+    private void ddiv()
+    {
+        double right = (Double) this.stack.pop();
+        double left = (Double) this.stack.pop();
+
+        if(right == 0)
+            throw new ArithmeticException("Divisor mustn't be 0");
+
+        this.stack.push(left / right);
+
+    }
+    private void deq()
+    {
+        double right = (Double)stack.pop();
+        double left = (Double)stack.pop();
+
+        if (left == right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
         ;
     }
-    private void dneq() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        if (esquerda != direita)
-            stack.push((Boolean)true);
+    private void dneq()
+    {
+        double right = (Double)stack.pop();
+        double left = (Double)stack.pop();
+        if (left != right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void dlt() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        if (esquerda < direita)
-            stack.push((Boolean)true);
+    private void dlt()
+    {
+        double right = (Double)stack.pop();
+        double left = (Double)stack.pop();
+        if (left < right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void dleq() {
-        Double direita = (Double)stack.pop();
-        Double esquerda = (Double)stack.pop();
-        if (esquerda <= direita)
-            stack.push((Boolean)true);
+    private void dleq()
+    {
+        double right = (Double)stack.pop();
+        double left = (Double)stack.pop();
+
+        if (left <= right)
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void dtos() {
+    private void dtos()
+    {
         Double real = (Double)stack.pop();
         stack.push(String.valueOf(real));
     }
-    private void sprint() {
+    private void sprint()
+    {
         System.out.println((String)stack.pop());
     }
-    private void sadd() {
-        String direta = (String)stack.pop();
-        String esquerda = (String)stack.pop();
-        esquerda.concat(direta);
+    private void sadd()
+    {
+        String right = (String)stack.pop();
+        String left = (String)stack.pop();
+
+        this.stack.push(left.concat(right));
     }
-    private void seq() {
-        String direta = (String)stack.pop();
-        String esquerda = (String)stack.pop();
-        if (esquerda.equals(direta))
-            stack.push((Boolean)true);
+    private void seq()
+    {
+        String right = (String)stack.pop();
+        String left = (String)stack.pop();
+
+        if (left.equals(right))
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void sneq() {
-        String direta = (String)stack.pop();
-        String esquerda = (String)stack.pop();
-        if (!esquerda.equals(direta))
-            stack.push((Boolean)true);
+    private void sneq()
+    {
+        String right = (String)stack.pop();
+        String left = (String)stack.pop();
+
+        if (!left.equals(right))
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void bprint() {
-        System.out.println((Boolean)stack.pop());
+    private void bprint()
+    {
+        System.out.println(stack.pop());
     }
-    private void beq() {
-        Boolean direta = (Boolean)stack.pop();
-        Boolean esquerda = (Boolean)stack.pop();
-        if (esquerda.equals(direta))
-            stack.push((Boolean)true);
+
+    private void beq()
+    {
+        Boolean right = (Boolean)stack.pop();
+        Boolean left = (Boolean)stack.pop();
+
+        if (left.equals(right))
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
     private void bneq() {
-        Boolean direta = (Boolean)stack.pop();
-        Boolean esquerda = (Boolean)stack.pop();
-        if (!esquerda.equals(direta))
-            stack.push((Boolean)true);
+        Boolean right = (Boolean)stack.pop();
+        Boolean left = (Boolean)stack.pop();
+
+        if (!left.equals(right))
+            stack.push(true);
         else
-            stack.push((Boolean)false);
+            stack.push(false);
     }
-    private void btos() {
-        Boolean booleano = (Boolean)stack.pop();
-        if (booleano == true) {
-            stack.push((String)"true");
-        }
-        else {
-            stack.push((String)"false");
-        }
-    }
-    private void halt() {
-        System. exit(0);
+    private void btos()
+    {
+        if ((boolean) this.stack.pop())
+            stack.push("true");
+
+        else
+            stack.push("false");
+
     }
 
 
     private void generateInstructions() throws IOException
     {
-        while (this.byteCodeBuffer.isAvailable()) {
+        while (this.byteCodeBuffer.isAvailable())
+        {
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
 
             if (instruction == OpCode.iconst)
+            {
                 this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
+            }
 
             else if (instruction == OpCode.dconst)
             {
-                Double argument = this.byteCodeBuffer.getDouble();
-                this.instructions.add(new Instruction(instruction, argument));
-                this.constantPool.add(argument);
+                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getDouble()));
             }
 
             else if(instruction == OpCode.sconst)
             {
-                String argument = this.byteCodeBuffer.getString();
-                this.instructions.add(new Instruction(instruction, argument));
-                this.constantPool.add(argument);
+                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getString()));
             }
 
             else if(instruction == OpCode.galloc | instruction == OpCode.gload | instruction == OpCode.gstore)
+            {
                 this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
+            }
 
             else if(instruction == OpCode.jump | instruction == OpCode.jumpf | instruction == OpCode.jumpt)
+            {
                 this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getString()));
+            }
 
             else
+            {
                 this.instructions.add(new Instruction(instruction));
+            }
         }
+
         this.byteCodeBuffer.resetPointer();
     }
 

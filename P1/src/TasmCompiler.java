@@ -83,7 +83,6 @@ public class TasmCompiler {
         walker.walk(instructionTree, tree);
 
         generateByteCode(instructionTree.getInstructions(), outputFile);
-        System.out.println(instructionTree);
 
         if(this.asm)
             asm(instructionTree.getInstructions(), outputFile);
