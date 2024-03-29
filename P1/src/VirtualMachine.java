@@ -23,6 +23,7 @@ public class VirtualMachine {
         this.stack = new Stack<>();
         this.trace = trace;
 
+        this.globalMemory = new Object[0];
         this.stackIterations = new LinkedList<>();
         this.stackIterations.add("[]");
 
@@ -38,7 +39,10 @@ public class VirtualMachine {
     private void doInstruction(OpCode instruction) throws Exception
     {
         if(this.trace)
-            traceInstruction();
+        {
+            System.out.println("                " + "Globals: " + Arrays.toString(this.globalMemory));
+            System.out.println("                " +  "Stack: " + this.stack);
+        }
 
         switch (instruction)
         {
@@ -130,6 +134,11 @@ public class VirtualMachine {
 
         }
 
+        if(this.trace)
+        {
+            System.out.println(this.instructionPointer + ": " + this.instructions.get(instructionPointer));
+        }
+
         this.stackIterations.add(this.stack.toString());
         this.instructionPointer++;
     }
@@ -170,7 +179,7 @@ public class VirtualMachine {
 
     private void iconst(int number)
     {
-        stack.push(number);
+        this.stack.push(number);
     }
     private void dconst(double number)
     {
@@ -178,8 +187,7 @@ public class VirtualMachine {
     }
     private void sconst(String string)
     {
-        char x = '"';
-        this.stack.push(string.replaceAll(Character.toString(x), ""));
+        this.stack.push(string);
     }
     private void tconst()
     {
@@ -400,14 +408,19 @@ public class VirtualMachine {
     }
     private void sprint()
     {
-        System.out.println((String)stack.pop());
+        char x = '"';
+        System.out.println(((String)this.stack.pop()).replaceAll(Character.toString(x), ""));
     }
     private void sadd()
     {
         String right = (String)stack.pop();
         String left = (String)stack.pop();
 
-        this.stack.push(left.concat(right));
+        left = left.substring(0, left.length()-1);
+        right = right.substring(1);
+
+
+        this.stack.push((left.concat(right)));
     }
     private void seq()
     {
@@ -444,7 +457,9 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
-    private void bneq() {
+
+    private void bneq()
+    {
         Boolean right = (Boolean)stack.pop();
         Boolean left = (Boolean)stack.pop();
 
@@ -453,6 +468,7 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
+
     private void btos()
     {
         if ((boolean) this.stack.pop())
@@ -504,34 +520,14 @@ public class VirtualMachine {
         this.byteCodeBuffer.resetPointer();
     }
 
-    private void traceInstruction()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        Instruction instruction = this.instructions.get(this.instructionPointer);
-
-        System.out.println(stringBuilder
-                .append(this.instructionPointer)
-                .append(": ")
-                .append(instruction)
-                .append(" ".repeat(TAB_SIZE - instruction.toString().length()))
-                .append("Stack: ")
-                .append(stackIterations.get(this.instructionPointer))
-        );
-    }
-
-
     private void trace() throws IOException
     {
-        generateInstructions();
-
-        System.out.println("ByteCodes: ");
-        System.out.print(this.byteCodeBuffer.toString());
 
         System.out.println("\nDisassembled instructions");
         for(int i = 0; i < instructions.size(); i++)
         {
             Instruction instruction = instructions.get(i);
-            System.out.println(STR."\{i}: \{instruction.toString()}\{" ".repeat(TAB_SIZE - instruction.toString().length())}// \{instruction.toString()}");
+            System.out.println(STR."\{i}: \{instruction.toString()}");
         }
         System.out.println("\nTrace while running the code");
         System.out.println("Execution starts at instruction 0\n");
