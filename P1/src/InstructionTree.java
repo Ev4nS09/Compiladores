@@ -1,12 +1,19 @@
+import java.util.HashMap;
 import java.util.LinkedList;
 import Antlr.*;
-public class InstructionTree extends TasmBaseListener{
+public class InstructionTree extends TasmBaseListener
+{
 
+    protected final HashMap<String, Integer> tagLine;
     protected final LinkedList<Instruction> instructions;
+
+    protected final HashMap<String, Integer> waitList;
 
     public InstructionTree()
     {
         this.instructions = new LinkedList<>();
+        this.tagLine = new HashMap<>();
+        this.waitList = new HashMap<>();
     }
 
     public void exitConst(TasmParser.ConstContext ctx)
@@ -61,13 +68,35 @@ public class InstructionTree extends TasmBaseListener{
 
     public void exitJp(TasmParser.JpContext ctx)
     {
-        this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), ctx.TAG().getText()));
+        Integer line = this.tagLine.get(ctx.tag.getText());
+
+        if(line == null)
+            this.waitList.put(ctx.TAG().getText(), this.instructions.size());
+
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), line));
     }
 
     public void exitLine(TasmParser.LineContext ctx)
     {
         if(ctx.HALT() != null)
             this.instructions.add(new Instruction(OpCode.halt));
+
+        //💀
+        if(ctx.TAG() != null)
+        {
+            for(int i = 0; i < ctx.TAG().size(); i++)
+            {
+                String tag = ctx.TAG().get(i).toString();
+                this.tagLine.put(tag, this.instructions.size() - 1);
+
+                if(this.waitList.containsKey(tag))
+                {
+                    int index = this.waitList.get(tag);
+                    Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), this.instructions.size() - 1);
+                    this.instructions.set(index, newInstruction);
+                }
+            }
+        }
     }
 
     public LinkedList<Instruction> getInstructions()

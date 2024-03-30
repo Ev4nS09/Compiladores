@@ -1,24 +1,34 @@
-galloc 5
-iconst 12
-gstore 0
-iconst 5
-gstore 2
-sconst "maria"
-gstore 1
-dconst 3.14159
-gstore 3
-tconst
-gstore 4
-sconst "ola"
-sconst " "
-gload 1
-sadd
-sadd
-gstore 1
-sconst "ola"
-sconst " "
-sadd
-gload 1
-sadd
-sprint
-halt
+ galloc 3
+ dconst 3.14159
+ gstore 0
+ iconst 1
+ gstore 2
+ beginLoop: gload 2
+ iconst 3
+ ilt
+ jumpf endLoop
+ gload 0
+ gload 2
+ itod
+ dmult
+ gload 2
+ itod
+ dmult
+ gstore 1
+sconst "Area de circulo de raio "
+ gload 2
+ itos
+ sadd
+ sconst " = "
+ sadd
+ gload 1
+ dtos
+ sadd
+ sprint
+ gload 2
+ iconst 1
+ iadd
+ gstore 2
+ jump beginLoop
+ endLoop: sconst "Fim"
+ sprint

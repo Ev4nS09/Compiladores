@@ -4,7 +4,7 @@ tasm: line+;
 
 line :     instruction
            | HALT
-           | tag=TAG(',' TAG)* ':' instruction
+           | TAG(',' TAG)* ':' instruction
            ;
 
 

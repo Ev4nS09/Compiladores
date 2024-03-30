@@ -3,24 +3,17 @@ import java.util.Arrays;
 public class Instruction {
 
     private final OpCode instruction;
-    private final Object argument;
-    private final String[] labels;
-
-    public Instruction(OpCode instruction, Object argument, String[] labels)
-    {
-        this.instruction = instruction;
-        this.argument = argument;
-        this.labels = labels;
-    }
+    private Object argument;
 
     public Instruction(OpCode instruction, Object argument)
     {
-        this(instruction, argument, null);
+        this.instruction = instruction;
+        this.argument = argument;
     }
 
     public Instruction(OpCode instruction)
     {
-        this(instruction, null, null);
+        this(instruction, null);
     }
 
 
@@ -39,9 +32,12 @@ public class Instruction {
         return this.argument != null;
     }
 
-    public boolean hasLabels()
+    public void addArgument(Object argument) throws Exception
     {
-        return this.labels != null && this.labels.length > 0;
+        if(hasArgument())
+            throw new Exception("Instruction already as an argument.");
+
+        this.argument = argument;
     }
 
     @Override

@@ -35,6 +35,7 @@ public class TasmCompiler {
             OpCode instructionOpCode = instruction.getInstruction();
             outputStream.writeByte(instructionOpCode.ordinal());
 
+
             if(instructionOpCode.name().equals("iconst"))
                 outputStream.writeInt((Integer) instruction.getArgument());
 
@@ -53,9 +54,8 @@ public class TasmCompiler {
 
             else if(instructionOpCode.name().charAt(0) == 'j')
             {
-                String argument = (String) instruction.getArgument();
-                outputStream.writeInt(argument.length());
-                outputStream.writeChars(argument);
+                Integer argument = (Integer) instruction.getArgument();
+                outputStream.writeInt(argument);
             }
         }
         outputStream.close();

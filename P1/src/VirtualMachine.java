@@ -3,6 +3,7 @@ import java.io.*;
 import java.lang.classfile.FieldBuilder;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.function.DoubleToLongFunction;
 
 public class VirtualMachine {
 
@@ -36,33 +37,36 @@ public class VirtualMachine {
         this(false);
     }
 
-    private void doInstruction(OpCode instruction) throws Exception
+    private void doInstruction(Instruction instruction) throws Exception
     {
         if(this.trace)
         {
             System.out.println("                " + "Globals: " + Arrays.toString(this.globalMemory));
             System.out.println("                " +  "Stack: " + this.stack);
+            System.out.println(this.instructionPointer + ": " + this.instructions.get(instructionPointer));
         }
 
-        switch (instruction)
+        this.instructionPointer++;
+
+        switch (instruction.getInstruction())
         {
-            case iconst -> iconst(this.byteCodeBuffer.getInt());
+            case iconst -> iconst( (Integer) instruction.getArgument());
 
-            case dconst -> dconst(this.byteCodeBuffer.getDouble());
+            case dconst -> dconst((Double) instruction.getArgument());
 
-            case sconst -> sconst(this.byteCodeBuffer.getString());
+            case sconst -> sconst((String) instruction.getArgument());
 
-            case jump -> jump(null);
+            case jump -> jump((Integer) instruction.getArgument());
 
-            case jumpt -> jumpt(null);
+            case jumpt -> jumpt((Integer) instruction.getArgument());
 
-            case jumpf -> jumpf(null);
+            case jumpf -> jumpf((Integer) instruction.getArgument());
 
-            case galloc -> galloc(this.byteCodeBuffer.getInt());
+            case galloc -> galloc((Integer) instruction.getArgument());
 
-            case gload -> gload(this.byteCodeBuffer.getInt());
+            case gload -> gload((Integer) instruction.getArgument());
 
-            case gstore -> gstore(this.byteCodeBuffer.getInt());
+            case gstore -> gstore((Integer) instruction.getArgument());
 
             case tconst -> tconst();
 
@@ -134,13 +138,7 @@ public class VirtualMachine {
 
         }
 
-        if(this.trace)
-        {
-            System.out.println(this.instructionPointer + ": " + this.instructions.get(instructionPointer));
-        }
-
         this.stackIterations.add(this.stack.toString());
-        this.instructionPointer++;
     }
 
     public void execute(String byteCode) throws Exception
@@ -151,11 +149,11 @@ public class VirtualMachine {
         if(this.trace)
             trace();
 
-        while(this.byteCodeBuffer.isAvailable())
+        while(this.instructionPointer < this.instructions.size())
         {
-            OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
+            Instruction instruction = this.instructions.get(this.instructionPointer);
 
-            if(instruction == OpCode.halt)
+            if(instruction.getInstruction() == OpCode.halt)
                 break;
 
             doInstruction(instruction);
@@ -177,11 +175,11 @@ public class VirtualMachine {
 
     }
 
-    private void iconst(int number)
+    private void iconst(Integer number)
     {
         this.stack.push(number);
     }
-    private void dconst(double number)
+    private void dconst(Double number)
     {
         this.stack.push(number);
     }
@@ -197,29 +195,35 @@ public class VirtualMachine {
     {
         this.stack.push(false);
     }
-    private void jump(String tag)
+    private void jump(Integer line)
     {
-        //TODO ----------------------------------!?!---------------------------
+        this.instructionPointer = line;
     }
-    private void jumpt(String tag)
+    private void jumpt(Integer line)
     {
-        //TODO ----------------------------------!?!---------------------------
+        boolean bool = (boolean) this.stack.pop();
+
+        if(bool)
+            this.instructionPointer = line;
     }
-    private void jumpf(String tag)
+    private void jumpf(Integer line)
     {
-        //TODO ----------------------------------!?!---------------------------
+        boolean bool = (boolean) this.stack.pop();
+
+        if(!bool)
+            this.instructionPointer = line;
     }
-    private void galloc(int size)
+    private void galloc(Integer size)
     {
         this.globalMemory = new Object[size];
         for(int i = 0; i < size; i++)
             this.globalMemory[i] = "NIL";
     }
-    private void gload(int address)
+    private void gload(Integer address)
     {
         this.stack.push(this.globalMemory[address]);
     }
-    private void gstore(int address)
+    private void gstore(Integer address)
     {
         this.globalMemory[address] = this.stack.pop();
     }
@@ -313,14 +317,14 @@ public class VirtualMachine {
     }
     private void itod()
     {
-        Double real = (Double)stack.pop();
+        Double real = Double.valueOf((Integer)stack.pop());
         stack.push(real);
 
     }
     private void itos()
     {
         int inteiro = (Integer)stack.pop();
-        stack.push(String.valueOf(inteiro));
+        stack.push('"' + String.valueOf(inteiro) + '"');
     }
     private void dprint()
     {
@@ -349,7 +353,7 @@ public class VirtualMachine {
     {
         Double right = (Double)stack.pop();
         Double left = (Double)stack.pop();
-        stack.push(left - right);
+        stack.push(left * right);
     }
     private void ddiv()
     {
@@ -404,12 +408,11 @@ public class VirtualMachine {
     private void dtos()
     {
         Double real = (Double)stack.pop();
-        stack.push(String.valueOf(real));
+        stack.push('"' + String.valueOf(real) + '"');
     }
     private void sprint()
-    {
-        char x = '"';
-        System.out.println(((String)this.stack.pop()).replaceAll(Character.toString(x), ""));
+    {                                                              //Peak of Coding
+        System.out.println(((String)this.stack.pop()).replaceAll('"' + "", ""));
     }
     private void sadd()
     {
@@ -424,27 +427,27 @@ public class VirtualMachine {
     }
     private void seq()
     {
-        String right = (String)stack.pop();
-        String left = (String)stack.pop();
+        String right = (String)this.stack.pop();
+        String left = (String)this.stack.pop();
 
         if (left.equals(right))
-            stack.push(true);
+            this.stack.push(true);
         else
-            stack.push(false);
+            this.stack.push(false);
     }
     private void sneq()
     {
-        String right = (String)stack.pop();
-        String left = (String)stack.pop();
+        String right = (String)this.stack.pop();
+        String left = (String)this.stack.pop();
 
         if (!left.equals(right))
-            stack.push(true);
+            this.stack.push(true);
         else
-            stack.push(false);
+            this.stack.push(false);
     }
     private void bprint()
     {
-        System.out.println(stack.pop());
+        System.out.println(this.stack.pop());
     }
 
     private void beq()
@@ -508,7 +511,7 @@ public class VirtualMachine {
 
             else if(instruction == OpCode.jump | instruction == OpCode.jumpf | instruction == OpCode.jumpt)
             {
-                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getString()));
+                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
             }
 
             else
