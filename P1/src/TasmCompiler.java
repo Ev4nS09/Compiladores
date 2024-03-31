@@ -27,32 +27,49 @@ public class TasmCompiler {
         return new TasmParser(tokens);
     }
 
-    private void generateByteCode(LinkedList<Instruction> instructions, String outputFile) throws Exception {
-
+    private void generateByteCode(LinkedList<Instruction> instructions, LinkedList<Instruction> constantPool, String outputFile) throws Exception
+    {
         DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(outputFile));
+
+        outputStream.writeInt(constantPool.size());
+
+        for(Instruction instruction : constantPool)
+        {
+            OpCode instructionOpCode = instruction.getInstruction();
+            outputStream.writeByte(instructionOpCode.ordinal());
+
+            if(instructionOpCode == OpCode.dconst)
+                outputStream.writeDouble((Double) instruction.getArgument());
+
+            else if(instructionOpCode == OpCode.sconst)
+            {
+                String argument = (String) instruction.getArgument();
+                outputStream.writeInt(argument.length());
+                outputStream.writeChars(argument);
+            }
+        }
+
         for (Instruction instruction : instructions)
         {
             OpCode instructionOpCode = instruction.getInstruction();
             outputStream.writeByte(instructionOpCode.ordinal());
 
 
-            if(instructionOpCode.name().equals("iconst"))
+            if(instructionOpCode == OpCode.iconst)
                 outputStream.writeInt((Integer) instruction.getArgument());
 
-            else if(instructionOpCode.name().equals("dconst"))
-                outputStream.writeDouble((Double) instruction.getArgument());
+            else if(instructionOpCode == OpCode.dconst)
+                outputStream.writeInt((Integer) instruction.getArgument());
 
-            else if(instructionOpCode.name().equals("sconst"))
+            else if(instructionOpCode == OpCode.sconst)
             {
-                String argument = (String) instruction.getArgument();
-                outputStream.writeInt(argument.length());
-                outputStream.writeChars(argument);
+                outputStream.writeInt((Integer) instruction.getArgument());
             }
 
-            else if(instructionOpCode.name().charAt(0) == 'g')
+            else if(instructionOpCode == OpCode.galloc || instructionOpCode == OpCode.gload || instructionOpCode == OpCode.gstore)
                 outputStream.writeInt((Integer) instruction.getArgument());
 
-            else if(instructionOpCode.name().charAt(0) == 'j')
+            else if(instructionOpCode == OpCode.jump || instructionOpCode == OpCode.jumpf || instructionOpCode == OpCode.jumpt)
             {
                 Integer argument = (Integer) instruction.getArgument();
                 outputStream.writeInt(argument);
@@ -82,7 +99,7 @@ public class TasmCompiler {
         InstructionTree instructionTree = new InstructionTree();
         walker.walk(instructionTree, tree);
 
-        generateByteCode(instructionTree.getInstructions(), outputFile);
+        generateByteCode(instructionTree.getInstructions(), instructionTree.getConstantPool(), outputFile);
 
         if(this.asm)
             asm(instructionTree.getInstructions(), outputFile);

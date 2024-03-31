@@ -7,13 +7,12 @@ import java.util.function.DoubleToLongFunction;
 
 public class VirtualMachine {
 
-    private final static int TAB_SIZE = 30;
-
     private Stack<Object> stack;
     private Object[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
     private final LinkedList<String> stackIterations;
     private final LinkedList<Instruction> instructions;
+    private LinkedList<Instruction> constPool;
 
     private final boolean trace;
 
@@ -23,6 +22,7 @@ public class VirtualMachine {
         this.byteCodeBuffer = null;
         this.stack = new Stack<>();
         this.trace = trace;
+        this.constPool = new LinkedList<>();
 
         this.globalMemory = new Object[0];
         this.stackIterations = new LinkedList<>();
@@ -485,8 +485,30 @@ public class VirtualMachine {
 
     private void generateInstructions() throws IOException
     {
+        ArrayList<Object> constantPool = new ArrayList<>();
+        int constantPoolSize = this.byteCodeBuffer.getInt();
+
+        for(int i = 0; i < constantPoolSize; i++)
+        {
+            OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
+
+            if(instruction == OpCode.dconst)
+            {
+                constantPool.add(this.byteCodeBuffer.getDouble());
+                this.constPool.add(new Instruction(OpCode.dconst, constantPool.getLast()));
+            }
+
+            if(instruction == OpCode.sconst)
+            {
+                constantPool.add(this.byteCodeBuffer.getString());
+                this.constPool.add(new Instruction(OpCode.sconst, constantPool.getLast()));
+            }
+        }
+
+
         while (this.byteCodeBuffer.isAvailable())
         {
+
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
 
             if (instruction == OpCode.iconst)
@@ -496,12 +518,12 @@ public class VirtualMachine {
 
             else if (instruction == OpCode.dconst)
             {
-                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getDouble()));
+                this.instructions.add(new Instruction(instruction, (Double) constantPool.get(this.byteCodeBuffer.getInt())));
             }
 
             else if(instruction == OpCode.sconst)
             {
-                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getString()));
+                this.instructions.add(new Instruction(instruction, (String) constantPool.get(this.byteCodeBuffer.getInt())));
             }
 
             else if(instruction == OpCode.galloc | instruction == OpCode.gload | instruction == OpCode.gstore)
@@ -526,11 +548,25 @@ public class VirtualMachine {
     private void trace() throws IOException
     {
 
+        for(int i = 0; i < constPool.size(); i++)
+        {
+            Instruction instruction = constPool.get(i);
+            System.out.println(STR."\{i}: \{instruction.toString()}");
+        }
+
+        //Sad Chaos
+        int poolPointer = 0;
         System.out.println("\nDisassembled instructions");
         for(int i = 0; i < instructions.size(); i++)
         {
             Instruction instruction = instructions.get(i);
-            System.out.println(STR."\{i}: \{instruction.toString()}");
+            if(instruction.getInstruction() == OpCode.dconst || instruction.getInstruction() == OpCode.sconst )
+            {
+                System.out.println(STR."\{i}: \{instruction.getInstruction()} \{poolPointer}");
+                poolPointer++;
+            }
+            else
+                System.out.println(STR."\{i}: \{instruction.toString()}");
         }
         System.out.println("\nTrace while running the code");
         System.out.println("Execution starts at instruction 0\n");

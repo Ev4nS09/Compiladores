@@ -4,14 +4,16 @@ import Antlr.*;
 public class InstructionTree extends TasmBaseListener
 {
 
-    protected final HashMap<String, Integer> tagLine;
     protected final LinkedList<Instruction> instructions;
+    protected final LinkedList<Instruction> constantPool;
 
+    protected final HashMap<String, Integer> tagLine;
     protected final HashMap<String, Integer> waitList;
 
     public InstructionTree()
     {
         this.instructions = new LinkedList<>();
+        this.constantPool = new LinkedList<>();
         this.tagLine = new HashMap<>();
         this.waitList = new HashMap<>();
     }
@@ -25,11 +27,13 @@ public class InstructionTree extends TasmBaseListener
         else if(ctx.DCONST() != null)
         {
             String number = ctx.INT() != null ? ctx.INT().getText() : ctx.DOUBLE().getText();
-            this.instructions.add(new Instruction(OpCode.dconst, Double.parseDouble(number)));
+            this.constantPool.add(new Instruction(OpCode.dconst, Double.parseDouble(number)));
+            this.instructions.add(new Instruction(OpCode.dconst, this.constantPool.size() - 1));
         }
         else if(ctx.SCONST() != null)
         {
-            this.instructions.add(new Instruction(OpCode.sconst, ctx.STRING().getText()));
+            this.constantPool.add(new Instruction(OpCode.sconst, ctx.STRING().getText()));
+            this.instructions.add(new Instruction(OpCode.sconst, this.constantPool.size() - 1));
         }
         else if(ctx.TCONST() != null)
         {
@@ -87,7 +91,12 @@ public class InstructionTree extends TasmBaseListener
             for(int i = 0; i < ctx.TAG().size(); i++)
             {
                 String tag = ctx.TAG().get(i).toString();
-                this.tagLine.put(tag, this.instructions.size() - 1);
+
+                if(this.tagLine.containsKey(tag))
+                {
+                    System.out.println("Label already defined");
+                    System.exit(1);
+                }
 
                 if(this.waitList.containsKey(tag))
                 {
@@ -95,6 +104,8 @@ public class InstructionTree extends TasmBaseListener
                     Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), this.instructions.size() - 1);
                     this.instructions.set(index, newInstruction);
                 }
+
+                this.tagLine.put(tag, this.instructions.size() - 1);
             }
         }
     }
@@ -102,6 +113,11 @@ public class InstructionTree extends TasmBaseListener
     public LinkedList<Instruction> getInstructions()
     {
         return this.instructions;
+    }
+
+    public LinkedList<Instruction> getConstantPool()
+    {
+        return this.constantPool;
     }
 
 
