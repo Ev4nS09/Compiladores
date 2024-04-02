@@ -7,12 +7,11 @@ import java.util.function.DoubleToLongFunction;
 
 public class VirtualMachine {
 
-    private Stack<Object> stack;
+    private final Stack<Object> stack;
     private Object[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
-    private final LinkedList<String> stackIterations;
     private final LinkedList<Instruction> instructions;
-    private LinkedList<Instruction> constPool;
+    private final LinkedList<Instruction> constPool;
 
     private final boolean trace;
 
@@ -25,8 +24,6 @@ public class VirtualMachine {
         this.constPool = new LinkedList<>();
 
         this.globalMemory = new Object[0];
-        this.stackIterations = new LinkedList<>();
-        this.stackIterations.add("[]");
 
         this.instructions = new LinkedList<>();
         this.instructionPointer = 0;
@@ -138,7 +135,6 @@ public class VirtualMachine {
 
         }
 
-        this.stackIterations.add(this.stack.toString());
     }
 
     public void execute(String byteCode) throws Exception
@@ -166,9 +162,6 @@ public class VirtualMachine {
     {
         this.globalMemory = new Object[0];
         this.stack.clear();
-
-        this.stackIterations.clear();
-        this.stackIterations.add("[]");
 
         this.instructions.clear();
         this.instructionPointer = 0;
@@ -411,8 +404,8 @@ public class VirtualMachine {
         stack.push('"' + String.valueOf(real) + '"');
     }
     private void sprint()
-    {                                                              //Peak of Coding
-        System.out.println(((String)this.stack.pop()).replaceAll('"' + "", ""));
+    {
+        System.out.println(((String)this.stack.pop()).replaceAll("\"", ""));
     }
     private void sadd()
     {
@@ -498,7 +491,7 @@ public class VirtualMachine {
                 this.constPool.add(new Instruction(OpCode.dconst, constantPool.getLast()));
             }
 
-            if(instruction == OpCode.sconst)
+            else if(instruction == OpCode.sconst)
             {
                 constantPool.add(this.byteCodeBuffer.getString());
                 this.constPool.add(new Instruction(OpCode.sconst, constantPool.getLast()));
@@ -518,12 +511,12 @@ public class VirtualMachine {
 
             else if (instruction == OpCode.dconst)
             {
-                this.instructions.add(new Instruction(instruction, (Double) constantPool.get(this.byteCodeBuffer.getInt())));
+                this.instructions.add(new Instruction(instruction, constantPool.get(this.byteCodeBuffer.getInt())));
             }
 
             else if(instruction == OpCode.sconst)
             {
-                this.instructions.add(new Instruction(instruction, (String) constantPool.get(this.byteCodeBuffer.getInt())));
+                this.instructions.add(new Instruction(instruction, constantPool.get(this.byteCodeBuffer.getInt())));
             }
 
             else if(instruction == OpCode.galloc | instruction == OpCode.gload | instruction == OpCode.gstore)

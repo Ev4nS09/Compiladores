@@ -1,14 +1,14 @@
-public class InstructionArgument<T> extends Instruction{
+public class InstructionArgument extends Instruction{
 
-    private final T argument;
+    private final Object argument;
 
-    public InstructionArgument(OpCode instruction, T argument)
+    public InstructionArgument(OpCode instruction, Object argument)
     {
         super(instruction);
         this.argument = argument;
     }
 
-    public T getInstructionArgument()
+    public Object getInstructionArgument()
     {
         return this.argument;
     }

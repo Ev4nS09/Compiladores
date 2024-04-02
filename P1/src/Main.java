@@ -9,7 +9,5 @@ public class Main {
         VirtualMachine vm = new VirtualMachine(true);
         compiler.compile("src/test.txt", "src/text.bc");
         vm.execute("src/text.bc");
-
-
     }
 }

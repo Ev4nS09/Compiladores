@@ -54,27 +54,13 @@ public class TasmCompiler {
             OpCode instructionOpCode = instruction.getInstruction();
             outputStream.writeByte(instructionOpCode.ordinal());
 
-
-            if(instructionOpCode == OpCode.iconst)
-                outputStream.writeInt((Integer) instruction.getArgument());
-
-            else if(instructionOpCode == OpCode.dconst)
-                outputStream.writeInt((Integer) instruction.getArgument());
-
-            else if(instructionOpCode == OpCode.sconst)
+            if(instruction.hasArgument())
             {
                 outputStream.writeInt((Integer) instruction.getArgument());
             }
 
-            else if(instructionOpCode == OpCode.galloc || instructionOpCode == OpCode.gload || instructionOpCode == OpCode.gstore)
-                outputStream.writeInt((Integer) instruction.getArgument());
-
-            else if(instructionOpCode == OpCode.jump || instructionOpCode == OpCode.jumpf || instructionOpCode == OpCode.jumpt)
-            {
-                Integer argument = (Integer) instruction.getArgument();
-                outputStream.writeInt(argument);
-            }
         }
+
         outputStream.close();
     }
 

@@ -1,3 +1,34 @@
-sconst "Ola"
-sprint
-halt
+                galloc 4
+                iconst 0
+                gstore 0
+                iconst 1
+                gstore 1
+                iconst 1
+                gstore 2
+                iconst 46
+                gstore 3
+                gload 3
+                iconst 0
+                ieq
+                jumpf fibStart
+                gload 0
+                iprint
+                halt
+fibStart:       gload 2
+                gload 3
+                ilt
+                jumpf fibEnd
+                gload 0
+                gload 1
+                iadd
+                gload 1
+                gstore 0
+                gstore 1
+                gload 2
+                iconst 1
+                iadd
+                gstore 2
+                jump fibStart
+fibEnd:        gload 1
+                iprint
+                halt
