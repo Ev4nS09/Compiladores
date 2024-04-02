@@ -6,13 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="fbdc6cc6-9a87-4887-b812-f9a1d2872572" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InstructionArgument.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/InstructionArgument.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InstructionTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/InstructionTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TasmCompiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/TasmCompiler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/VirtualMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VirtualMachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/text.bc" beforeDir="false" afterPath="$PROJECT_DIR$/src/text.bc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

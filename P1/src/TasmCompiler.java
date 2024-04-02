@@ -68,9 +68,9 @@ public class TasmCompiler {
         System.out.println("Generated code in assembly format");
 
         for(int i = 0; i < instructions.size(); i++)
-            System.out.println(STR."\{i}: \{instructions.get(i).toString()}");
+            System.out.println(i + " " + instructions.get(i).toString());
 
-        System.out.println(STR."Saving the bytecodes to \{outputFile}");
+        System.out.println("Saving the bytecodes to " + outputFile);
     }
 
     public void compile(String inputFile, String outputFile) throws Exception

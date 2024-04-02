@@ -544,7 +544,7 @@ public class VirtualMachine {
         for(int i = 0; i < constPool.size(); i++)
         {
             Instruction instruction = constPool.get(i);
-            System.out.println(STR."\{i}: \{instruction.toString()}");
+            System.out.println(i + " " + instruction.toString());
         }
 
         //Sad Chaos
@@ -555,11 +555,11 @@ public class VirtualMachine {
             Instruction instruction = instructions.get(i);
             if(instruction.getInstruction() == OpCode.dconst || instruction.getInstruction() == OpCode.sconst )
             {
-                System.out.println(STR."\{i}: \{instruction.getInstruction()} \{poolPointer}");
+                System.out.println(i + " " + instruction.getInstruction() + " " + poolPointer);
                 poolPointer++;
             }
             else
-                System.out.println(STR."\{i}: \{instruction.toString()}");
+                System.out.println(i + " " + instruction);
         }
         System.out.println("\nTrace while running the code");
         System.out.println("Execution starts at instruction 0\n");
