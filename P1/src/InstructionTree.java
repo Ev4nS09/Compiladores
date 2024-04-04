@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import Antlr.*;
 
@@ -10,6 +11,7 @@ public class InstructionTree extends TasmBaseListener
 
     protected final HashMap<String, Integer> tagLine;
     protected final HashMap<String, Integer> waitList;
+    protected final HashMap<String, Integer> constantPoolCache;
 
     public InstructionTree()
     {
@@ -17,6 +19,7 @@ public class InstructionTree extends TasmBaseListener
         this.constantPool = new LinkedList<>();
         this.tagLine = new HashMap<>();
         this.waitList = new HashMap<>();
+        this.constantPoolCache = new HashMap<>();
     }
 
     public void exitConst(TasmParser.ConstContext ctx)
@@ -28,13 +31,27 @@ public class InstructionTree extends TasmBaseListener
         else if(ctx.DCONST() != null)
         {
             String number = ctx.INT() != null ? ctx.INT().getText() : ctx.DOUBLE().getText();
-            this.constantPool.add(new Instruction(OpCode.dconst, Double.parseDouble(number)));
-            this.instructions.add(new Instruction(OpCode.dconst, this.constantPool.size() - 1));
+
+            if(!this.constantPoolCache.containsKey(number))
+            {
+                this.constantPool.add(new Instruction(OpCode.dconst, Double.parseDouble(number)));
+                this.constantPoolCache.put(number, this.constantPool.size()-1);
+            }
+
+            this.instructions.add(new Instruction(OpCode.dconst, this.constantPoolCache.get(number)));
         }
         else if(ctx.SCONST() != null)
         {
-            this.constantPool.add(new Instruction(OpCode.sconst, ctx.STRING().getText()));
-            this.instructions.add(new Instruction(OpCode.sconst, this.constantPool.size() - 1));
+            String string = ctx.STRING().getText();
+
+            if(!this.constantPoolCache.containsKey(string))
+            {
+                this.constantPool.add(new Instruction(OpCode.sconst, string));
+                this.constantPoolCache.put(string, this.constantPool.size()-1);
+            }
+
+            this.instructions.add(new Instruction(OpCode.sconst, this.constantPoolCache.get(string)));
+
         }
         else if(ctx.TCONST() != null)
         {
@@ -81,34 +98,33 @@ public class InstructionTree extends TasmBaseListener
         this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), line));
     }
 
-    public void exitLine(TasmParser.LineContext ctx)
+    public void exitTagInstruction(TasmParser.TagInstructionContext ctx)
+    {
+        for(int i = 0; i < ctx.TAG().size(); i++)
+        {
+            String tag = ctx.TAG().get(i).toString();
+
+            if (this.tagLine.containsKey(tag))
+            {
+                System.out.println("Label already defined");
+                System.exit(1);
+            }
+
+            if (this.waitList.containsKey(tag))
+            {
+                int index = this.waitList.get(tag);
+                Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), this.instructions.size() - 1);
+                this.instructions.set(index, newInstruction);
+            }
+
+            this.tagLine.put(tag, this.instructions.size() - 1);
+        }
+    }
+
+    public void exitTasm(TasmParser.TasmContext ctx)
     {
         if(ctx.HALT() != null)
             this.instructions.add(new Instruction(OpCode.halt));
-
-        //💀
-        if(ctx.TAG() != null)
-        {
-            for(int i = 0; i < ctx.TAG().size(); i++)
-            {
-                String tag = ctx.TAG().get(i).toString();
-
-                if(this.tagLine.containsKey(tag))
-                {
-                    System.out.println("Label already defined");
-                    System.exit(1);
-                }
-
-                if(this.waitList.containsKey(tag))
-                {
-                    int index = this.waitList.get(tag);
-                    Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), this.instructions.size() - 1);
-                    this.instructions.set(index, newInstruction);
-                }
-
-                this.tagLine.put(tag, this.instructions.size() - 1);
-            }
-        }
     }
 
     public LinkedList<Instruction> getInstructions()

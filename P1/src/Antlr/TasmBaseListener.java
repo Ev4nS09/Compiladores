@@ -1,5 +1,6 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
 package Antlr;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -28,13 +29,25 @@ public class TasmBaseListener implements TasmListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLine(TasmParser.LineContext ctx) { }
+	@Override public void enterInst(TasmParser.InstContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLine(TasmParser.LineContext ctx) { }
+	@Override public void exitInst(TasmParser.InstContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTagInstruction(TasmParser.TagInstructionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTagInstruction(TasmParser.TagInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

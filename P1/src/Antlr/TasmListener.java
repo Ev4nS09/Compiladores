@@ -1,5 +1,6 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
-package Antlr;import org.antlr.v4.runtime.tree.ParseTreeListener;
+// Generated from /home/rio/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
+package Antlr;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
  * This interface defines a complete listener for a parse tree produced by
@@ -17,15 +18,29 @@ public interface TasmListener extends ParseTreeListener {
 	 */
 	void exitTasm(TasmParser.TasmContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TasmParser#line}.
+	 * Enter a parse tree produced by the {@code Inst}
+	 * labeled alternative in {@link TasmParser#line}.
 	 * @param ctx the parse tree
 	 */
-	void enterLine(TasmParser.LineContext ctx);
+	void enterInst(TasmParser.InstContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TasmParser#line}.
+	 * Exit a parse tree produced by the {@code Inst}
+	 * labeled alternative in {@link TasmParser#line}.
 	 * @param ctx the parse tree
 	 */
-	void exitLine(TasmParser.LineContext ctx);
+	void exitInst(TasmParser.InstContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code TagInstruction}
+	 * labeled alternative in {@link TasmParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void enterTagInstruction(TasmParser.TagInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code TagInstruction}
+	 * labeled alternative in {@link TasmParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void exitTagInstruction(TasmParser.TagInstructionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link TasmParser#instruction}.
 	 * @param ctx the parse tree

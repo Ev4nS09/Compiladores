@@ -45,25 +45,28 @@ public class VirtualMachine {
 
         this.instructionPointer++;
 
+        OpCode instructionOpCOde = instruction.getInstruction();
+        Integer argument = instruction.hasArgument() ? (Integer) instruction.getArgument() : null;
+
         switch (instruction.getInstruction())
         {
-            case iconst -> iconst( (Integer) instruction.getArgument());
+            case iconst -> iconst(argument);
 
-            case dconst -> dconst((Double) instruction.getArgument());
+            case dconst -> dconst(argument);
 
-            case sconst -> sconst((String) instruction.getArgument());
+            case sconst -> sconst(argument);
 
-            case jump -> jump((Integer) instruction.getArgument());
+            case jump -> jump(argument);
 
-            case jumpt -> jumpt((Integer) instruction.getArgument());
+            case jumpt -> jumpt(argument);
 
-            case jumpf -> jumpf((Integer) instruction.getArgument());
+            case jumpf -> jumpf(argument);
 
-            case galloc -> galloc((Integer) instruction.getArgument());
+            case galloc -> galloc(argument);
 
-            case gload -> gload((Integer) instruction.getArgument());
+            case gload -> gload(argument);
 
-            case gstore -> gstore((Integer) instruction.getArgument());
+            case gstore -> gstore(argument);
 
             case tconst -> tconst();
 
@@ -140,7 +143,7 @@ public class VirtualMachine {
     public void execute(String byteCode) throws Exception
     {
         this.byteCodeBuffer = new ByteCodeBuffer(byteCode);
-        generateInstructions();
+        this.generateInstructions();
 
         if(this.trace)
             trace();
@@ -148,10 +151,6 @@ public class VirtualMachine {
         while(this.instructionPointer < this.instructions.size())
         {
             Instruction instruction = this.instructions.get(this.instructionPointer);
-
-            if(instruction.getInstruction() == OpCode.halt)
-                break;
-
             doInstruction(instruction);
         }
 
@@ -162,6 +161,7 @@ public class VirtualMachine {
     {
         this.globalMemory = new Object[0];
         this.stack.clear();
+        this.constPool.clear();
 
         this.instructions.clear();
         this.instructionPointer = 0;
@@ -172,13 +172,13 @@ public class VirtualMachine {
     {
         this.stack.push(number);
     }
-    private void dconst(Double number)
+    private void dconst(Integer constantPoolPosition)
     {
-        this.stack.push(number);
+        this.stack.push(this.constPool.get(constantPoolPosition).getArgument());
     }
-    private void sconst(String string)
+    private void sconst(Integer constantPoolPosition)
     {
-        this.stack.push(string);
+        this.stack.push(this.constPool.get(constantPoolPosition).getArgument());
     }
     private void tconst()
     {
@@ -208,9 +208,19 @@ public class VirtualMachine {
     }
     private void galloc(Integer size)
     {
-        this.globalMemory = new Object[size];
-        for(int i = 0; i < size; i++)
-            this.globalMemory[i] = "NIL";
+        int newGlobalSize = this.globalMemory.length + size;
+        Object[] newGlobal = new Object[newGlobalSize];
+
+        System.arraycopy(this.globalMemory, 0, newGlobal, 0, this.globalMemory.length);
+
+        for(int i = this.globalMemory.length; i < newGlobalSize; i++)
+        {
+            newGlobal[i] = "NIL";
+        }
+
+        this.globalMemory = newGlobal;
+
+
     }
     private void gload(Integer address)
     {
@@ -475,60 +485,43 @@ public class VirtualMachine {
 
     }
 
+    private boolean opCodeHasArgument(OpCode instruction)
+    {
+        return instruction == OpCode.iconst || instruction == OpCode.dconst || instruction == OpCode.sconst ||
+                instruction == OpCode.galloc || instruction == OpCode.gload || instruction == OpCode.gstore ||
+                instruction == OpCode.jump || instruction == OpCode.jumpf || instruction == OpCode.jumpt;
+    }
+
 
     private void generateInstructions() throws IOException
     {
-        ArrayList<Object> constantPool = new ArrayList<>();
+        //Generates the constant pool
         int constantPoolSize = this.byteCodeBuffer.getInt();
-
         for(int i = 0; i < constantPoolSize; i++)
         {
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
 
             if(instruction == OpCode.dconst)
             {
-                constantPool.add(this.byteCodeBuffer.getDouble());
-                this.constPool.add(new Instruction(OpCode.dconst, constantPool.getLast()));
+                this.constPool.add(new Instruction(OpCode.dconst, this.byteCodeBuffer.getDouble()));
             }
 
             else if(instruction == OpCode.sconst)
             {
-                constantPool.add(this.byteCodeBuffer.getString());
-                this.constPool.add(new Instruction(OpCode.sconst, constantPool.getLast()));
+                this.constPool.add(new Instruction(OpCode.sconst, this.byteCodeBuffer.getString()));
             }
         }
 
-
+        //Generates the instructions
         while (this.byteCodeBuffer.isAvailable())
         {
 
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
 
-            if (instruction == OpCode.iconst)
+            if(this.opCodeHasArgument(instruction))
             {
                 this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
             }
-
-            else if (instruction == OpCode.dconst)
-            {
-                this.instructions.add(new Instruction(instruction, constantPool.get(this.byteCodeBuffer.getInt())));
-            }
-
-            else if(instruction == OpCode.sconst)
-            {
-                this.instructions.add(new Instruction(instruction, constantPool.get(this.byteCodeBuffer.getInt())));
-            }
-
-            else if(instruction == OpCode.galloc | instruction == OpCode.gload | instruction == OpCode.gstore)
-            {
-                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
-            }
-
-            else if(instruction == OpCode.jump | instruction == OpCode.jumpf | instruction == OpCode.jumpt)
-            {
-                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
-            }
-
             else
             {
                 this.instructions.add(new Instruction(instruction));
@@ -541,25 +534,19 @@ public class VirtualMachine {
     private void trace() throws IOException
     {
 
+        System.out.println("Constant Pool");
+
         for(int i = 0; i < constPool.size(); i++)
         {
             Instruction instruction = constPool.get(i);
-            System.out.println(i + " " + instruction.toString());
+            System.out.println(i + ": " + instruction.toString());
         }
 
-        //Sad Chaos
-        int poolPointer = 0;
         System.out.println("\nDisassembled instructions");
         for(int i = 0; i < instructions.size(); i++)
         {
             Instruction instruction = instructions.get(i);
-            if(instruction.getInstruction() == OpCode.dconst || instruction.getInstruction() == OpCode.sconst )
-            {
-                System.out.println(i + " " + instruction.getInstruction() + " " + poolPointer);
-                poolPointer++;
-            }
-            else
-                System.out.println(i + " " + instruction);
+            System.out.println(i + ": " + instruction);
         }
         System.out.println("\nTrace while running the code");
         System.out.println("Execution starts at instruction 0\n");

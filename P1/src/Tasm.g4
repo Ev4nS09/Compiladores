@@ -1,11 +1,11 @@
 grammar Tasm;
 
-tasm: line+;
+tasm: line+ HALT;
 
-line :     instruction
-           | HALT
-           | TAG(',' TAG)* ':' instruction
+line:       instruction                         #Inst
+           | TAG(',' TAG)* ':' instruction      #TagInstruction
            ;
+
 
 
 instruction : constant '\n'
@@ -104,6 +104,6 @@ GALLOC:'galloc';
 GLOAD:'gload';
 GSTORE:'gstore';
 
-TAG: [a-zA-Z]([a-zA-Z0-9_-]*);
+TAG: [_a-zA-Z]([a-zA-Z0-9_-]*);
 
 WS : [ \t\r]+ -> skip ;

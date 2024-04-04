@@ -103,7 +103,7 @@ public class ByteCodeBuffer
     @Override
     public String toString()
     {
-        StringBuilder result = new StringBuilder(this.byteBuffer.length > 0 ? STR."\{this.byteBuffer[0]}" : "");
+        StringBuilder result = new StringBuilder(this.byteBuffer.length > 0 ? String.valueOf(this.byteBuffer[0]) : "");
 
         for(int i = 1; i < this.byteBuffer.length; i++)
             result.append(" ").append(String.format("%02X", this.byteBuffer[i]));

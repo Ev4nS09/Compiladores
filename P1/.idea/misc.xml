@@ -6,10 +6,10 @@
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/Tasm.g4" />
           <option name="autoGen" value="true" />
-          <option name="outputDir" value="$PROJECT_DIR$/src/Antlr" />
+          <option name="outputDir" value="$PROJECT_DIR$/src/" />
           <option name="libDir" value="$PROJECT_DIR$/src" />
           <option name="encoding" value="" />
-          <option name="pkg" value="" />
+          <option name="pkg" value="Antlr" />
           <option name="language" value="" />
         </PerGrammarGenerationSettings>
       </list>
