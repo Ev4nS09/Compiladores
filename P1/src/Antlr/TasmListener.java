@@ -52,17 +52,65 @@ public interface TasmListener extends ParseTreeListener {
 	 */
 	void exitInstruction(TasmParser.InstructionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code Const}
+	 * Enter a parse tree produced by the {@code Iconst}
 	 * labeled alternative in {@link TasmParser#constant}.
 	 * @param ctx the parse tree
 	 */
-	void enterConst(TasmParser.ConstContext ctx);
+	void enterIconst(TasmParser.IconstContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code Const}
+	 * Exit a parse tree produced by the {@code Iconst}
 	 * labeled alternative in {@link TasmParser#constant}.
 	 * @param ctx the parse tree
 	 */
-	void exitConst(TasmParser.ConstContext ctx);
+	void exitIconst(TasmParser.IconstContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Dconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void enterDconst(TasmParser.DconstContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Dconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void exitDconst(TasmParser.DconstContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Sconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void enterSconst(TasmParser.SconstContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Sconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void exitSconst(TasmParser.SconstContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Tconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void enterTconst(TasmParser.TconstContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Tconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void exitTconst(TasmParser.TconstContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code Fconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void enterFconst(TasmParser.FconstContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Fconst}
+	 * labeled alternative in {@link TasmParser#constant}.
+	 * @param ctx the parse tree
+	 */
+	void exitFconst(TasmParser.FconstContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Global}
 	 * labeled alternative in {@link TasmParser#allocation}.

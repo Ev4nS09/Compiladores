@@ -461,23 +461,72 @@ public class TasmParser extends Parser {
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
-	public static class ConstContext extends ConstantContext {
-		public TerminalNode ICONST() { return getToken(TasmParser.ICONST, 0); }
-		public TerminalNode INT() { return getToken(TasmParser.INT, 0); }
-		public TerminalNode DCONST() { return getToken(TasmParser.DCONST, 0); }
-		public TerminalNode SCONST() { return getToken(TasmParser.SCONST, 0); }
-		public TerminalNode STRING() { return getToken(TasmParser.STRING, 0); }
+	public static class TconstContext extends ConstantContext {
 		public TerminalNode TCONST() { return getToken(TasmParser.TCONST, 0); }
-		public TerminalNode FCONST() { return getToken(TasmParser.FCONST, 0); }
-		public TerminalNode DOUBLE() { return getToken(TasmParser.DOUBLE, 0); }
-		public ConstContext(ConstantContext ctx) { copyFrom(ctx); }
+		public TconstContext(ConstantContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterConst(this);
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterTconst(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitConst(this);
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitTconst(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class IconstContext extends ConstantContext {
+		public TerminalNode ICONST() { return getToken(TasmParser.ICONST, 0); }
+		public TerminalNode INT() { return getToken(TasmParser.INT, 0); }
+		public IconstContext(ConstantContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterIconst(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitIconst(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class FconstContext extends ConstantContext {
+		public TerminalNode FCONST() { return getToken(TasmParser.FCONST, 0); }
+		public FconstContext(ConstantContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterFconst(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitFconst(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class SconstContext extends ConstantContext {
+		public TerminalNode SCONST() { return getToken(TasmParser.SCONST, 0); }
+		public TerminalNode STRING() { return getToken(TasmParser.STRING, 0); }
+		public SconstContext(ConstantContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterSconst(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitSconst(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class DconstContext extends ConstantContext {
+		public TerminalNode DCONST() { return getToken(TasmParser.DCONST, 0); }
+		public TerminalNode DOUBLE() { return getToken(TasmParser.DOUBLE, 0); }
+		public TerminalNode INT() { return getToken(TasmParser.INT, 0); }
+		public DconstContext(ConstantContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).enterDconst(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TasmListener ) ((TasmListener)listener).exitDconst(this);
 		}
 	}
 
@@ -486,13 +535,12 @@ public class TasmParser extends Parser {
 		enterRule(_localctx, 6, RULE_constant);
 		int _la;
 		try {
-			_localctx = new ConstContext(_localctx);
-			enterOuterAlt(_localctx, 1);
-			{
 			setState(72);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case ICONST:
+				_localctx = new IconstContext(_localctx);
+				enterOuterAlt(_localctx, 1);
 				{
 				setState(64);
 				match(ICONST);
@@ -501,6 +549,8 @@ public class TasmParser extends Parser {
 				}
 				break;
 			case DCONST:
+				_localctx = new DconstContext(_localctx);
+				enterOuterAlt(_localctx, 2);
 				{
 				setState(66);
 				match(DCONST);
@@ -517,6 +567,8 @@ public class TasmParser extends Parser {
 				}
 				break;
 			case SCONST:
+				_localctx = new SconstContext(_localctx);
+				enterOuterAlt(_localctx, 3);
 				{
 				setState(68);
 				match(SCONST);
@@ -525,12 +577,16 @@ public class TasmParser extends Parser {
 				}
 				break;
 			case TCONST:
+				_localctx = new TconstContext(_localctx);
+				enterOuterAlt(_localctx, 4);
 				{
 				setState(70);
 				match(TCONST);
 				}
 				break;
 			case FCONST:
+				_localctx = new FconstContext(_localctx);
+				enterOuterAlt(_localctx, 5);
 				{
 				setState(71);
 				match(FCONST);
@@ -538,7 +594,6 @@ public class TasmParser extends Parser {
 				break;
 			default:
 				throw new NoViableAltException(this);
-			}
 			}
 		}
 		catch (RecognitionException re) {

@@ -11,7 +11,7 @@ public class InstructionTree extends TasmBaseListener
 
     protected final HashMap<String, Integer> tagLine;
     protected final HashMap<String, Integer> waitList;
-    protected final HashMap<String, Integer> constantPoolCache;
+    protected final HashMap<Object, Integer> constantPoolCache;
 
     public InstructionTree()
     {
@@ -22,45 +22,46 @@ public class InstructionTree extends TasmBaseListener
         this.constantPoolCache = new HashMap<>();
     }
 
-    public void exitConst(TasmParser.ConstContext ctx)
+    public void exitIconst(TasmParser.IconstContext ctx)
     {
-        if(ctx.ICONST() != null)
-        {
-            this.instructions.add(new Instruction(OpCode.iconst, Integer.parseInt(ctx.INT().getText())));
-        }
-        else if(ctx.DCONST() != null)
-        {
-            String number = ctx.INT() != null ? ctx.INT().getText() : ctx.DOUBLE().getText();
+        this.instructions.add(new Instruction(OpCode.iconst, Integer.parseInt(ctx.INT().getText())));
+    }
 
-            if(!this.constantPoolCache.containsKey(number))
-            {
-                this.constantPool.add(new Instruction(OpCode.dconst, Double.parseDouble(number)));
-                this.constantPoolCache.put(number, this.constantPool.size()-1);
-            }
+    public void exitDconst(TasmParser.DconstContext ctx)
+    {
+        Double number = Double.valueOf(ctx.DOUBLE().getText());
 
-            this.instructions.add(new Instruction(OpCode.dconst, this.constantPoolCache.get(number)));
-        }
-        else if(ctx.SCONST() != null)
+        if(!this.constantPoolCache.containsKey(number))
         {
-            String string = ctx.STRING().getText();
-
-            if(!this.constantPoolCache.containsKey(string))
-            {
-                this.constantPool.add(new Instruction(OpCode.sconst, string));
-                this.constantPoolCache.put(string, this.constantPool.size()-1);
-            }
-
-            this.instructions.add(new Instruction(OpCode.sconst, this.constantPoolCache.get(string)));
-
+            this.constantPool.add(new Instruction(OpCode.dconst, number));
+            this.constantPoolCache.put(number, this.constantPool.size()-1);
         }
-        else if(ctx.TCONST() != null)
+
+        this.instructions.add(new Instruction(OpCode.sconst, this.constantPoolCache.get(number)));
+    }
+
+    public void exitSconst(TasmParser.SconstContext ctx)
+    {
+
+        String string = ctx.STRING().getText();
+
+        if(!this.constantPoolCache.containsKey(string))
         {
-            this.instructions.add(new Instruction(OpCode.tconst));
+            this.constantPool.add(new Instruction(OpCode.sconst, string));
+            this.constantPoolCache.put(string, this.constantPool.size()-1);
         }
-        else if(ctx.FCONST() != null)
-        {
-            this.instructions.add(new Instruction(OpCode.fconst));
-        }
+
+        this.instructions.add(new Instruction(OpCode.sconst, this.constantPoolCache.get(string)));
+    }
+
+    public void exitTconst(TasmParser.TconstContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.tconst));
+    }
+
+    public void exitFconst(TasmParser.FconstContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.tconst));
     }
 
     public void exitGlobal(TasmParser.GlobalContext ctx)
@@ -123,8 +124,7 @@ public class InstructionTree extends TasmBaseListener
 
     public void exitTasm(TasmParser.TasmContext ctx)
     {
-        if(ctx.HALT() != null)
-            this.instructions.add(new Instruction(OpCode.halt));
+        this.instructions.add(new Instruction(OpCode.halt));
     }
 
     public LinkedList<Instruction> getInstructions()

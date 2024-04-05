@@ -136,6 +136,12 @@ public class VirtualMachine {
 
             case btos -> btos();
 
+            case or -> or();
+
+            case and -> and();
+
+            case not -> not();
+
         }
 
     }
@@ -172,26 +178,32 @@ public class VirtualMachine {
     {
         this.stack.push(number);
     }
+
     private void dconst(Integer constantPoolPosition)
     {
         this.stack.push(this.constPool.get(constantPoolPosition).getArgument());
     }
+
     private void sconst(Integer constantPoolPosition)
     {
         this.stack.push(this.constPool.get(constantPoolPosition).getArgument());
     }
+
     private void tconst()
     {
         this.stack.push(true);
     }
+
     private void fconst()
     {
         this.stack.push(false);
     }
+
     private void jump(Integer line)
     {
         this.instructionPointer = line;
     }
+
     private void jumpt(Integer line)
     {
         boolean bool = (boolean) this.stack.pop();
@@ -199,6 +211,7 @@ public class VirtualMachine {
         if(bool)
             this.instructionPointer = line;
     }
+
     private void jumpf(Integer line)
     {
         boolean bool = (boolean) this.stack.pop();
@@ -206,6 +219,7 @@ public class VirtualMachine {
         if(!bool)
             this.instructionPointer = line;
     }
+
     private void galloc(Integer size)
     {
         int newGlobalSize = this.globalMemory.length + size;
@@ -222,10 +236,12 @@ public class VirtualMachine {
 
 
     }
+
     private void gload(Integer address)
     {
         this.stack.push(this.globalMemory[address]);
     }
+
     private void gstore(Integer address)
     {
         this.globalMemory[address] = this.stack.pop();
@@ -234,28 +250,33 @@ public class VirtualMachine {
     private void iprint() {
         System.out.println(stack.pop());
     }
+
     private void iuminus()
     {
         stack.push(-(Integer)this.stack.pop());
     }
+
     private void iadd()
     {
         int right = (Integer)stack.pop();
         int left = (Integer)stack.pop();
         stack.push(left + right);
     }
+
     private void isub()
     {
         int right = (Integer)stack.pop();
         int left = (Integer)stack.pop();
         stack.push(left - right);
     }
+
     private void imult()
     {
         int right = (Integer) this.stack.pop();
         int left = (Integer) this.stack.pop();
         this.stack.push(left * right);
     }
+
     private void idiv()
     {
         int right = (Integer) this.stack.pop();
@@ -266,6 +287,7 @@ public class VirtualMachine {
 
         this.stack.push(left / right);
     }
+
     private void imod()
     {
         int right = (Integer) this.stack.pop();
@@ -276,6 +298,7 @@ public class VirtualMachine {
 
         this.stack.push(left % right);
     }
+
     private void ieq()
     {
         int right = (Integer) this.stack.pop();
@@ -286,6 +309,7 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
+
     private void ineq()
     {
         int right = (Integer) this.stack.pop();
@@ -296,6 +320,7 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
+
     private void ilt()
     {
         int right = (Integer) this.stack.pop();
@@ -307,7 +332,9 @@ public class VirtualMachine {
             stack.push(false);
 
     }
-    private void ileq() {
+
+    private void ileq()
+    {
         int right = (Integer) this.stack.pop();
         int left = (Integer) this.stack.pop();
 
@@ -318,21 +345,25 @@ public class VirtualMachine {
 
 
     }
+
     private void itod()
     {
         Double real = Double.valueOf((Integer)stack.pop());
         stack.push(real);
 
     }
+
     private void itos()
     {
         int inteiro = (Integer)stack.pop();
         stack.push('"' + String.valueOf(inteiro) + '"');
     }
+
     private void dprint()
     {
         System.out.println(this.stack.pop());
     }
+
     private void duminus()
     {
         stack.push(-(Double)this.stack.pop());
@@ -358,6 +389,7 @@ public class VirtualMachine {
         Double left = (Double)stack.pop();
         stack.push(left * right);
     }
+
     private void ddiv()
     {
         double right = (Double) this.stack.pop();
@@ -369,6 +401,7 @@ public class VirtualMachine {
         this.stack.push(left / right);
 
     }
+
     private void deq()
     {
         double right = (Double)stack.pop();
@@ -380,6 +413,7 @@ public class VirtualMachine {
             stack.push(false);
         ;
     }
+
     private void dneq()
     {
         double right = (Double)stack.pop();
@@ -389,6 +423,7 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
+
     private void dlt()
     {
         double right = (Double)stack.pop();
@@ -398,6 +433,7 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
+
     private void dleq()
     {
         double right = (Double)stack.pop();
@@ -408,15 +444,18 @@ public class VirtualMachine {
         else
             stack.push(false);
     }
+
     private void dtos()
     {
         Double real = (Double)stack.pop();
         stack.push('"' + String.valueOf(real) + '"');
     }
+
     private void sprint()
     {
         System.out.println(((String)this.stack.pop()).replaceAll("\"", ""));
     }
+
     private void sadd()
     {
         String right = (String)stack.pop();
@@ -428,6 +467,7 @@ public class VirtualMachine {
 
         this.stack.push((left.concat(right)));
     }
+
     private void seq()
     {
         String right = (String)this.stack.pop();
@@ -438,6 +478,7 @@ public class VirtualMachine {
         else
             this.stack.push(false);
     }
+
     private void sneq()
     {
         String right = (String)this.stack.pop();
@@ -448,6 +489,7 @@ public class VirtualMachine {
         else
             this.stack.push(false);
     }
+
     private void bprint()
     {
         System.out.println(this.stack.pop());
@@ -483,6 +525,29 @@ public class VirtualMachine {
         else
             stack.push("false");
 
+    }
+
+    private void and()
+    {
+        boolean right = (boolean) this.stack.pop();
+        boolean left = (boolean) this.stack.pop();
+
+        this.stack.push(left && right);
+    }
+
+    private void or()
+    {
+        boolean right = (boolean) this.stack.pop();
+        boolean left = (boolean) this.stack.pop();
+
+        this.stack.push(left || right);
+    }
+
+    private void not()
+    {
+        boolean bool = (boolean) this.stack.pop();
+
+        this.stack.push(!bool);
     }
 
     private boolean opCodeHasArgument(OpCode instruction)

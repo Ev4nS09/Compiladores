@@ -26,8 +26,14 @@ instruction : constant '\n'
 
             ;
 
-constant: (ICONST INT | DCONST (DOUBLE | INT) | SCONST STRING | TCONST | FCONST)                                #Const
+constant: ICONST INT                               #Iconst
+          | DCONST (DOUBLE | INT)                   #Dconst
+          | SCONST STRING                           #Sconst
+          | TCONST                                  #Tconst
+          | FCONST                                  #Fconst
         ;
+
+
 
 allocation: alloc=(GALLOC | GLOAD | GSTORE ) INT                                                    #Global
           ;
@@ -55,7 +61,7 @@ HALT: 'halt';
 BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
-STRING: '"' .*? '"';
+STRING: '"' ('\\"'|.)*? '"';
 
 ICONST:'iconst';
 IPRINT:'iprint';
