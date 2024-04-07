@@ -26,7 +26,7 @@ instruction : constant '\n'
 
             ;
 
-constant: ICONST INT                               #Iconst
+constant: ICONST INT                                #Iconst
           | DCONST (DOUBLE | INT)                   #Dconst
           | SCONST STRING                           #Sconst
           | TCONST                                  #Tconst
@@ -61,7 +61,7 @@ HALT: 'halt';
 BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
-STRING: '"' ('\\"'|.)*? '"';
+STRING: '"' ('\\"' | .)*? '"';
 
 ICONST:'iconst';
 IPRINT:'iprint';

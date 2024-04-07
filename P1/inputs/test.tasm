@@ -2,8 +2,10 @@ galloc 3
 dconst 3.14
 dprint
 galloc 5
-sconst "SIIIIIU"
+sconst "SIIIIIU\\\\\\\\\\\\\\\\\\\\\n\t"
 dconst 3.14
 dconst 3.14
 gstore 7
+dprint
+sprint
 halt

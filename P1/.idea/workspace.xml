@@ -6,15 +6,26 @@
   <component name="ChangeListManager">
     <list default="true" id="fbdc6cc6-9a87-4887-b812-f9a1d2872572" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Antlr/Tasm.interp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Antlr/Tasm.interp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Antlr/TasmBaseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Antlr/TasmBaseListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Antlr/TasmLexer.interp" beforeDir="false" afterPath="$PROJECT_DIR$/src/Antlr/TasmLexer.interp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Antlr/TasmLexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Antlr/TasmLexer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Antlr/TasmListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Antlr/TasmListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Antlr/TasmParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Antlr/TasmParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Format-Hex" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/InstructionArgument.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/InstructionTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/InstructionTree.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/OpCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OpCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/T.g4" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Tasm.g4" beforeDir="false" afterPath="$PROJECT_DIR$/src/Tasm.g4" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/VirtualMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/VirtualMachine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TasmCompiler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tAssembler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/VirtualMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tVM.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/double.bc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ola.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test.bc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/text.bc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.bc" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,10 +84,18 @@
     <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="P1" />
+      <option name="PROGRAM_PARAMETERS" value="-trace" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-22-openjdk-22-3183f394aec4-bad0321e" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

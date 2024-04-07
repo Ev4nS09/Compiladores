@@ -1,11 +1,7 @@
-import javax.swing.*;
 import java.io.*;
-import java.lang.classfile.FieldBuilder;
-import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.function.DoubleToLongFunction;
 
-public class VirtualMachine {
+public class tVM {
 
     private final Stack<Object> stack;
     private Object[] globalMemory;
@@ -17,7 +13,7 @@ public class VirtualMachine {
 
     private int instructionPointer;
 
-    public VirtualMachine(boolean trace) throws IOException {
+    public tVM(boolean trace) throws IOException {
         this.byteCodeBuffer = null;
         this.stack = new Stack<>();
         this.trace = trace;
@@ -30,7 +26,7 @@ public class VirtualMachine {
 
     }
 
-    public VirtualMachine() throws IOException {
+    public tVM() throws IOException {
         this(false);
     }
 
@@ -150,6 +146,7 @@ public class VirtualMachine {
     {
         this.byteCodeBuffer = new ByteCodeBuffer(byteCode);
         this.generateInstructions();
+        System.out.println(this.instructions);
 
         if(this.trace)
             trace();
@@ -173,6 +170,40 @@ public class VirtualMachine {
         this.instructionPointer = 0;
 
     }
+
+    private String verifyObejctTypeString(Object object)
+    {
+        if(object instanceof String)
+            return (String) object;
+        else
+            throw new ArithmeticException("Wrong type.");
+    }
+
+    private Integer verifyObejctTypeInteger(Object object)
+    {
+        if(object instanceof Integer)
+            return (Integer) object;
+        else
+            throw new ArithmeticException("Wrong type.");
+    }
+
+    private Double verifyObejctTypeDouble(Object object)
+    {
+        if(object instanceof Double)
+            return (Double) object;
+        else
+            throw new ArithmeticException("Wrong type.");
+    }
+
+
+    private Boolean verifyObejctTypeBoolean(Object object)
+    {
+        if(object instanceof Boolean)
+            return (Boolean) object;
+        else
+            throw new ArithmeticException("Wrong type.");
+    }
+
 
     private void iconst(Integer number)
     {
@@ -450,6 +481,7 @@ public class VirtualMachine {
         Double real = (Double)stack.pop();
         stack.push('"' + String.valueOf(real) + '"');
     }
+
 
     private void sprint()
     {

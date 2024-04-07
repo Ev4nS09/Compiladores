@@ -7,7 +7,7 @@ import java.util.*;
 
 import Antlr.*;
 
-public class TasmCompiler {
+public class tAssembler {
 
     private TasmParser generateParser(InputStream inputStream) throws Exception{
 

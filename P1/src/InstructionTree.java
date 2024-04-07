@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import Antlr.*;
+import org.antlr.v4.codegen.model.ThrowNoViableAlt;
 
 public class InstructionTree extends TasmBaseListener
 {
@@ -37,8 +38,9 @@ public class InstructionTree extends TasmBaseListener
             this.constantPoolCache.put(number, this.constantPool.size()-1);
         }
 
-        this.instructions.add(new Instruction(OpCode.sconst, this.constantPoolCache.get(number)));
+        this.instructions.add(new Instruction(OpCode.dconst, this.constantPoolCache.get(number)));
     }
+
 
     public void exitSconst(TasmParser.SconstContext ctx)
     {
@@ -124,6 +126,12 @@ public class InstructionTree extends TasmBaseListener
 
     public void exitTasm(TasmParser.TasmContext ctx)
     {
+        if(ctx.HALT() == null)
+        {
+            System.out.println("Must have halt at the end of the code.");
+            System.exit(1);
+        }
+
         this.instructions.add(new Instruction(OpCode.halt));
     }
 
