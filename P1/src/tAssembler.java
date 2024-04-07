@@ -3,6 +3,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.*;
 
 import Antlr.*;
@@ -69,6 +70,10 @@ public class tAssembler {
 
         InstructionTree instructionTree = new InstructionTree();
         walker.walk(instructionTree, tree);
+
+        if(parser.getNumberOfSyntaxErrors() > 0)
+            System.exit(1);
+
 
         this.generateByteCode(instructionTree.getInstructions(), instructionTree.getConstantPool(), outputFile);
 

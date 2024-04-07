@@ -1,3 +1,4 @@
-dconst 3.14
-dconst 1.2
-iadd
+iconst 3
+iconst 5
+dadd
+halt

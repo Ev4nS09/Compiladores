@@ -1,0 +1,22 @@
+        galloc 2
+        iconst 123
+        iconst 0
+        gstore 1
+        gstore 0
+_Begin: gload 0
+        iconst 10
+        imod
+        gload 1
+        iadd
+        gstore 1
+        gload 0
+        iconst 10
+        idiv
+        gstore 0
+        gload 0
+        iconst 0
+        ieq
+        jumpf _Begin
+        gload 1
+        iprint
+        halt
