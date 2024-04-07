@@ -1,0 +1,116 @@
+iconst 5
+iprint
+dconst 5.5
+dprint
+sconst "Teste"
+sprint
+tconst
+bprint
+fconst
+bprint
+iconst 5
+iuminus
+iconst 5
+iadd
+iconst 5
+isub
+iconst 5
+imult
+iconst 5
+idiv
+iconst 5
+imod
+iconst 5
+ieq
+bprint
+iconst 5
+iconst 5
+ilt
+iconst 5
+iconst 5
+ileq
+iconst 5
+itod
+iconst 5
+itos
+dconst 5.5
+duminus
+dconst 5.5
+dadd
+dconst 5.5
+dsub
+dconst 5.5
+dmult
+dconst 5.5
+ddiv
+dconst 5.5
+deq
+dconst 5.5
+dconst 5.5
+dneq
+dconst 5.5
+dconst 5.5
+dlt
+dconst 5.5
+dconst 5.5
+dleq
+dconst 5.5
+dtos
+sconst "bom "
+sconst "dia"
+sadd
+sconst "bom dia"
+seq
+sconst "a"
+sconst "a"
+sneq
+tconst
+beq
+tconst
+bneq
+tconst
+tconst
+and
+tconst
+tconst
+or
+tconst
+not
+tconst
+btos
+galloc 10
+iconst 0
+gstore 0
+_begin: iconst 1
+gload 0
+iadd
+gstore 0
+iconst 2
+gload 0
+ileq
+jumpf _begin
+iconst 0
+gstore 0
+_begin2: iconst 1
+gload 0
+iadd
+gstore 0
+gload 0
+iconst 2
+ileq
+jumpt _begin2
+iconst 0
+gstore 0
+fconst
+_begin3: jumpt over
+iconst 1
+gload 0
+iadd
+gstore 0
+iconst 2
+gload 0
+ileq
+jump _begin3
+over: gload 0
+iprint
+halt

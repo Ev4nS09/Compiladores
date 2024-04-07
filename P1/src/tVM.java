@@ -562,10 +562,10 @@ public class tVM {
     private void btos()
     {
         if (this.verifyObejctTypeBoolean(this.stack.pop()))
-            stack.push("true");
+            stack.push("\"true\"");
 
         else
-            stack.push("false");
+            stack.push("\"false\"");
 
     }
 

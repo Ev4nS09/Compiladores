@@ -1,0 +1,17 @@
+galloc 5
+sconst "Ola  "
+sconst "Maria!"
+sadd
+gstore 0
+sconst " Tenho "
+iconst 5
+itos
+sadd
+gstore 1
+gload 0
+gload 1
+sadd
+sconst " anos"
+sadd
+sprint
+halt

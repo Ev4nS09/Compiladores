@@ -1,4 +1,4 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P1/src/Tasm.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -154,7 +154,7 @@ public class TasmParser extends Parser {
 				setState(23); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 72057585447992840L) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 72057594037927432L) != 0) );
 			setState(25);
 			match(HALT);
 			}
@@ -250,6 +250,7 @@ public class TasmParser extends Parser {
 			case DEQ:
 			case DNEQ:
 			case DLT:
+			case DLEQ:
 			case DTOS:
 			case SCONST:
 			case SPRINT:
@@ -692,6 +693,7 @@ public class TasmParser extends Parser {
 		public TerminalNode ILEQ() { return getToken(TasmParser.ILEQ, 0); }
 		public TerminalNode DEQ() { return getToken(TasmParser.DEQ, 0); }
 		public TerminalNode DNEQ() { return getToken(TasmParser.DNEQ, 0); }
+		public TerminalNode DLEQ() { return getToken(TasmParser.DLEQ, 0); }
 		public TerminalNode DLT() { return getToken(TasmParser.DLT, 0); }
 		public TerminalNode DTOS() { return getToken(TasmParser.DTOS, 0); }
 		public TerminalNode SEQ() { return getToken(TasmParser.SEQ, 0); }
@@ -723,7 +725,7 @@ public class TasmParser extends Parser {
 			setState(77);
 			((ConditionsContext)_localctx).cd = _input.LT(1);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 273528215437312L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 273536805371904L) != 0)) ) {
 				((ConditionsContext)_localctx).cd = (Token)_errHandler.recoverInline(this);
 			}
 			else {
@@ -1019,14 +1021,14 @@ public class TasmParser extends Parser {
 		"I\b\u0003\u0001\u0004\u0001\u0004\u0001\u0004\u0001\u0005\u0001\u0005"+
 		"\u0001\u0006\u0001\u0006\u0001\u0007\u0001\u0007\u0001\b\u0001\b\u0001"+
 		"\t\u0001\t\u0001\t\u0001\t\u0000\u0000\n\u0000\u0002\u0004\u0006\b\n\f"+
-		"\u000e\u0010\u0012\u0000\u0007\u0001\u0000\u0006\u0007\u0001\u000046\u0005"+
-		"\u0000\u0011\u0014\u001e \"\"&\'+/\u0003\u0000\u0015\u0016\"\"00\u0003"+
-		"\u0000\u000b\u0010\u0019\u001d%%\u0004\u0000\n\n\u0018\u0018$$**\u0001"+
-		"\u000013\\\u0000\u0015\u0001\u0000\u0000\u0000\u0002&\u0001\u0000\u0000"+
-		"\u0000\u0004>\u0001\u0000\u0000\u0000\u0006H\u0001\u0000\u0000\u0000\b"+
-		"J\u0001\u0000\u0000\u0000\nM\u0001\u0000\u0000\u0000\fO\u0001\u0000\u0000"+
-		"\u0000\u000eQ\u0001\u0000\u0000\u0000\u0010S\u0001\u0000\u0000\u0000\u0012"+
-		"U\u0001\u0000\u0000\u0000\u0014\u0016\u0003\u0002\u0001\u0000\u0015\u0014"+
+		"\u000e\u0010\u0012\u0000\u0007\u0001\u0000\u0006\u0007\u0001\u000046\u0004"+
+		"\u0000\u0011\u0014\u001e\"&\'+/\u0003\u0000\u0015\u0016\"\"00\u0003\u0000"+
+		"\u000b\u0010\u0019\u001d%%\u0004\u0000\n\n\u0018\u0018$$**\u0001\u0000"+
+		"13\\\u0000\u0015\u0001\u0000\u0000\u0000\u0002&\u0001\u0000\u0000\u0000"+
+		"\u0004>\u0001\u0000\u0000\u0000\u0006H\u0001\u0000\u0000\u0000\bJ\u0001"+
+		"\u0000\u0000\u0000\nM\u0001\u0000\u0000\u0000\fO\u0001\u0000\u0000\u0000"+
+		"\u000eQ\u0001\u0000\u0000\u0000\u0010S\u0001\u0000\u0000\u0000\u0012U"+
+		"\u0001\u0000\u0000\u0000\u0014\u0016\u0003\u0002\u0001\u0000\u0015\u0014"+
 		"\u0001\u0000\u0000\u0000\u0016\u0017\u0001\u0000\u0000\u0000\u0017\u0015"+
 		"\u0001\u0000\u0000\u0000\u0017\u0018\u0001\u0000\u0000\u0000\u0018\u0019"+
 		"\u0001\u0000\u0000\u0000\u0019\u001a\u0005\u0004\u0000\u0000\u001a\u0001"+

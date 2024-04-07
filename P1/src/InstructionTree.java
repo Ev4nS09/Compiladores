@@ -63,7 +63,7 @@ public class InstructionTree extends TasmBaseListener
 
     public void exitFconst(TasmParser.FconstContext ctx)
     {
-        this.instructions.add(new Instruction(OpCode.tconst));
+        this.instructions.add(new Instruction(OpCode.fconst));
     }
 
     public void exitGlobal(TasmParser.GlobalContext ctx)

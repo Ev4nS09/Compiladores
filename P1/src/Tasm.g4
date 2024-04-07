@@ -38,7 +38,7 @@ constant: ICONST INT                                #Iconst
 allocation: alloc=(GALLOC | GLOAD | GSTORE ) INT                                                    #Global
           ;
 
-condition: cd=(IEQ | INEQ | ILT | ILEQ | DEQ| DNEQ | DLT | DTOS |
+condition: cd=(IEQ | INEQ | ILT | ILEQ | DEQ| DNEQ | DLEQ | DLT | DTOS |
                       SEQ | SNEQ | BEQ | BNEQ| AND | OR | NOT)                                         #Conditions
          ;
 
