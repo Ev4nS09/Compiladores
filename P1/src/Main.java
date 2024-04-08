@@ -5,7 +5,8 @@ import java.io.FileWriter;
 import java.nio.file.FileSystemException;
 import java.util.Scanner;
 
-public class Main {
+public class Main
+{
 
     private String readInput()
     {
@@ -44,7 +45,7 @@ public class Main {
 
         if(!inputFile.split("\\.")[1].equals("tasm"))
         {
-            throw new FileSystemException("Invalid file extension, File must have the extension tasm.");
+            Flaw.Error("Invalid file extension, File must have the extension tasm.");
         }
 
         String outputFile = inputFile.split("\\.")[0].concat(".tbc");
@@ -55,5 +56,6 @@ public class Main {
 
         compiler.compile(inputFile, outputFile);
         tVM.execute(outputFile);
+
     }
 }

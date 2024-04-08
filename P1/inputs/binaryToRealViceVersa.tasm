@@ -1,0 +1,51 @@
+galloc 20
+iconst 1010111011
+gstore 0
+iconst 0
+gstore 1
+iconst 0
+gstore 2
+
+_Binary: gload 0
+iconst 10
+imod
+gstore 4
+iconst 0
+gstore 3
+gload 2
+iconst 0
+ieq
+_Pow: jumpt _endPow
+gload 4
+iconst 2
+imult
+gstore 4
+gload 3
+iconst 1
+iadd
+gstore 3
+gload 2
+gload 3
+ieq
+jump _Pow
+_endPow: gload 4
+gload 1
+iadd
+gstore 1
+gload 0
+iconst 10
+idiv
+gstore 0
+gload 0
+iconst 0
+ieq
+gload 2
+iconst 1
+iadd
+gstore 2
+jumpf _Binary
+gload 1
+iprint
+halt
+
+

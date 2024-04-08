@@ -1,0 +1,18 @@
+ galloc 3
+        iconst 1
+        gstore 0
+        iconst 2
+        gstore 1
+        gload 0
+        gload 1
+        idiv
+        iprint
+        gload 0
+        gload 1
+        imod
+        iprint
+        dconst 1
+        dconst 2
+        dadd
+        dprint
+        halt

@@ -1,0 +1,20 @@
+        galloc 1
+        iconst 1
+        itod
+        dconst 3.1
+        dadd
+        dconst 4.5
+        dmult
+        dconst 1.55
+        dadd
+        gstore 0
+        sconst "Print em double : "
+        sprint
+        gload 0
+        dprint
+        sconst "Print em string : "
+        gload 0
+        dtos
+        sadd
+        sprint
+        halt

@@ -173,43 +173,40 @@ public class tVM {
 
     private String verifyObejctTypeString(Object object)
     {
-        if(object instanceof String)
-            return (String) object;
-        else
-            throw new ArithmeticException("Invalid type for the instruction " +
+        if(!(object instanceof String))
+            Flaw.Error("Invalid type for the instruction " +
                     this.instructions.get(this.instructionPointer-1) + "The valid type must be a String");
+
+        return (String) object;
     }
 
     private Integer verifyObejctTypeInteger(Object object)
     {
-        if(object instanceof Integer)
-            return (Integer) object;
-        else
-            throw new ArithmeticException("Invalid type for the instruction " +
+        if(!(object instanceof Integer))
+            Flaw.Error("Invalid type for the instruction " +
                     this.instructions.get(this.instructionPointer-1) + "The valid type must be an Integer");
 
+        return (Integer) object;
     }
 
     private Double verifyObejctTypeDouble(Object object)
     {
-        if(object instanceof Double)
-            return (Double) object;
-        else
-            throw new ArithmeticException("Invalid type for the instruction " +
+        if(!(object instanceof Double))
+            Flaw.Error("Invalid type for the instruction " +
                     this.instructions.get(this.instructionPointer-1) + "The valid type must be a Double");
 
+        return (Double) object;
 
     }
 
 
     private Boolean verifyObejctTypeBoolean(Object object)
     {
-        if(object instanceof Boolean)
-            return (Boolean) object;
-        else
-            throw new ArithmeticException("Invalid type for the instruction " +
+        if(!(object instanceof Boolean))
+            Flaw.Error("Invalid type for the instruction " +
                     this.instructions.get(this.instructionPointer-1) + "The valid type must be a Boolean");
 
+        return (Boolean) object;
     }
 
 
@@ -279,11 +276,17 @@ public class tVM {
 
     private void gload(Integer address)
     {
+        if(address >= this.globalMemory.length)
+            Flaw.Error("Index out of bounds.");
+
         this.stack.push(this.globalMemory[address]);
     }
 
     private void gstore(Integer address)
     {
+        if(address >= this.globalMemory.length)
+            Flaw.Error("Index out of bounds.");
+
         this.globalMemory[address] = this.stack.pop();
     }
 
@@ -324,7 +327,7 @@ public class tVM {
         int left = this.verifyObejctTypeInteger(this.stack.pop());
 
         if(right == 0)
-            throw new ArithmeticException("Divisor mustn't be 0");
+            Flaw.Error("Divisor mustn't be 0");
 
         this.stack.push(left / right);
     }
@@ -335,7 +338,7 @@ public class tVM {
         int left = this.verifyObejctTypeInteger(this.stack.pop());
 
         if(right == 0)
-            throw new ArithmeticException("Divisor mustn't be 0");
+            Flaw.Error("Divisor mustn't be 0");
 
         this.stack.push(left % right);
     }
@@ -437,7 +440,7 @@ public class tVM {
         double left = this.verifyObejctTypeDouble(this.stack.pop());
 
         if(right == 0)
-            throw new ArithmeticException("Divisor mustn't be 0");
+            Flaw.Error("Divisor mustn't be 0");
 
         this.stack.push(left / right);
 

@@ -1,4 +1,1 @@
-iconst 3
-iconst 5
-dadd
-halt
+iconst 10

@@ -10,16 +10,16 @@ public class InstructionTree extends TasmBaseListener
     protected final LinkedList<Instruction> instructions;
     protected final LinkedList<Instruction> constantPool;
 
-    protected final HashMap<String, Integer> tagLine;
-    protected final HashMap<String, Integer> waitList;
+    protected final HashMap<String, Integer> tagCache;
+    protected final HashMap<String, Integer> tagWaitList;
     protected final HashMap<Object, Integer> constantPoolCache;
 
     public InstructionTree()
     {
         this.instructions = new LinkedList<>();
         this.constantPool = new LinkedList<>();
-        this.tagLine = new HashMap<>();
-        this.waitList = new HashMap<>();
+        this.tagCache = new HashMap<>();
+        this.tagWaitList = new HashMap<>();
         this.constantPoolCache = new HashMap<>();
     }
 
@@ -30,7 +30,7 @@ public class InstructionTree extends TasmBaseListener
 
     public void exitDconst(TasmParser.DconstContext ctx)
     {
-        Double number = Double.valueOf(ctx.DOUBLE().getText());
+        Double number = Double.valueOf(ctx.DOUBLE() != null ? ctx.DOUBLE().getText() : ctx.INT().getText());
 
         if(!this.constantPoolCache.containsKey(number))
         {
@@ -93,10 +93,10 @@ public class InstructionTree extends TasmBaseListener
 
     public void exitJp(TasmParser.JpContext ctx)
     {
-        Integer line = this.tagLine.get(ctx.tag.getText());
+        Integer line = this.tagCache.get(ctx.tag.getText());
 
         if(line == null)
-            this.waitList.put(ctx.TAG().getText(), this.instructions.size());
+            this.tagWaitList.put(ctx.TAG().getText(), this.instructions.size());
 
         this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), line));
     }
@@ -107,31 +107,24 @@ public class InstructionTree extends TasmBaseListener
         {
             String tag = ctx.TAG().get(i).toString();
 
-            if (this.tagLine.containsKey(tag))
+            if (this.tagCache.containsKey(tag))
             {
-                System.out.println("Label already defined");
-                System.exit(1);
+                Flaw.Error("Label already defined");
             }
 
-            if (this.waitList.containsKey(tag))
+            if (this.tagWaitList.containsKey(tag))
             {
-                int index = this.waitList.get(tag);
+                int index = this.tagWaitList.get(tag);
                 Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), this.instructions.size() - 1);
                 this.instructions.set(index, newInstruction);
             }
 
-            this.tagLine.put(tag, this.instructions.size() - 1);
+            this.tagCache.put(tag, this.instructions.size() - 1);
         }
     }
 
     public void exitTasm(TasmParser.TasmContext ctx)
     {
-        if(ctx.HALT() == null)
-        {
-            System.out.println("Must have halt at the end of the code.");
-            System.exit(1);
-        }
-
         this.instructions.add(new Instruction(OpCode.halt));
     }
 
