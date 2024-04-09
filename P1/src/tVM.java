@@ -146,7 +146,6 @@ public class tVM {
     {
         this.byteCodeBuffer = new ByteCodeBuffer(byteCode);
         this.generateInstructions();
-        System.out.println(this.instructions);
 
         if(this.trace)
             trace();
@@ -638,7 +637,7 @@ public class tVM {
             }
         }
 
-        this.byteCodeBuffer.resetPointer();
+        this.byteCodeBuffer.close();
     }
 
     private void trace() throws IOException

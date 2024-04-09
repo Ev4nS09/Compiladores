@@ -1,28 +1,23 @@
+import javax.xml.crypto.Data;
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.file.FileSystemException;
 import java.util.Scanner;
 
-public class Main
-{
+public class Main {
 
-    private String readInput()
-    {
+    private String readInput() {
         String result = "";
         Scanner scanner = new Scanner(System.in);
 
-        while(scanner.hasNextLine())
-        {
+        while (scanner.hasNextLine()) {
             result += scanner.nextLine() + '\n';
         }
 
         return result;
     }
 
-    public void main(String[] args) throws Exception
-    {
+    public void main(String[] args) throws Exception {
         String inputFile = null;
         boolean trace = false;
 
@@ -34,8 +29,7 @@ public class Main
                 inputFile = arg;
         }
 
-        if(inputFile == null)
-        {
+        if (inputFile == null) {
             inputFile = "inputs/input.tasm";
             File file = new File(inputFile);
             FileWriter writer = new FileWriter(inputFile);
@@ -43,8 +37,7 @@ public class Main
             writer.close();
         }
 
-        if(!inputFile.split("\\.")[1].equals("tasm"))
-        {
+        if (!inputFile.split("\\.")[1].equals("tasm")) {
             Flaw.Error("Invalid file extension, File must have the extension tasm.");
         }
 
@@ -56,6 +49,7 @@ public class Main
 
         compiler.compile(inputFile, outputFile);
         tVM.execute(outputFile);
+
 
     }
 }

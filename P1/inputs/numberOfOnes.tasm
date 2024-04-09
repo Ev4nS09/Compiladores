@@ -1,0 +1,22 @@
+galloc 2
+iconst 255
+gstore 0
+iconst 0
+gstore 1
+_Start: gload 0
+iconst 2
+imod
+gload 1
+iadd
+gstore 1
+gload 0
+iconst 2
+idiv
+gstore 0
+gload 0
+iconst 0
+ieq
+jumpf _Start
+gload 1
+iprint
+halt
