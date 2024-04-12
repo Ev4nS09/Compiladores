@@ -13,7 +13,8 @@ public class tVM {
 
     private int instructionPointer;
 
-    public tVM(boolean trace) throws IOException {
+    public tVM(boolean trace)
+    {
         this.byteCodeBuffer = null;
         this.stack = new Stack<>();
         this.trace = trace;
@@ -26,7 +27,8 @@ public class tVM {
 
     }
 
-    public tVM() throws IOException {
+    public tVM()
+    {
         this(false);
     }
 
