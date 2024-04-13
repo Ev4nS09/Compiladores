@@ -3,8 +3,8 @@ import java.util.*;
 
 public class tVM {
 
-    private final Stack<Object> stack;
-    private Object[] globalMemory;
+    private final Stack<Value> stack;
+    private Value[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
     private final LinkedList<Instruction> instructions;
     private final LinkedList<Instruction> constPool;
@@ -20,7 +20,7 @@ public class tVM {
         this.trace = trace;
         this.constPool = new LinkedList<>();
 
-        this.globalMemory = new Object[0];
+        this.globalMemory = new Value[0];
 
         this.instructions = new LinkedList<>();
         this.instructionPointer = 0;
@@ -43,10 +43,10 @@ public class tVM {
 
         this.instructionPointer++;
 
-        OpCode instructionOpCOde = instruction.getInstruction();
-        Integer argument = instruction.hasArgument() ? (Integer) instruction.getArgument() : null;
+        OpCode instructionOpCode = instruction.getInstruction();
+        Integer argument = instruction.hasArgument() ? instruction.getArgument().getInteger() : null;
 
-        switch (instruction.getInstruction())
+        switch (instructionOpCode)
         {
             case iconst -> iconst(argument);
 
@@ -163,7 +163,7 @@ public class tVM {
 
     private void reset()
     {
-        this.globalMemory = new Object[0];
+        this.globalMemory = new Value[0];
         this.stack.clear();
         this.constPool.clear();
 
@@ -172,48 +172,9 @@ public class tVM {
 
     }
 
-    private String verifyObejctTypeString(Object object)
-    {
-        if(!(object instanceof String))
-            Flaw.Error("Invalid type for the instruction " +
-                    this.instructions.get(this.instructionPointer-1) + "The valid type must be a String");
-
-        return (String) object;
-    }
-
-    private Integer verifyObejctTypeInteger(Object object)
-    {
-        if(!(object instanceof Integer))
-            Flaw.Error("Invalid type for the instruction " +
-                    this.instructions.get(this.instructionPointer-1) + "The valid type must be an Integer");
-
-        return (Integer) object;
-    }
-
-    private Double verifyObejctTypeDouble(Object object)
-    {
-        if(!(object instanceof Double))
-            Flaw.Error("Invalid type for the instruction " +
-                    this.instructions.get(this.instructionPointer-1) + "The valid type must be a Double");
-
-        return (Double) object;
-
-    }
-
-
-    private Boolean verifyObejctTypeBoolean(Object object)
-    {
-        if(!(object instanceof Boolean))
-            Flaw.Error("Invalid type for the instruction " +
-                    this.instructions.get(this.instructionPointer-1) + "The valid type must be a Boolean");
-
-        return (Boolean) object;
-    }
-
-
     private void iconst(Integer number)
     {
-        this.stack.push(number);
+        this.stack.push(new Value(number));
     }
 
     private void dconst(Integer constantPoolPosition)
@@ -228,12 +189,12 @@ public class tVM {
 
     private void tconst()
     {
-        this.stack.push(true);
+        this.stack.push(new Value(true));
     }
 
     private void fconst()
     {
-        this.stack.push(false);
+        this.stack.push(new Value(false));
     }
 
     private void jump(Integer line)
@@ -244,7 +205,7 @@ public class tVM {
     private void jumpt(Integer line)
     {
 
-        boolean bool = this.verifyObejctTypeBoolean(this.stack.pop());
+        boolean bool = this.stack.pop().getBoolean();
 
         if(bool)
             this.instructionPointer = line;
@@ -252,7 +213,7 @@ public class tVM {
 
     private void jumpf(Integer line)
     {
-        boolean bool = this.verifyObejctTypeBoolean(this.stack.pop());
+        boolean bool = this.stack.pop().getBoolean();
 
         if(!bool)
             this.instructionPointer = line;
@@ -261,17 +222,16 @@ public class tVM {
     private void galloc(Integer size)
     {
         int newGlobalSize = this.globalMemory.length + size;
-        Object[] newGlobal = new Object[newGlobalSize];
+        Value[] newGlobal = new Value[newGlobalSize];
 
         System.arraycopy(this.globalMemory, 0, newGlobal, 0, this.globalMemory.length);
 
         for(int i = this.globalMemory.length; i < newGlobalSize; i++)
         {
-            newGlobal[i] = "NIL";
+            newGlobal[i] = new Value("NIL");
         }
 
         this.globalMemory = newGlobal;
-
 
     }
 
@@ -293,307 +253,312 @@ public class tVM {
 
     private void iprint()
     {
-        System.out.println(this.verifyObejctTypeInteger(stack.pop()));
+        System.out.println(stack.pop().getInteger());
     }
 
     private void iuminus()
     {
-        stack.push(-this.verifyObejctTypeInteger(this.stack.pop()));
+        stack.push(new Value(-this.stack.pop().getInteger()));
     }
 
     private void iadd()
     {
-        int right = this.verifyObejctTypeInteger(stack.pop());
-        int left = this.verifyObejctTypeInteger(stack.pop());
-        stack.push(left + right);
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
+        stack.push(new Value(left + right));
     }
 
     private void isub()
     {
-        int right = this.verifyObejctTypeInteger(stack.pop());
-        int left = this.verifyObejctTypeInteger(stack.pop());
-        stack.push(left - right);
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
+        stack.push(new Value(left - right));
     }
 
     private void imult()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
-        this.stack.push(left * right);
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
+        this.stack.push(new Value(left * right));
     }
 
     private void idiv()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
 
         if(right == 0)
             Flaw.Error("Divisor mustn't be 0");
 
-        this.stack.push(left / right);
+        this.stack.push(new Value(left / right));
     }
 
     private void imod()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
+        int right = this.stack.pop().getInteger();
+        System.out.println("sda");
+        int left = this.stack.pop().getInteger();
 
         if(right == 0)
             Flaw.Error("Divisor mustn't be 0");
 
-        this.stack.push(left % right);
+        this.stack.push(new Value(left % right));
     }
 
     private void ieq()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
 
         if (left == right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
     }
 
     private void ineq()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
 
         if (left != right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
     }
 
     private void ilt()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
 
         if (left < right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
 
     }
 
     private void ileq()
     {
-        int right = this.verifyObejctTypeInteger(this.stack.pop());
-        int left = this.verifyObejctTypeInteger(this.stack.pop());
+        int right = this.stack.pop().getInteger();
+        int left = this.stack.pop().getInteger();
 
         if (left <= right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
 
 
     }
 
     private void itod()
     {
-        Double real = Double.valueOf(this.verifyObejctTypeInteger(stack.pop()));
-        stack.push(real);
+        Double real = Double.valueOf(stack.pop().getInteger());
+        stack.push(new Value(real));
 
     }
 
     private void itos()
     {
-        int integer = this.verifyObejctTypeInteger(stack.pop());
-        stack.push('"' + String.valueOf(integer) + '"');
+        int integer = stack.pop().getInteger();
+        stack.push(new Value('"' + String.valueOf(integer) + '"'));
     }
 
     private void dprint()
     {
-        System.out.println(this.verifyObejctTypeDouble(this.stack.pop()));
+        System.out.println(this.stack.pop().getDouble());
     }
 
     private void duminus()
     {
-        stack.push(-this.verifyObejctTypeDouble(this.stack.pop()));
+        stack.push(new Value(-this.stack.pop().getDouble()));
     }
 
     private void dadd()
     {
-        Double left = this.verifyObejctTypeDouble(stack.pop());
-        Double right = this.verifyObejctTypeDouble(stack.pop());
-        stack.push(left + right);
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
+
+        stack.push(new Value(left + right));
     }
 
     private void dsub()
     {
-        Double right = this.verifyObejctTypeDouble(stack.pop());
-        Double left = this.verifyObejctTypeDouble(stack.pop());
-        stack.push(left - right);
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
+
+        stack.push(new Value(left - right));
     }
 
     private void dmult()
     {
-        Double right = this.verifyObejctTypeDouble(stack.pop());
-        Double left = this.verifyObejctTypeDouble(stack.pop());
-        stack.push(left * right);
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
+
+        stack.push(new Value(left * right));
     }
 
     private void ddiv()
     {
-        double right = this.verifyObejctTypeDouble(this.stack.pop());
-        double left = this.verifyObejctTypeDouble(this.stack.pop());
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
 
         if(right == 0)
             Flaw.Error("Divisor mustn't be 0");
 
-        this.stack.push(left / right);
-
+        this.stack.push(new Value(left / right));
     }
 
     private void deq()
     {
-        double right = this.verifyObejctTypeDouble(stack.pop());
-        double left = this.verifyObejctTypeDouble(stack.pop());
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
 
         if (left == right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
         ;
     }
 
     private void dneq()
     {
-        double right = this.verifyObejctTypeDouble(stack.pop());
-        double left = this.verifyObejctTypeDouble(stack.pop());
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
+
         if (left != right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
     }
 
     private void dlt()
     {
-        double right = this.verifyObejctTypeDouble(stack.pop());
-        double left = this.verifyObejctTypeDouble(stack.pop());
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
+
         if (left < right)
-            stack.push(true);
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
     }
 
     private void dleq()
     {
-        double right = this.verifyObejctTypeDouble(stack.pop());
-        double left = this.verifyObejctTypeDouble(stack.pop());
+        double left = stack.pop().getDouble();
+        double right = stack.pop().getDouble();
 
         if (left <= right)
-            stack.push(true);
+            this.stack.push(new Value(true));
         else
-            stack.push(false);
+            this.stack.push(new Value(false));
     }
 
     private void dtos()
     {
-        Double real = this.verifyObejctTypeDouble(stack.pop());
-        stack.push('"' + String.valueOf(real) + '"');
+        Double real = this.stack.pop().getDouble();
+        this.stack.push(new Value('"' + String.valueOf(real) + '"'));
     }
 
 
     private void sprint()
     {
-        System.out.println((this.verifyObejctTypeString(this.stack.pop())).replaceAll("\"", ""));
+        System.out.println(this.stack.pop().getString().replaceAll("\"", ""));
     }
 
     private void sadd()
     {
-        String right = this.verifyObejctTypeString(stack.pop());
-        String left = this.verifyObejctTypeString(stack.pop());
+        String right = stack.pop().getString();
+        String left = stack.pop().getString();
 
         left = left.substring(0, left.length()-1);
         right = right.substring(1);
 
 
-        this.stack.push((left.concat(right)));
+        this.stack.push(new Value(left.concat(right)));
     }
 
     private void seq()
     {
-        String right = this.verifyObejctTypeString(this.stack.pop());
-        String left = this.verifyObejctTypeString(this.stack.pop());
+        String right = stack.pop().getString();
+        String left = stack.pop().getString();
 
         if (left.equals(right))
-            this.stack.push(true);
+            this.stack.push(new Value(true));
         else
-            this.stack.push(false);
+            this.stack.push(new Value(false));
     }
 
     private void sneq()
     {
-        String right = this.verifyObejctTypeString(this.stack.pop());
-        String left = this.verifyObejctTypeString(this.stack.pop());
+        String right = stack.pop().getString();
+        String left = stack.pop().getString();
 
         if (!left.equals(right))
-            this.stack.push(true);
+            this.stack.push(new Value(true));
         else
-            this.stack.push(false);
+            this.stack.push(new Value(false));
     }
 
     private void bprint()
     {
-        System.out.println(this.verifyObejctTypeBoolean(this.stack.pop()));
+        System.out.println(this.stack.pop().getBoolean());
     }
 
     private void beq()
     {
-        Boolean right = this.verifyObejctTypeBoolean(stack.pop());
-        Boolean left = this.verifyObejctTypeBoolean(stack.pop());
+        boolean right = this.stack.pop().getBoolean();
+        boolean left = this.stack.pop().getBoolean();
 
-        if (left.equals(right))
-            stack.push(true);
+        if (left == right)
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
     }
 
     private void bneq()
     {
-        Boolean right = this.verifyObejctTypeBoolean(stack.pop());
-        Boolean left = this.verifyObejctTypeBoolean(stack.pop());
+        boolean right = this.stack.pop().getBoolean();
+        boolean left = this.stack.pop().getBoolean();
 
-        if (!left.equals(right))
-            stack.push(true);
+        if (left != right)
+            stack.push(new Value(true));
         else
-            stack.push(false);
+            stack.push(new Value(false));
     }
 
     private void btos()
     {
-        if (this.verifyObejctTypeBoolean(this.stack.pop()))
-            stack.push("\"true\"");
+        if (this.stack.pop().getBoolean())
+            stack.push(new Value("\"true\""));
 
         else
-            stack.push("\"false\"");
+            stack.push(new Value("\"false\""));
 
     }
 
     private void and()
     {
-        boolean right = this.verifyObejctTypeBoolean(this.stack.pop());
-        boolean left = this.verifyObejctTypeBoolean(this.stack.pop());
+        boolean right = this.stack.pop().getBoolean();
+        boolean left = this.stack.pop().getBoolean();
 
-        this.stack.push(left && right);
+        this.stack.push(new Value(left && right));
     }
 
     private void or()
     {
-        boolean right = this.verifyObejctTypeBoolean(this.stack.pop());
-        boolean left = this.verifyObejctTypeBoolean(this.stack.pop());
+        boolean right = this.stack.pop().getBoolean();
+        boolean left = this.stack.pop().getBoolean();
 
-        this.stack.push(left || right);
+        this.stack.push(new Value(left || right));
     }
 
     private void not()
     {
-        boolean bool = this.verifyObejctTypeBoolean(this.stack.pop());
+        boolean bool = this.stack.pop().getBoolean();
 
-        this.stack.push(!bool);
+        this.stack.push(new Value(!bool));
     }
 
     private boolean opCodeHasArgument(OpCode instruction)
@@ -614,12 +579,12 @@ public class tVM {
 
             if(instruction == OpCode.dconst)
             {
-                this.constPool.add(new Instruction(OpCode.dconst, this.byteCodeBuffer.getDouble()));
+                this.constPool.add(new Instruction(OpCode.dconst, new Value(this.byteCodeBuffer.getDouble())));
             }
 
             else if(instruction == OpCode.sconst)
             {
-                this.constPool.add(new Instruction(OpCode.sconst, this.byteCodeBuffer.getString()));
+                this.constPool.add(new Instruction(OpCode.sconst, new Value(this.byteCodeBuffer.getString())));
             }
         }
 
@@ -631,7 +596,7 @@ public class tVM {
 
             if(this.opCodeHasArgument(instruction))
             {
-                this.instructions.add(new Instruction(instruction, this.byteCodeBuffer.getInt()));
+                this.instructions.add(new Instruction(instruction, new Value(this.byteCodeBuffer.getInt())));
             }
             else
             {

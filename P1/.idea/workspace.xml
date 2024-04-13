@@ -6,7 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="fbdc6cc6-9a87-4887-b812-f9a1d2872572" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InstructionTree.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputs/input.tasm" beforeDir="false" afterPath="$PROJECT_DIR$/inputs/input.tasm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inputs/input.tbc" beforeDir="false" afterPath="$PROJECT_DIR$/inputs/input.tbc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Instruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Instruction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tAssembler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tAssembler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tVM.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tVM.java" afterDir="false" />
     </list>
@@ -39,23 +42,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Compile.executor": "Run",
-    "Application.Execute.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.Unnamed.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/afons/Desktop/Compiladores/P1/src",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Compile.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Execute.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/afons/Desktop/Compiladores/P1/src&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\afons\Desktop\Compiladores\P1\src" />
@@ -69,7 +72,6 @@
     <configuration name="Compile" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="TasmCompile" />
       <module name="P1" />
-      <option name="PROGRAM_PARAMETERS" value="inputs/numberOfOnes.tasm" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -99,7 +101,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="jdk-22-openjdk-22-3183f394aec4-75f08976" />
+        <option value="jdk-22-openjdk-22-3183f394aec4-bad0321e" />
       </set>
     </attachedChunks>
   </component>

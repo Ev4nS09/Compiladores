@@ -1,1 +1,5 @@
-iconst 10
+iconst 2
+iconst 2
+iadd
+iprint
+halt

@@ -31,7 +31,7 @@ public class tAssembler
 
         public void exitIconst(TasmParser.IconstContext ctx)
         {
-            this.instructions.add(new Instruction(OpCode.iconst, Integer.parseInt(ctx.INT().getText())));
+            this.instructions.add(new Instruction(OpCode.iconst, new Value(Integer.parseInt(ctx.INT().getText()))));
         }
 
         public void exitDconst(TasmParser.DconstContext ctx)
@@ -40,11 +40,11 @@ public class tAssembler
 
             if(!this.constantPoolCache.containsKey(number))
             {
-                this.constantPool.add(new Instruction(OpCode.dconst, number));
+                this.constantPool.add(new Instruction(OpCode.dconst, new Value(number)));
                 this.constantPoolCache.put(number, this.constantPool.size()-1);
             }
 
-            this.instructions.add(new Instruction(OpCode.dconst, this.constantPoolCache.get(number)));
+            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.constantPoolCache.get(number))));
         }
 
 
@@ -55,11 +55,11 @@ public class tAssembler
 
             if(!this.constantPoolCache.containsKey(string))
             {
-                this.constantPool.add(new Instruction(OpCode.sconst, string));
+                this.constantPool.add(new Instruction(OpCode.sconst, new Value(string)));
                 this.constantPoolCache.put(string, this.constantPool.size()-1);
             }
 
-            this.instructions.add(new Instruction(OpCode.sconst, this.constantPoolCache.get(string)));
+            this.instructions.add(new Instruction(OpCode.sconst, new Value(this.constantPoolCache.get(string))));
         }
 
         public void exitTconst(TasmParser.TconstContext ctx)
@@ -74,7 +74,7 @@ public class tAssembler
 
         public void exitGlobal(TasmParser.GlobalContext ctx)
         {
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()), Integer.parseInt(ctx.INT().getText())));
+            this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()), new Value(Integer.parseInt(ctx.INT().getText()))));
         }
 
         public void exitConditions(TasmParser.ConditionsContext ctx)
@@ -104,7 +104,7 @@ public class tAssembler
             if(line == null)
                 this.tagWaitList.put(ctx.TAG().getText(), this.instructions.size());
 
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), line));
+            this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), new Value(line)));
         }
 
         public void exitTagInstruction(TasmParser.TagInstructionContext ctx)
@@ -121,7 +121,7 @@ public class tAssembler
                 if (this.tagWaitList.containsKey(tag))
                 {
                     int index = this.tagWaitList.get(tag);
-                    Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), this.instructions.size() - 1);
+                    Instruction newInstruction = new Instruction(this.instructions.get(index).getInstruction(), new Value(this.instructions.size() - 1));
                     this.instructions.set(index, newInstruction);
                 }
 
@@ -179,12 +179,12 @@ public class tAssembler
 
             if(instructionOpCode == OpCode.dconst)
             {
-                outputStream.writeDouble((Double) instruction.getArgument());
+                outputStream.writeDouble(instruction.getArgument().getDouble());
             }
 
             else if(instructionOpCode == OpCode.sconst)
             {
-                String argument = (String) instruction.getArgument();
+                String argument = instruction.getArgument().getString();
                 outputStream.writeInt(argument.length());
                 outputStream.writeChars(argument);
             }
@@ -198,7 +198,7 @@ public class tAssembler
 
             if(instruction.hasArgument())
             {
-                outputStream.writeInt((Integer) instruction.getArgument());
+                outputStream.writeInt(instruction.getArgument().getInteger());
             }
 
         }

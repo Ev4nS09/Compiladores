@@ -3,9 +3,9 @@ import java.util.Arrays;
 public class Instruction {
 
     private final OpCode instruction;
-    private Object argument;
+    private Value argument;
 
-    public Instruction(OpCode instruction, Object argument)
+    public Instruction(OpCode instruction, Value argument)
     {
         this.instruction = instruction;
         this.argument = argument;
@@ -22,7 +22,7 @@ public class Instruction {
         return this.instruction;
     }
 
-    public Object getArgument()
+    public Value getArgument()
     {
         return this.argument;
     }
@@ -32,10 +32,10 @@ public class Instruction {
         return this.argument != null;
     }
 
-    public void addArgument(Object argument) throws Exception
+    public void addArgument(Value argument) throws Exception
     {
         if(hasArgument())
-            throw new Exception("Instruction already as an argument.");
+            Flaw.Error("Instruction already as an argument.");
 
         this.argument = argument;
     }
