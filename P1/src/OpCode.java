@@ -6,5 +6,5 @@ public enum OpCode
     bprint, beq, bneq, btos, tconst, fconst,
     galloc, gload, gstore,
     jump, jumpt, jumpf,
-    halt, pool
+    halt
 }

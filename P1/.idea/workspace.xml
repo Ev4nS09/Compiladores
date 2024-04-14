@@ -6,12 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="fbdc6cc6-9a87-4887-b812-f9a1d2872572" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inputs/input.tasm" beforeDir="false" afterPath="$PROJECT_DIR$/inputs/input.tasm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/inputs/input.tbc" beforeDir="false" afterPath="$PROJECT_DIR$/inputs/input.tbc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Instruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Instruction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OpCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/OpCode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tAssembler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tAssembler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tVM.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tVM.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +66,7 @@
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Execute">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Compile" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="TasmCompile" />
       <module name="P1" />

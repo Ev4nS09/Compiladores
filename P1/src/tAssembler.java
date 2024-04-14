@@ -59,6 +59,7 @@ public class tAssembler
                 this.constantPoolCache.put(string, this.constantPool.size()-1);
             }
 
+
             this.instructions.add(new Instruction(OpCode.sconst, new Value(this.constantPoolCache.get(string))));
         }
 
@@ -66,6 +67,7 @@ public class tAssembler
         {
             this.instructions.add(new Instruction(OpCode.tconst));
         }
+
 
         public void exitFconst(TasmParser.FconstContext ctx)
         {
