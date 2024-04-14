@@ -277,6 +277,25 @@ public class SolParser extends Parser {
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
+	public static class MultDivModContext extends ExpressionContext {
+		public Token op;
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
+		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode MULT() { return getToken(SolParser.MULT, 0); }
+		public TerminalNode DIV() { return getToken(SolParser.DIV, 0); }
+		public TerminalNode MOD() { return getToken(SolParser.MOD, 0); }
+		public MultDivModContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SolVisitor ) return ((SolVisitor<? extends T>)visitor).visitMultDivMod(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class AndContext extends ExpressionContext {
 		public Token op;
 		public List<ExpressionContext> expression() {
@@ -368,25 +387,6 @@ public class SolParser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof SolVisitor ) return ((SolVisitor<? extends T>)visitor).visitInt(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	@SuppressWarnings("CheckReturnValue")
-	public static class MultDivContext extends ExpressionContext {
-		public Token op;
-		public List<ExpressionContext> expression() {
-			return getRuleContexts(ExpressionContext.class);
-		}
-		public ExpressionContext expression(int i) {
-			return getRuleContext(ExpressionContext.class,i);
-		}
-		public TerminalNode MULT() { return getToken(SolParser.MULT, 0); }
-		public TerminalNode DIV() { return getToken(SolParser.DIV, 0); }
-		public TerminalNode MOD() { return getToken(SolParser.MOD, 0); }
-		public MultDivContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SolVisitor ) return ((SolVisitor<? extends T>)visitor).visitMultDiv(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -498,15 +498,15 @@ public class SolParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 					case 1:
 						{
-						_localctx = new MultDivContext(new ExpressionContext(_parentctx, _parentState));
+						_localctx = new MultDivModContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(30);
 						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
 						setState(31);
-						((MultDivContext)_localctx).op = _input.LT(1);
+						((MultDivModContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 448L) != 0)) ) {
-							((MultDivContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((MultDivModContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;

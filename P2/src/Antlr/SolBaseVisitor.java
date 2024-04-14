@@ -60,6 +60,13 @@ public class SolBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements So
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitMultDivMod(SolParser.MultDivModContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitAnd(SolParser.AndContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -103,11 +110,4 @@ public class SolBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements So
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitInt(SolParser.IntContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitMultDiv(SolParser.MultDivContext ctx) { return visitChildren(ctx); }
 }

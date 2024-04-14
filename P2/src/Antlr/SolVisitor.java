@@ -51,6 +51,13 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAddSub(SolParser.AddSubContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code MultDivMod}
+	 * labeled alternative in {@link SolParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultDivMod(SolParser.MultDivModContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code And}
 	 * labeled alternative in {@link SolParser#expression}.
 	 * @param ctx the parse tree
@@ -99,11 +106,4 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitInt(SolParser.IntContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code MultDiv}
-	 * labeled alternative in {@link SolParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultDiv(SolParser.MultDivContext ctx);
 }

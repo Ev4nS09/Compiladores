@@ -25,6 +25,47 @@ public class tAssembler
             this.constantPoolCache = new HashMap<>();
         }
 
+        private Class<?> mult(Class<?> left, Class<?> right)
+        {
+            if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
+            {
+                Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
+            }
+
+            Class<?> result;
+
+            if(left == int.class && right == int.class)
+            {
+                this.instructions.add(new Instruction(OpCode.imult));
+                result = int.class;
+            }
+            else if(left == int.class)
+            {
+            }
+
+            return null;
+        }
+
+        @Override
+        public Class<?> visitMultDivMod(SolParser.MultDivModContext ctx)
+        {
+            Class<?> result;
+
+            if(ctx.op.getText().equals('*'))
+            {
+
+            }
+            else if(ctx.op.getText().equals('/'))
+            {
+
+            }
+            else
+            {
+
+            }
+
+            return null;
+        }
 
         private Class<?> unaryMinus(Class<?> argumentClass)
         {
@@ -99,7 +140,7 @@ public class tAssembler
             Class<?> left = visit(ctx.expression(0));
             Class<?> right = visit(ctx.expression(1));
 
-            if(left == boolean.class || right == boolean.class)
+            if(left != boolean.class || right != boolean.class)
             {
                 Flaw.Error("The 'or' operation only accepts two booleans");
             }
@@ -122,7 +163,9 @@ public class tAssembler
         public Class<?> visitDouble(SolParser.DoubleContext ctx)
         {
             double real = Double.parseDouble(ctx.DOUBLE().getText());
-            this.instructions.add(new Instruction(OpCode.dconst, new Value(real)));
+
+            this.constantPool.add(new Instruction(OpCode.dconst, new Value(real)));
+            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.constantPool.size()-1)));
 
             return double.class;
         }
@@ -131,7 +174,9 @@ public class tAssembler
         public Class<?> visitString(SolParser.StringContext ctx)
         {
             String string = ctx.STRING().getText();
-            this.instructions.add(new Instruction(OpCode.sconst, new Value(string)));
+
+            this.constantPool.add(new Instruction(OpCode.sconst, new Value(string)));
+            this.instructions.add(new Instruction(OpCode.sconst, new Value(this.constantPool.size()-1)));
 
             return String.class;
         }
@@ -145,7 +190,7 @@ public class tAssembler
                 this.instructions.add(new Instruction(OpCode.tconst, new Value(true)));
 
             else
-                this.instructions.add(new Instruction(OpCode.tconst, new Value(false)));
+                this.instructions.add(new Instruction(OpCode.fconst, new Value(false)));
 
             return boolean.class;
         }
