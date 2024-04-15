@@ -25,25 +25,160 @@ public class tAssembler
             this.constantPoolCache = new HashMap<>();
         }
 
-        private Class<?> mult(Class<?> left, Class<?> right)
+        private boolean isNumber(Class<?> left, Class<?> right)
+        {
+            return (left == double.class || left == int.class) && (right == double.class || right == int.class);
+        }
+
+        private Class<?> doubleInt(OpCode integerInstruction, OpCode doubleInstruction, Class<?> left, Class<?> right)
+        {
+
+            Class<?> result;
+
+            if(left == int.class && right == int.class)
+            {
+                this.instructions.add(new Instruction(integerInstruction));
+                result = int.class;
+            }
+            else if(left == int.class)
+            {
+                this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.itod));
+                this.instructions.add(new Instruction(doubleInstruction));
+                result = double.class;
+            }
+            else if(right == int.class)
+            {
+                this.instructions.add(new Instruction(OpCode.itod));
+                this.instructions.add(new Instruction(doubleInstruction));
+                result = double.class;
+            }
+            else
+            {
+                this.instructions.add(new Instruction(doubleInstruction));
+                result = double.class;
+            }
+
+            return result;
+        }
+
+        private Class<?> stringAdd(Class<?> left, Class<?> right)
+        {
+            if(left == String.class)
+            {
+                if(right == int.class)
+                {
+                    this.instructions.add(new Instruction(OpCode.itos));
+                }
+                else if(right == double.class)
+                {
+                    this.instructions.add(new Instruction(OpCode.dtos));
+                }
+                else if(right == boolean.class)
+                {
+                    this.instructions.add(new Instruction(OpCode.btos));
+                }
+            }
+            else
+            {
+                if(left == int.class)
+                {
+                    this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.itos));
+                }
+                else if(left == double.class)
+                {
+                    this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.dtos));
+                }
+                else if(left == boolean.class)
+                {
+                    this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.btos));
+                }
+            }
+
+            this.instructions.add(new Instruction(OpCode.sadd));
+
+            return String.class;
+        }
+
+        private Class<?> add(Class<?> left, Class<?> right)
+        {
+            if((left != String.class && right != String.class) && (left == boolean.class || right == boolean.class))
+            {
+                Flaw.Error("Cannot add a " + left.getName() + "with a " + right.getName());
+            }
+
+            Class<?> result;
+
+            if(isNumber(left, right))
+            {
+                result = doubleInt(OpCode.iadd, OpCode.dadd, left, right);
+            }
+            else
+            {
+                result = stringAdd(left, right);
+            }
+
+            return result;
+
+        }
+
+        private Class<?> sub(Class<?> left, Class<?> right)
+        {
+            if(!isNumber(left, right))
+            {
+                Flaw.Error("Cannot sub a " + left.getName() + "with a " + right.getName());
+            }
+
+            return doubleInt(OpCode.isub, OpCode.dsub, left, right);
+        }
+
+        @Override
+        public Class<?> visitAddSub(SolParser.AddSubContext ctx)
+        {
+            Class<?> result;
+
+            Class<?> left = visit(ctx.expression(0));
+            Class<?> right = visit(ctx.expression(1));
+
+            if(ctx.op.getText().equals("+"))
+            {
+                result = add(left, right);
+            }
+            else
+            {
+                result = sub(left, right);
+            }
+
+            return result;
+        }
+
+        public Class<?> mult(Class<?> left, Class<?> right)
         {
             if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
             {
                 Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
             }
 
-            Class<?> result;
+            return doubleInt(OpCode.imult, OpCode.dmult, left, right);
+        }
 
-            if(left == int.class && right == int.class)
+        public Class<?> div(Class<?> left, Class<?> right)
+        {
+            if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
             {
-                this.instructions.add(new Instruction(OpCode.imult));
-                result = int.class;
-            }
-            else if(left == int.class)
-            {
+                Flaw.Error("Cannot divide a " + left.getName() + "with a " + right.getName());
             }
 
-            return null;
+            return doubleInt(OpCode.idiv, OpCode.ddiv, left, right);
+        }
+
+        public Class<?> mod(Class<?> left, Class<?> right)
+        {
+            if(left != int.class || right != int.class)
+            {
+                Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
+            }
+
+            return doubleInt(OpCode.imod, null, left, right);
         }
 
         @Override
@@ -51,24 +186,33 @@ public class tAssembler
         {
             Class<?> result;
 
-            if(ctx.op.getText().equals('*'))
-            {
+            Class<?> left = visit(ctx.expression(0));
+            Class<?> right = visit(ctx.expression(1));
 
+            if(ctx.op.getText().equals("*"))
+            {
+                result = mult(left, right);
             }
-            else if(ctx.op.getText().equals('/'))
+            else if(ctx.op.getText().equals("/"))
             {
-
+                result = div(left, right);
             }
             else
             {
-
+                result = mod(left, right);
             }
 
-            return null;
+            System.out.println(result);
+            return result;
         }
 
         private Class<?> unaryMinus(Class<?> argumentClass)
         {
+            if(argumentClass != int.class && argumentClass != double.class)
+            {
+                Flaw.Error("Cannot apply the unary operation '-' to " + argumentClass.getName());
+            }
+
             Class<?> result;
 
             if(argumentClass == int.class)
@@ -76,15 +220,10 @@ public class tAssembler
                 this.instructions.add(new Instruction(OpCode.isub));
                 result = int.class;
             }
-            else if(argumentClass == double.class)
+            else
             {
                 this.instructions.add(new Instruction(OpCode.dsub));
                 result = double.class;
-            }
-            else
-            {
-                Flaw.Error("Cannot apply the unary operation '-' to " + argumentClass.getName());
-                result = null;
             }
 
             return result;
@@ -151,6 +290,78 @@ public class tAssembler
         }
 
         @Override
+        public Class<?> visitRelational(SolParser.RelationalContext ctx)
+        {
+            Class<?> left = visit(ctx.expression(0));
+            Class<?> right = visit(ctx.expression(1));
+
+            if(!isNumber(left, right))
+            {
+                Flaw.Error("Cannot compare a " + left.getName() + "with a " + right.getName());
+            }
+
+            if(ctx.op.getText().equals("<"))
+            {
+                doubleInt(OpCode.ileq, OpCode.dleq, left, right);
+                this.instructions.add(new Instruction(OpCode.not));
+
+            }
+            else if(ctx.op.getText().equals("<="))
+            {
+                doubleInt(OpCode.ilt, OpCode.dlt, left, right);
+                this.instructions.add(new Instruction(OpCode.not));
+            }
+            else if(ctx.op.getText().equals(">"))
+            {
+                doubleInt(OpCode.ilt, OpCode.dlt, left, right);
+            }
+            else
+            {
+                doubleInt(OpCode.ileq, OpCode.dleq, left, right);
+            }
+
+            return boolean.class;
+        }
+
+        @Override
+        public Class<?> visitIguality(SolParser.IgualityContext ctx)
+        {
+            Class<?> left = visit(ctx.expression(0));
+            Class<?> right = visit(ctx.expression(1));
+
+            if(!((left == boolean.class && right == boolean.class) || (left == String.class && right == String.class)))
+            {
+                Flaw.Error("Cannot compare a " + left.getName() + "with a " + right.getName());
+            }
+
+            if(left == boolean.class)
+            {
+                OpCode opCode = ctx.op.getText().equals("==") ? OpCode.beq : OpCode.bneq;
+                this.instructions.add(new Instruction(opCode));
+            }
+            else if(left == String.class)
+            {
+                OpCode opCode = ctx.op.getText().equals("==") ? OpCode.seq : OpCode.sneq;
+                this.instructions.add(new Instruction(opCode));
+            }
+            else
+            {
+               if(ctx.op.getText().equals("=="))
+                   doubleInt(OpCode.ieq, OpCode.deq, left, right);
+               else
+                   doubleInt(OpCode.ineq, OpCode.dneq, left, right);
+            }
+
+            return boolean.class;
+        }
+
+        @Override
+        public Class<?> visitLRParen(SolParser.LRParenContext ctx)
+        {
+            return visit(ctx.expression());
+        }
+
+        @Override
         public Class<?> visitInt(SolParser.IntContext ctx)
         {
             int integer = Integer.parseInt(ctx.INT().getText());
@@ -164,8 +375,14 @@ public class tAssembler
         {
             double real = Double.parseDouble(ctx.DOUBLE().getText());
 
+            if(!this.constantPoolCache.containsKey(real))
+            {
+                this.constantPoolCache.put(real, this.constantPool.size());
+            }
+
+
             this.constantPool.add(new Instruction(OpCode.dconst, new Value(real)));
-            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.constantPool.size()-1)));
+            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.constantPoolCache.get(real))));
 
             return double.class;
         }
@@ -175,8 +392,13 @@ public class tAssembler
         {
             String string = ctx.STRING().getText();
 
+            if(!this.constantPoolCache.containsKey(string))
+            {
+                this.constantPoolCache.put(string, this.constantPool.size());
+            }
+
             this.constantPool.add(new Instruction(OpCode.sconst, new Value(string)));
-            this.instructions.add(new Instruction(OpCode.sconst, new Value(this.constantPool.size()-1)));
+            this.instructions.add(new Instruction(OpCode.sconst, new Value(this.constantPoolCache.get(string))));
 
             return String.class;
         }
@@ -187,12 +409,29 @@ public class tAssembler
             boolean bool = Boolean.parseBoolean(ctx.BOOL().getText());
 
             if(bool)
-                this.instructions.add(new Instruction(OpCode.tconst, new Value(true)));
+                this.instructions.add(new Instruction(OpCode.tconst));
 
             else
-                this.instructions.add(new Instruction(OpCode.fconst, new Value(false)));
+                this.instructions.add(new Instruction(OpCode.fconst));
 
             return boolean.class;
+        }
+
+        @Override
+        public Class<?> visitInstruction(SolParser.InstructionContext ctx)
+        {
+            Class<?> type = visit(ctx.expression());
+
+            if(type == int.class)
+                this.instructions.add(new Instruction(OpCode.iprint));
+            else if(type == double.class)
+                this.instructions.add(new Instruction(OpCode.dprint));
+            else if(type == String.class)
+                this.instructions.add(new Instruction(OpCode.sprint));
+            else
+                this.instructions.add(new Instruction(OpCode.bprint));
+
+            return type;
         }
 
         @Override
@@ -269,6 +508,8 @@ public class tAssembler
 
         Visitor visitor = new Visitor();
         visitor.visit(tree);
+
+        System.out.println(visitor.instructions);
 
         this.generateByteCode(visitor.instructions, visitor.constantPool, outputFile);
 

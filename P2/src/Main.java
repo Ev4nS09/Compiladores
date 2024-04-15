@@ -4,8 +4,10 @@ public class Main {
 
     public void main(String[] args) throws Exception
     {
-        String a = " dfsfef";
-        System.out.println(a);
+        tAssembler compiler = new tAssembler();
+        compiler.compile("inputs/multTest.sol", "inputs/multTest.tbc");
 
+        tVM vm = new tVM();
+        vm.execute("inputs/multTest.tbc");
     }
 }

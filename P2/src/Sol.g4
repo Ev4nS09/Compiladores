@@ -37,7 +37,7 @@ BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' ('\\"' | .)*? '"';
-WS : [ \n\t]+ -> skip ;
+WS : [ \n\t\r]+ -> skip ;
 
 SL_COMMENT : '//' .*? (EOF|'\n') -> skip; // single-line comment
 ML_COMMENT : '/*' .*? '*/' -> skip ; // multi-line comment
