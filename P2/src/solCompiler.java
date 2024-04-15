@@ -3,12 +3,11 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.*;
 
 import Antlr.*;
 
-public class tAssembler
+public class solCompiler
 {
     private static class Visitor extends SolBaseVisitor<Class<?>>
     {
@@ -204,7 +203,6 @@ public class tAssembler
                 result = mod(index, left, right);
             }
 
-            System.out.println(result);
             return result;
         }
 
@@ -219,12 +217,12 @@ public class tAssembler
 
             if(argumentClass == int.class)
             {
-                this.instructions.add(new Instruction(OpCode.isub));
+                this.instructions.add(new Instruction(OpCode.iuminus));
                 result = int.class;
             }
             else
             {
-                this.instructions.add(new Instruction(OpCode.dsub));
+                this.instructions.add(new Instruction(OpCode.duminus));
                 result = double.class;
             }
 
@@ -305,25 +303,57 @@ public class tAssembler
 
             if(ctx.op.getText().equals("<"))
             {
-                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
-                this.instructions.add(new Instruction(OpCode.not));
+                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
 
             }
             else if(ctx.op.getText().equals("<="))
             {
-                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
-                this.instructions.add(new Instruction(OpCode.not));
+                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
             }
             else if(ctx.op.getText().equals(">"))
             {
-                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
+                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
+                this.instructions.add(new Instruction(OpCode.not));
             }
             else
             {
-                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
+                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
+                this.instructions.add(new Instruction(OpCode.not));
             }
 
             return boolean.class;
+        }
+
+        private void equal(int index, Class<?> left, Class<?> right)
+        {
+            if(left == boolean.class)
+            {
+                this.instructions.add(new Instruction(OpCode.beq));
+            }
+            else if(left == String.class)
+            {
+                this.instructions.add(new Instruction(OpCode.seq));
+            }
+            else
+            {
+                doubleInt(index, OpCode.ieq, OpCode.deq, left, right);
+            }
+        }
+
+        private void notEqual(int index, Class<?> left, Class<?> right)
+        {
+            if(left == boolean.class)
+            {
+                this.instructions.add(new Instruction(OpCode.bneq));
+            }
+            else if(left == String.class)
+            {
+                this.instructions.add(new Instruction(OpCode.sneq));
+            }
+            else
+            {
+                doubleInt(index, OpCode.ineq, OpCode.dneq, left, right);
+            }
         }
 
         @Override
@@ -333,27 +363,18 @@ public class tAssembler
             int index = this.instructions.size();
             Class<?> right = visit(ctx.expression(1));
 
-            if(!((left == boolean.class && right == boolean.class) || (left == String.class && right == String.class)))
+            if(!isNumber(left, right) && !(left == boolean.class && right == boolean.class || left == String.class && right == String.class))
             {
-                Flaw.Error("Cannot compare a " + left.getName() + "with a " + right.getName());
+                Flaw.Error("Cannot compare a " + left.getName() + " with a " + right.getName());
             }
 
-            if(left == boolean.class)
+            if(ctx.op.getText().equals("=="))
             {
-                OpCode opCode = ctx.op.getText().equals("==") ? OpCode.beq : OpCode.bneq;
-                this.instructions.add(new Instruction(opCode));
-            }
-            else if(left == String.class)
-            {
-                OpCode opCode = ctx.op.getText().equals("==") ? OpCode.seq : OpCode.sneq;
-                this.instructions.add(new Instruction(opCode));
+                equal(index, left, right);
             }
             else
             {
-               if(ctx.op.getText().equals("=="))
-                   doubleInt(index, OpCode.ieq, OpCode.deq, left, right);
-               else
-                   doubleInt(index, OpCode.ineq, OpCode.dneq, left, right);
+                notEqual(index, left, right);
             }
 
             return boolean.class;
@@ -428,11 +449,14 @@ public class tAssembler
 
             if(type == int.class)
                 this.instructions.add(new Instruction(OpCode.iprint));
+
             else if(type == double.class)
                 this.instructions.add(new Instruction(OpCode.dprint));
+
             else if(type == String.class)
                 this.instructions.add(new Instruction(OpCode.sprint));
-            else
+
+            else if(type == boolean.class)
                 this.instructions.add(new Instruction(OpCode.bprint));
 
             return type;

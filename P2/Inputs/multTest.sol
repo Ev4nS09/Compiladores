@@ -1,1 +1,1 @@
-print true + " Mekie";
+print (2 * 3.0) == (3 * 2);

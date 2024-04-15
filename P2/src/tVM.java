@@ -296,7 +296,6 @@ public class tVM {
     private void imod()
     {
         int right = this.stack.pop().getInteger();
-        System.out.println("sda");
         int left = this.stack.pop().getInteger();
 
         if(right == 0)
@@ -377,33 +376,32 @@ public class tVM {
 
     private void dadd()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         stack.push(new Value(left + right));
     }
 
     private void dsub()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         stack.push(new Value(left - right));
     }
 
     private void dmult()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         stack.push(new Value(left * right));
     }
 
     private void ddiv()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
-
+        double left = stack.pop().getDouble();
         if(right == 0)
             Flaw.Error("Divisor mustn't be 0");
 
@@ -412,8 +410,8 @@ public class tVM {
 
     private void deq()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         if (left == right)
             stack.push(new Value(true));
@@ -424,8 +422,8 @@ public class tVM {
 
     private void dneq()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         if (left != right)
             stack.push(new Value(true));
@@ -435,8 +433,8 @@ public class tVM {
 
     private void dlt()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         if (left < right)
             stack.push(new Value(true));
@@ -446,8 +444,8 @@ public class tVM {
 
     private void dleq()
     {
-        double left = stack.pop().getDouble();
         double right = stack.pop().getDouble();
+        double left = stack.pop().getDouble();
 
         if (left <= right)
             this.stack.push(new Value(true));
