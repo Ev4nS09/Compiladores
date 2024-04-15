@@ -30,7 +30,7 @@ public class tAssembler
             return (left == double.class || left == int.class) && (right == double.class || right == int.class);
         }
 
-        private Class<?> doubleInt(OpCode integerInstruction, OpCode doubleInstruction, Class<?> left, Class<?> right)
+        private Class<?> doubleInt(int index, OpCode integerInstruction, OpCode doubleInstruction, Class<?> left, Class<?> right)
         {
 
             Class<?> result;
@@ -42,7 +42,7 @@ public class tAssembler
             }
             else if(left == int.class)
             {
-                this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.itod));
+                this.instructions.add(index, new Instruction(OpCode.itod));
                 this.instructions.add(new Instruction(doubleInstruction));
                 result = double.class;
             }
@@ -61,7 +61,7 @@ public class tAssembler
             return result;
         }
 
-        private Class<?> stringAdd(Class<?> left, Class<?> right)
+        private Class<?> stringAdd(int index, Class<?> left, Class<?> right)
         {
             if(left == String.class)
             {
@@ -82,15 +82,15 @@ public class tAssembler
             {
                 if(left == int.class)
                 {
-                    this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.itos));
+                    this.instructions.add(index, new Instruction(OpCode.itos));
                 }
                 else if(left == double.class)
                 {
-                    this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.dtos));
+                    this.instructions.add(index, new Instruction(OpCode.dtos));
                 }
                 else if(left == boolean.class)
                 {
-                    this.instructions.add(this.instructions.size()-1, new Instruction(OpCode.btos));
+                    this.instructions.add(index, new Instruction(OpCode.btos));
                 }
             }
 
@@ -99,7 +99,7 @@ public class tAssembler
             return String.class;
         }
 
-        private Class<?> add(Class<?> left, Class<?> right)
+        private Class<?> add(int index, Class<?> left, Class<?> right)
         {
             if((left != String.class && right != String.class) && (left == boolean.class || right == boolean.class))
             {
@@ -110,25 +110,25 @@ public class tAssembler
 
             if(isNumber(left, right))
             {
-                result = doubleInt(OpCode.iadd, OpCode.dadd, left, right);
+                result = doubleInt(index, OpCode.iadd, OpCode.dadd, left, right);
             }
             else
             {
-                result = stringAdd(left, right);
+                result = stringAdd(index, left, right);
             }
 
             return result;
 
         }
 
-        private Class<?> sub(Class<?> left, Class<?> right)
+        private Class<?> sub(int index, Class<?> left, Class<?> right)
         {
             if(!isNumber(left, right))
             {
                 Flaw.Error("Cannot sub a " + left.getName() + "with a " + right.getName());
             }
 
-            return doubleInt(OpCode.isub, OpCode.dsub, left, right);
+            return doubleInt(index, OpCode.isub, OpCode.dsub, left, right);
         }
 
         @Override
@@ -137,48 +137,49 @@ public class tAssembler
             Class<?> result;
 
             Class<?> left = visit(ctx.expression(0));
+            int index = this.instructions.size();
             Class<?> right = visit(ctx.expression(1));
 
             if(ctx.op.getText().equals("+"))
             {
-                result = add(left, right);
+                result = add(index, left, right);
             }
             else
             {
-                result = sub(left, right);
+                result = sub(index, left, right);
             }
 
             return result;
         }
 
-        public Class<?> mult(Class<?> left, Class<?> right)
+        public Class<?> mult(int index, Class<?> left, Class<?> right)
         {
             if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
             {
                 Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
             }
 
-            return doubleInt(OpCode.imult, OpCode.dmult, left, right);
+            return doubleInt(index, OpCode.imult, OpCode.dmult, left, right);
         }
 
-        public Class<?> div(Class<?> left, Class<?> right)
+        public Class<?> div(int index, Class<?> left, Class<?> right)
         {
             if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
             {
                 Flaw.Error("Cannot divide a " + left.getName() + "with a " + right.getName());
             }
 
-            return doubleInt(OpCode.idiv, OpCode.ddiv, left, right);
+            return doubleInt(index, OpCode.idiv, OpCode.ddiv, left, right);
         }
 
-        public Class<?> mod(Class<?> left, Class<?> right)
+        public Class<?> mod(int index, Class<?> left, Class<?> right)
         {
             if(left != int.class || right != int.class)
             {
                 Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
             }
 
-            return doubleInt(OpCode.imod, null, left, right);
+            return doubleInt(index, OpCode.imod, null, left, right);
         }
 
         @Override
@@ -187,19 +188,20 @@ public class tAssembler
             Class<?> result;
 
             Class<?> left = visit(ctx.expression(0));
+            int index = this.instructions.size();
             Class<?> right = visit(ctx.expression(1));
 
             if(ctx.op.getText().equals("*"))
             {
-                result = mult(left, right);
+                result = mult(index, left, right);
             }
             else if(ctx.op.getText().equals("/"))
             {
-                result = div(left, right);
+                result = div(index, left, right);
             }
             else
             {
-                result = mod(left, right);
+                result = mod(index, left, right);
             }
 
             System.out.println(result);
@@ -293,6 +295,7 @@ public class tAssembler
         public Class<?> visitRelational(SolParser.RelationalContext ctx)
         {
             Class<?> left = visit(ctx.expression(0));
+            int index = this.instructions.size();
             Class<?> right = visit(ctx.expression(1));
 
             if(!isNumber(left, right))
@@ -302,22 +305,22 @@ public class tAssembler
 
             if(ctx.op.getText().equals("<"))
             {
-                doubleInt(OpCode.ileq, OpCode.dleq, left, right);
+                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
                 this.instructions.add(new Instruction(OpCode.not));
 
             }
             else if(ctx.op.getText().equals("<="))
             {
-                doubleInt(OpCode.ilt, OpCode.dlt, left, right);
+                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
                 this.instructions.add(new Instruction(OpCode.not));
             }
             else if(ctx.op.getText().equals(">"))
             {
-                doubleInt(OpCode.ilt, OpCode.dlt, left, right);
+                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
             }
             else
             {
-                doubleInt(OpCode.ileq, OpCode.dleq, left, right);
+                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
             }
 
             return boolean.class;
@@ -327,6 +330,7 @@ public class tAssembler
         public Class<?> visitIguality(SolParser.IgualityContext ctx)
         {
             Class<?> left = visit(ctx.expression(0));
+            int index = this.instructions.size();
             Class<?> right = visit(ctx.expression(1));
 
             if(!((left == boolean.class && right == boolean.class) || (left == String.class && right == String.class)))
@@ -347,9 +351,9 @@ public class tAssembler
             else
             {
                if(ctx.op.getText().equals("=="))
-                   doubleInt(OpCode.ieq, OpCode.deq, left, right);
+                   doubleInt(index, OpCode.ieq, OpCode.deq, left, right);
                else
-                   doubleInt(OpCode.ineq, OpCode.dneq, left, right);
+                   doubleInt(index, OpCode.ineq, OpCode.dneq, left, right);
             }
 
             return boolean.class;

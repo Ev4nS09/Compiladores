@@ -4,6 +4,7 @@ public class Main {
 
     public void main(String[] args) throws Exception
     {
+        System.out.println("ola" + true);
         tAssembler compiler = new tAssembler();
         compiler.compile("inputs/multTest.sol", "inputs/multTest.tbc");
 
