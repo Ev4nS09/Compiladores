@@ -38,6 +38,28 @@ public class Instruction {
         this.argument = argument;
     }
 
+    public boolean equals(Object that)
+    {
+        if(this == that)
+            return true;
+        if(that == null)
+            return false;
+        if(this.getClass() != that.getClass())
+            return false;
+
+        Instruction thatInstruction = (Instruction) that;
+
+        if(this.getInstruction() != thatInstruction.getInstruction())
+            return false;
+
+
+        if(this.hasArgument() && thatInstruction.hasArgument())
+            return this.argument == thatInstruction.getArgument();
+        else
+            return true;
+
+    }
+
     @Override
     public String toString()
     {

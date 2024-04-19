@@ -1,0 +1,1 @@
+print (((true or false) + "") == "true") + " " + ((23 * 4) <= (--22222)) + "TEste do alex";

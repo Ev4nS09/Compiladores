@@ -34,7 +34,7 @@ public class SolCompile
 
         if (inputFile == null)
         {
-            inputFile = "inputs/input.tasm";
+            inputFile = "inputs/input.sol";
             File file = new File(inputFile);
             FileWriter writer = new FileWriter(inputFile);
             writer.write(readInput());

@@ -11,17 +11,13 @@ public class solCompiler
 {
     private static class Visitor extends SolBaseVisitor<Class<?>>
     {
-
         protected final LinkedList<Instruction> instructions;
-        protected final LinkedList<Instruction> constantPool;
-
-        protected final HashMap<Object, Integer> constantPoolCache;
+        protected final ConstantPool pool;
 
         public Visitor()
         {
             this.instructions = new LinkedList<>();
-            this.constantPool = new LinkedList<>();
-            this.constantPoolCache = new HashMap<>();
+            this.pool = new ConstantPool();
         }
 
         private boolean isNumber(Class<?> left, Class<?> right)
@@ -153,9 +149,9 @@ public class solCompiler
 
         public Class<?> mult(int index, Class<?> left, Class<?> right)
         {
-            if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
+            if(!isNumber(left, right))
             {
-                Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
+                Flaw.Error("Cannot multiply a " + left.getName() + " with a " + right.getName());
             }
 
             return doubleInt(index, OpCode.imult, OpCode.dmult, left, right);
@@ -163,7 +159,7 @@ public class solCompiler
 
         public Class<?> div(int index, Class<?> left, Class<?> right)
         {
-            if(!(left == int.class || left == double.class) && !(right == int.class || right == double.class))
+            if(!isNumber(left, right))
             {
                 Flaw.Error("Cannot divide a " + left.getName() + "with a " + right.getName());
             }
@@ -398,16 +394,10 @@ public class solCompiler
         @Override
         public Class<?> visitDouble(SolParser.DoubleContext ctx)
         {
-            double real = Double.parseDouble(ctx.DOUBLE().getText());
+            Value real = new Value(Double.parseDouble(ctx.DOUBLE().getText()));
 
-            if(!this.constantPoolCache.containsKey(real))
-            {
-                this.constantPoolCache.put(real, this.constantPool.size());
-            }
-
-
-            this.constantPool.add(new Instruction(OpCode.dconst, new Value(real)));
-            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.constantPoolCache.get(real))));
+            this.pool.add(real);
+            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.pool.getPoolPosition(real))));
 
             return double.class;
         }
@@ -415,15 +405,10 @@ public class solCompiler
         @Override
         public Class<?> visitString(SolParser.StringContext ctx)
         {
-            String string = ctx.STRING().getText();
+            Value string = new Value(ctx.STRING().getText());
 
-            if(!this.constantPoolCache.containsKey(string))
-            {
-                this.constantPoolCache.put(string, this.constantPool.size());
-            }
-
-            this.constantPool.add(new Instruction(OpCode.sconst, new Value(string)));
-            this.instructions.add(new Instruction(OpCode.sconst, new Value(this.constantPoolCache.get(string))));
+            this.pool.add(string);
+            this.instructions.add(new Instruction(OpCode.dconst, new Value(this.pool.getPoolPosition(string))));
 
             return String.class;
         }
@@ -482,26 +467,25 @@ public class solCompiler
         return new SolParser(tokens);
     }
 
-    private void generateByteCode(LinkedList<Instruction> instructions, LinkedList<Instruction> constantPool, String outputFile) throws Exception
+    private void generateByteCode(LinkedList<Instruction> instructions, LinkedList<Value> constantPool, String outputFile) throws Exception
     {
         DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(outputFile));
 
         outputStream.writeInt(constantPool.size());
 
         //Generates Bytes for constant pool
-        for(Instruction instruction : constantPool)
+        for(Value value : constantPool)
         {
-            OpCode instructionOpCode = instruction.getInstruction();
-            outputStream.writeByte(instructionOpCode.ordinal());
-
-            if(instructionOpCode == OpCode.dconst)
+            if(value.getValueType() == Double.class)
             {
-                outputStream.writeDouble(instruction.getArgument().getDouble());
+                outputStream.writeByte(OpCode.dconst.ordinal());
+                outputStream.writeDouble(value.getDouble());
             }
 
-            else if(instructionOpCode == OpCode.sconst)
+            else if(value.getValueType() == String.class)
             {
-                String argument = instruction.getArgument().getString();
+                outputStream.writeByte(OpCode.sconst.ordinal());
+                String argument = value.getString();
                 outputStream.writeInt(argument.length());
                 outputStream.writeChars(argument);
             }
@@ -510,8 +494,7 @@ public class solCompiler
         //Generates bytes for instructions
         for (Instruction instruction : instructions)
         {
-            OpCode instructionOpCode = instruction.getInstruction();
-            outputStream.writeByte(instructionOpCode.ordinal());
+            outputStream.writeByte(instruction.getInstruction().ordinal());
 
             if(instruction.hasArgument())
             {
@@ -539,7 +522,7 @@ public class solCompiler
 
         System.out.println(visitor.instructions);
 
-        this.generateByteCode(visitor.instructions, visitor.constantPool, outputFile);
+        this.generateByteCode(visitor.instructions, visitor.pool.getValueList(), outputFile);
 
     }
 }

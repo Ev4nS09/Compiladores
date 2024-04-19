@@ -1,11 +1,26 @@
+import java.util.Arrays;
+
 public class Value
 {
-    Class<?>[] VALID_TYPES = {Integer.class, Double.class, String.class, Boolean.class};
-    Object value;
+    private Object value;
+    private Class<?> type;
 
     public Value(Object value)
     {
-        this.value = value;
+        Class<?>[] VALID_TYPES = {Integer.class, Double.class, String.class, Boolean.class};
+
+        for(Class<?> type : VALID_TYPES)
+        {
+            if(type.isInstance(value))
+            {
+                this.value = value;
+                this.type = type;
+            }
+        }
+
+        if(this.value == null)
+            Flaw.Error("Invalid Type, the valid types are: " + Arrays.toString(VALID_TYPES));
+
     }
 
     public Object getObject()
@@ -43,6 +58,24 @@ public class Value
             Flaw.Error("Couldn't cast to Boolean, because the value is not an instance of Boolean");
 
         return (Boolean) this.value;
+    }
+
+    public Class<?> getValueType()
+    {
+        return this.type;
+    }
+
+    @Override
+    public boolean equals(Object that)
+    {
+        if(this == that)
+            return true;
+        if(that == null)
+            return false;
+        if(this.getClass() != that.getClass())
+            return false;
+
+        return this.value.equals(((Value)that).value);
     }
 
 
