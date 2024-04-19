@@ -152,11 +152,16 @@ public class tVM {
         if(this.trace)
             trace();
 
+        if(this.instructions.getLast().getInstruction() != OpCode.halt)
+            Flaw.Error("Code doesn't halt.");
+
         while(this.instructionPointer < this.instructions.size())
         {
             Instruction instruction = this.instructions.get(this.instructionPointer);
             doInstruction(instruction);
         }
+
+
 
         reset();
     }

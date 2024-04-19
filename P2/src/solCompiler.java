@@ -9,6 +9,8 @@ import Antlr.*;
 
 public class solCompiler
 {
+    private ParseTreeProperty<Class<?>> types;
+
     private static class Visitor extends SolBaseVisitor<Class<?>>
     {
         protected final LinkedList<Instruction> instructions;
@@ -485,9 +487,8 @@ public class solCompiler
             else if(value.getValueType() == String.class)
             {
                 outputStream.writeByte(OpCode.sconst.ordinal());
-                String argument = value.getString();
-                outputStream.writeInt(argument.length());
-                outputStream.writeChars(argument);
+                outputStream.writeInt(value.getString().length());
+                outputStream.writeChars(value.getString());
             }
         }
 
@@ -503,6 +504,8 @@ public class solCompiler
 
         }
 
+        outputStream.writeByte(OpCode.halt.ordinal());
+
         outputStream.close();
     }
 
@@ -516,6 +519,9 @@ public class solCompiler
 
         if(parser.getNumberOfSyntaxErrors() > 0)
             System.exit(1);
+
+
+        this.types = new TypeRecord().getTypes(tree);
 
         Visitor visitor = new Visitor();
         visitor.visit(tree);
