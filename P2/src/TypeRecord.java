@@ -111,6 +111,7 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitIguality(SolParser.IgualityContext ctx)
     {
+
         this.types.put(ctx, boolean.class);
     }
 

@@ -9,262 +9,134 @@ import Antlr.*;
 
 public class solCompiler
 {
-    private ParseTreeProperty<Class<?>> types;
-
     private static class Visitor extends SolBaseVisitor<Class<?>>
     {
         protected final LinkedList<Instruction> instructions;
         protected final ConstantPool pool;
+        protected final ParseTreeProperty<Class<?>> types;
 
-        public Visitor()
+        public Visitor(ParseTreeProperty<Class<?>> types)
         {
             this.instructions = new LinkedList<>();
             this.pool = new ConstantPool();
+            this.types = types;
         }
 
-        private boolean isNumber(Class<?> left, Class<?> right)
+        private Class<?> mergeTypes(Class<?> left, Class<?> right)
         {
-            return (left == double.class || left == int.class) && (right == double.class || right == int.class);
+            Class<?> mergedType = null;
+
+            if(left == String.class || right == String.class)
+                mergedType = String.class;
+            else if(left == double.class || right == double.class)
+                mergedType = double.class;
+            else if(left == int.class || right == int.class)
+                mergedType = int.class;
+            else if(left == boolean.class || right == boolean.class)
+                mergedType = boolean.class;
+
+            return mergedType;
         }
 
-        private Class<?> doubleInt(int index, OpCode integerInstruction, OpCode doubleInstruction, Class<?> left, Class<?> right)
+        private OpCode stringConversion(Class<?> type)
         {
+            OpCode result = null;
 
-            Class<?> result;
-
-            if(left == int.class && right == int.class)
-            {
-                this.instructions.add(new Instruction(integerInstruction));
-                result = int.class;
-            }
-            else if(left == int.class)
-            {
-                this.instructions.add(index, new Instruction(OpCode.itod));
-                this.instructions.add(new Instruction(doubleInstruction));
-                result = double.class;
-            }
-            else if(right == int.class)
-            {
-                this.instructions.add(new Instruction(OpCode.itod));
-                this.instructions.add(new Instruction(doubleInstruction));
-                result = double.class;
-            }
-            else
-            {
-                this.instructions.add(new Instruction(doubleInstruction));
-                result = double.class;
-            }
+            if(type == int.class)
+                result = OpCode.itos;
+            else if(type == double.class)
+                result = OpCode.dtos;
+            else if(type == boolean.class)
+                result = OpCode.btos;
 
             return result;
         }
 
-        private Class<?> stringAdd(int index, Class<?> left, Class<?> right)
+        private OpCode doubleConversion(Class<?> type)
         {
-            if(left == String.class)
-            {
-                if(right == int.class)
-                {
-                    this.instructions.add(new Instruction(OpCode.itos));
-                }
-                else if(right == double.class)
-                {
-                    this.instructions.add(new Instruction(OpCode.dtos));
-                }
-                else if(right == boolean.class)
-                {
-                    this.instructions.add(new Instruction(OpCode.btos));
-                }
-            }
-            else
-            {
-                if(left == int.class)
-                {
-                    this.instructions.add(index, new Instruction(OpCode.itos));
-                }
-                else if(left == double.class)
-                {
-                    this.instructions.add(index, new Instruction(OpCode.dtos));
-                }
-                else if(left == boolean.class)
-                {
-                    this.instructions.add(index, new Instruction(OpCode.btos));
-                }
-            }
+            OpCode result = null;
 
-            this.instructions.add(new Instruction(OpCode.sadd));
-
-            return String.class;
-        }
-
-        private Class<?> add(int index, Class<?> left, Class<?> right)
-        {
-            if((left != String.class && right != String.class) && (left == boolean.class || right == boolean.class))
-            {
-                Flaw.Error("Cannot add a " + left.getName() + "with a " + right.getName());
-            }
-
-            Class<?> result;
-
-            if(isNumber(left, right))
-            {
-                result = doubleInt(index, OpCode.iadd, OpCode.dadd, left, right);
-            }
-            else
-            {
-                result = stringAdd(index, left, right);
-            }
+            if(type == int.class)
+                result = OpCode.itod;
 
             return result;
-
         }
 
-        private Class<?> sub(int index, Class<?> left, Class<?> right)
+
+        private void possibleConversion(Class<?> parentType, ParseTree child)
         {
-            if(!isNumber(left, right))
-            {
-                Flaw.Error("Cannot sub a " + left.getName() + "with a " + right.getName());
-            }
+            visit(child);
 
-            return doubleInt(index, OpCode.isub, OpCode.dsub, left, right);
+            OpCode code = null;
+            Class<?> childType = this.types.get(child);
+
+            if(parentType == String.class)
+                code = stringConversion(childType);
+            else if(parentType == double.class)
+                code = doubleConversion(childType);
+
+            if(code != null)
+                this.instructions.add(new Instruction(code));
         }
-
         @Override
         public Class<?> visitAddSub(SolParser.AddSubContext ctx)
         {
-            Class<?> result;
+            Class<?> currentNodeType = this.types.get(ctx);
 
-            Class<?> left = visit(ctx.expression(0));
-            int index = this.instructions.size();
-            Class<?> right = visit(ctx.expression(1));
+            possibleConversion(currentNodeType, ctx.expression(0)); //Left
+            possibleConversion(currentNodeType, ctx.expression(1)); //Right
 
-            if(ctx.op.getText().equals("+"))
-            {
-                result = add(index, left, right);
-            }
-            else
-            {
-                result = sub(index, left, right);
-            }
+            if(currentNodeType == String.class)
+                this.instructions.add(new Instruction(OpCode.sadd));
+            else if(currentNodeType == int.class)
+                this.instructions.add(new Instruction(ctx.op.getText().equals("+") ? OpCode.iadd : OpCode.isub));
+            else if(currentNodeType == double.class)
+                this.instructions.add(new Instruction(ctx.op.getText().equals("+") ? OpCode.dadd : OpCode.dsub));
 
-            return result;
+            return null;
         }
 
-        public Class<?> mult(int index, Class<?> left, Class<?> right)
-        {
-            if(!isNumber(left, right))
-            {
-                Flaw.Error("Cannot multiply a " + left.getName() + " with a " + right.getName());
-            }
-
-            return doubleInt(index, OpCode.imult, OpCode.dmult, left, right);
-        }
-
-        public Class<?> div(int index, Class<?> left, Class<?> right)
-        {
-            if(!isNumber(left, right))
-            {
-                Flaw.Error("Cannot divide a " + left.getName() + "with a " + right.getName());
-            }
-
-            return doubleInt(index, OpCode.idiv, OpCode.ddiv, left, right);
-        }
-
-        public Class<?> mod(int index, Class<?> left, Class<?> right)
-        {
-            if(left != int.class || right != int.class)
-            {
-                Flaw.Error("Cannot multiply a " + left.getName() + "with a " + right.getName());
-            }
-
-            return doubleInt(index, OpCode.imod, null, left, right);
-        }
 
         @Override
         public Class<?> visitMultDivMod(SolParser.MultDivModContext ctx)
         {
-            Class<?> result;
+            Class<?> currentNodeType = this.types.get(ctx);
 
-            Class<?> left = visit(ctx.expression(0));
-            int index = this.instructions.size();
-            Class<?> right = visit(ctx.expression(1));
+            possibleConversion(currentNodeType, ctx.expression(0)); //Left
+            possibleConversion(currentNodeType, ctx.expression(1)); //Right
 
             if(ctx.op.getText().equals("*"))
-            {
-                result = mult(index, left, right);
-            }
+                this.instructions.add(new Instruction(currentNodeType == int.class ? OpCode.imult : OpCode.dmult));
             else if(ctx.op.getText().equals("/"))
-            {
-                result = div(index, left, right);
-            }
-            else
-            {
-                result = mod(index, left, right);
-            }
+                this.instructions.add(new Instruction(currentNodeType == int.class ? OpCode.idiv : OpCode.ddiv));
+            else if(ctx.op.getText().equals("%"))
+                this.instructions.add(new Instruction(OpCode.imod));
 
-            return result;
-        }
-
-        private Class<?> unaryMinus(Class<?> argumentClass)
-        {
-            if(argumentClass != int.class && argumentClass != double.class)
-            {
-                Flaw.Error("Cannot apply the unary operation '-' to " + argumentClass.getName());
-            }
-
-            Class<?> result;
-
-            if(argumentClass == int.class)
-            {
-                this.instructions.add(new Instruction(OpCode.iuminus));
-                result = int.class;
-            }
-            else
-            {
-                this.instructions.add(new Instruction(OpCode.duminus));
-                result = double.class;
-            }
-
-            return result;
-        }
-
-        private Class<?> unaryNot(Class<?> argumentClass)
-        {
-            if(argumentClass != boolean.class)
-            {
-                Flaw.Error("Cannot apply the unary operation 'not' to " + argumentClass.getName());
-            }
-
-            this.instructions.add(new Instruction(OpCode.not));
-            return boolean.class;
+            return null;
         }
 
         @Override
         public Class<?> visitUnary(SolParser.UnaryContext ctx)
         {
-            Class<?> result;
+            Class<?> currentNodeType = this.types.get(ctx);
+
+            possibleConversion(currentNodeType, ctx.expression());
 
             if(ctx.op.getText().equals("-"))
-            {
-                result = unaryMinus(visit(ctx.expression()));
-            }
-            else
-            {
-                result = unaryNot(visit(ctx.expression()));
-            }
+                this.instructions.add(new Instruction(currentNodeType == int.class ? OpCode.iuminus : OpCode.duminus));
+            else if(ctx.op.getText().equals("not"))
+                this.instructions.add(new Instruction(OpCode.not));
 
-            return result;
+            return null;
         }
 
         @Override
         public Class<?> visitAnd(SolParser.AndContext ctx)
         {
-            Class<?> left = visit(ctx.expression(0));
-            Class<?> right = visit(ctx.expression(1));
+            Class<?> currentNodeType = this.types.get(ctx);
 
-            if(left != boolean.class || right != boolean.class)
-            {
-                Flaw.Error("The 'and' operation only accepts two booleans");
-            }
+            possibleConversion(currentNodeType, ctx.expression(0)); //Left
+            possibleConversion(currentNodeType, ctx.expression(1)); //Right
 
             this.instructions.add(new Instruction(OpCode.and));
 
@@ -274,13 +146,10 @@ public class solCompiler
         @Override
         public Class<?> visitOr(SolParser.OrContext ctx)
         {
-            Class<?> left = visit(ctx.expression(0));
-            Class<?> right = visit(ctx.expression(1));
+            Class<?> currentNodeType = this.types.get(ctx);
 
-            if(left != boolean.class || right != boolean.class)
-            {
-                Flaw.Error("The 'or' operation only accepts two booleans");
-            }
+            possibleConversion(currentNodeType, ctx.expression(0)); //Left
+            possibleConversion(currentNodeType, ctx.expression(1)); //Right
 
             this.instructions.add(new Instruction(OpCode.or));
 
@@ -290,98 +159,51 @@ public class solCompiler
         @Override
         public Class<?> visitRelational(SolParser.RelationalContext ctx)
         {
-            Class<?> left = visit(ctx.expression(0));
-            int index = this.instructions.size();
-            Class<?> right = visit(ctx.expression(1));
+            Class<?> currentNodeType = mergeTypes(this.types.get(ctx.expression(0)), this.types.get(ctx.expression(1)));
 
-            if(!isNumber(left, right))
-            {
-                Flaw.Error("Cannot compare a " + left.getName() + "with a " + right.getName());
-            }
+            possibleConversion(currentNodeType, ctx.expression(0)); //Left
+            possibleConversion(currentNodeType, ctx.expression(1)); //Right
 
             if(ctx.op.getText().equals("<"))
             {
-                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
-
+                this.instructions.add(new Instruction(currentNodeType == int.class ?  OpCode.ilt : OpCode.dlt));
             }
             else if(ctx.op.getText().equals("<="))
             {
-                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
+                this.instructions.add(new Instruction(currentNodeType == int.class ?  OpCode.ileq : OpCode.dleq));
             }
             else if(ctx.op.getText().equals(">"))
             {
-                doubleInt(index, OpCode.ileq, OpCode.dleq, left, right);
+                this.instructions.add(new Instruction(currentNodeType == int.class ?  OpCode.ileq : OpCode.dleq));
                 this.instructions.add(new Instruction(OpCode.not));
             }
             else
             {
-                doubleInt(index, OpCode.ilt, OpCode.dlt, left, right);
+                this.instructions.add(new Instruction(currentNodeType == int.class ?  OpCode.ilt : OpCode.dlt));
                 this.instructions.add(new Instruction(OpCode.not));
             }
 
-            return boolean.class;
-        }
-
-        private void equal(int index, Class<?> left, Class<?> right)
-        {
-            if(left == boolean.class)
-            {
-                this.instructions.add(new Instruction(OpCode.beq));
-            }
-            else if(left == String.class)
-            {
-                this.instructions.add(new Instruction(OpCode.seq));
-            }
-            else
-            {
-                doubleInt(index, OpCode.ieq, OpCode.deq, left, right);
-            }
-        }
-
-        private void notEqual(int index, Class<?> left, Class<?> right)
-        {
-            if(left == boolean.class)
-            {
-                this.instructions.add(new Instruction(OpCode.bneq));
-            }
-            else if(left == String.class)
-            {
-                this.instructions.add(new Instruction(OpCode.sneq));
-            }
-            else
-            {
-                doubleInt(index, OpCode.ineq, OpCode.dneq, left, right);
-            }
+            return null;
         }
 
         @Override
         public Class<?> visitIguality(SolParser.IgualityContext ctx)
         {
-            Class<?> left = visit(ctx.expression(0));
-            int index = this.instructions.size();
-            Class<?> right = visit(ctx.expression(1));
+            Class<?> currentNodeType = mergeTypes(this.types.get(ctx.expression(0)), this.types.get(ctx.expression(1)));
 
-            if(!isNumber(left, right) && !(left == boolean.class && right == boolean.class || left == String.class && right == String.class))
-            {
-                Flaw.Error("Cannot compare a " + left.getName() + " with a " + right.getName());
-            }
+            possibleConversion(currentNodeType, ctx.expression(0)); //Left
+            possibleConversion(currentNodeType, ctx.expression(1)); //Right
 
-            if(ctx.op.getText().equals("=="))
-            {
-                equal(index, left, right);
-            }
-            else
-            {
-                notEqual(index, left, right);
-            }
+            if(currentNodeType == String.class)
+                this.instructions.add(new Instruction(ctx.op.getText().equals("==") ? OpCode.seq : OpCode.sneq));
+            else if(currentNodeType == int.class)
+                this.instructions.add(new Instruction(ctx.op.getText().equals("==") ? OpCode.ieq : OpCode.ineq));
+            else if(currentNodeType == double.class)
+                this.instructions.add(new Instruction(ctx.op.getText().equals("==") ? OpCode.deq : OpCode.dneq));
+            else if(currentNodeType == boolean.class)
+                this.instructions.add(new Instruction(ctx.op.getText().equals("==") ? OpCode.beq : OpCode.bneq));
 
-            return boolean.class;
-        }
-
-        @Override
-        public Class<?> visitLRParen(SolParser.LRParenContext ctx)
-        {
-            return visit(ctx.expression());
+            return null;
         }
 
         @Override
@@ -390,7 +212,7 @@ public class solCompiler
             int integer = Integer.parseInt(ctx.INT().getText());
             this.instructions.add(new Instruction(OpCode.iconst, new Value(integer)));
 
-            return int.class;
+            return null;
         }
 
         @Override
@@ -401,7 +223,7 @@ public class solCompiler
             this.pool.add(real);
             this.instructions.add(new Instruction(OpCode.dconst, new Value(this.pool.getPoolPosition(real))));
 
-            return double.class;
+            return null;
         }
 
         @Override
@@ -412,7 +234,7 @@ public class solCompiler
             this.pool.add(string);
             this.instructions.add(new Instruction(OpCode.dconst, new Value(this.pool.getPoolPosition(string))));
 
-            return String.class;
+            return null;
         }
 
         @Override
@@ -426,13 +248,15 @@ public class solCompiler
             else
                 this.instructions.add(new Instruction(OpCode.fconst));
 
-            return boolean.class;
+            return null;
         }
 
         @Override
         public Class<?> visitInstruction(SolParser.InstructionContext ctx)
         {
-            Class<?> type = visit(ctx.expression());
+            visit(ctx.expression());
+
+            Class<?> type = this.types.get(ctx);
 
             if(type == int.class)
                 this.instructions.add(new Instruction(OpCode.iprint));
@@ -446,7 +270,7 @@ public class solCompiler
             else if(type == boolean.class)
                 this.instructions.add(new Instruction(OpCode.bprint));
 
-            return type;
+            return null;
         }
 
         @Override
@@ -521,9 +345,9 @@ public class solCompiler
             System.exit(1);
 
 
-        this.types = new TypeRecord().getTypes(tree);
+        ParseTreeProperty<Class<?>> types = new TypeRecord().getTypes(tree);
 
-        Visitor visitor = new Visitor();
+        Visitor visitor = new Visitor(types);
         visitor.visit(tree);
 
         System.out.println(visitor.instructions);
