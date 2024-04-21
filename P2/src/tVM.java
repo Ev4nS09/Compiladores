@@ -1,8 +1,8 @@
 import java.io.*;
 import java.util.*;
 
-public class tVM {
-
+public class tVM
+{
     private final Stack<Value> stack;
     private Value[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
@@ -144,24 +144,19 @@ public class tVM {
 
     }
 
-    public void execute(String byteCode) throws Exception
+    public void execute(String byteCodeFile) throws Exception
     {
-        this.byteCodeBuffer = new ByteCodeBuffer(byteCode);
+        this.byteCodeBuffer = new ByteCodeBuffer(byteCodeFile);
         this.generateInstructions();
 
-        if(this.trace)
-            trace();
-
         if(this.instructions.getLast().getInstruction() != OpCode.halt)
-            Flaw.Error("Code doesn't halt.");
+            ErrorHandler.throwError("Code doesn't halt.");
 
         while(this.instructionPointer < this.instructions.size())
         {
             Instruction instruction = this.instructions.get(this.instructionPointer);
             doInstruction(instruction);
         }
-
-
 
         reset();
     }
@@ -209,7 +204,6 @@ public class tVM {
 
     private void jumpt(Integer line)
     {
-
         boolean bool = this.stack.pop().getBoolean();
 
         if(bool)
@@ -237,13 +231,12 @@ public class tVM {
         }
 
         this.globalMemory = newGlobal;
-
     }
 
     private void gload(Integer address)
     {
         if(address >= this.globalMemory.length)
-            Flaw.Error("Index out of bounds.");
+            ErrorHandler.throwError("Index out of bounds.");
 
         this.stack.push(this.globalMemory[address]);
     }
@@ -251,7 +244,7 @@ public class tVM {
     private void gstore(Integer address)
     {
         if(address >= this.globalMemory.length)
-            Flaw.Error("Index out of bounds.");
+            ErrorHandler.throwError("Index out of bounds.");
 
         this.globalMemory[address] = this.stack.pop();
     }
@@ -293,7 +286,7 @@ public class tVM {
         int left = this.stack.pop().getInteger();
 
         if(right == 0)
-            Flaw.Error("Divisor mustn't be 0");
+            ErrorHandler.throwError("Divisor mustn't be 0");
 
         this.stack.push(new Value(left / right));
     }
@@ -304,7 +297,7 @@ public class tVM {
         int left = this.stack.pop().getInteger();
 
         if(right == 0)
-            Flaw.Error("Divisor mustn't be 0");
+            ErrorHandler.throwError("Divisor mustn't be 0");
 
         this.stack.push(new Value(left % right));
     }
@@ -340,7 +333,6 @@ public class tVM {
             stack.push(new Value(true));
         else
             stack.push(new Value(false));
-
     }
 
     private void ileq()
@@ -352,15 +344,12 @@ public class tVM {
             stack.push(new Value(true));
         else
             stack.push(new Value(false));
-
-
     }
 
     private void itod()
     {
         Double real = Double.valueOf(stack.pop().getInteger());
         stack.push(new Value(real));
-
     }
 
     private void itos()
@@ -407,8 +396,9 @@ public class tVM {
     {
         double right = stack.pop().getDouble();
         double left = stack.pop().getDouble();
+
         if(right == 0)
-            Flaw.Error("Divisor mustn't be 0");
+            ErrorHandler.throwError("Divisor mustn't be 0");
 
         this.stack.push(new Value(left / right));
     }
@@ -574,9 +564,9 @@ public class tVM {
 
     private void generateInstructions() throws IOException
     {
-        //Generates the constant pool
+        //Generates the constant pool from the bytecode file
         int constantPoolSize = this.byteCodeBuffer.getInt();
-        for(int i = 0; i < constantPoolSize; i++)
+        while (constantPoolSize-- > 0)
         {
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
 
@@ -591,8 +581,8 @@ public class tVM {
             }
         }
 
-        //Generates the instructions
-        while (this.byteCodeBuffer.isAvailable())
+        //Generates the instructions from the bytecode file
+        while(this.byteCodeBuffer.isAvailable())
         {
 
             OpCode instruction = OpCode.values()[this.byteCodeBuffer.getByte()];
@@ -610,24 +600,53 @@ public class tVM {
         this.byteCodeBuffer.close();
     }
 
-    private void trace() throws IOException
+    private static String readInput()
     {
+        String result = "";
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Constant Pool");
-
-        for(int i = 0; i < constPool.size(); i++)
+        while (scanner.hasNextLine())
         {
-            Instruction instruction = constPool.get(i);
-            System.out.println(i + ": " + instruction.toString());
+            result += scanner.nextLine() + '\n';
         }
 
-        System.out.println("\nDisassembled instructions");
-        for(int i = 0; i < instructions.size(); i++)
+        return result;
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        if(args.length > 2)
         {
-            Instruction instruction = instructions.get(i);
-            System.out.println(i + ": " + instruction);
+            ErrorHandler.throwError("Too many Program arguments. VirtualMachineExecute [OPTION] [FILE]");
         }
-        System.out.println("\nTrace while running the code");
-        System.out.println("Execution starts at instruction 0\n");
+
+        String inputFile = null;
+        boolean trace = false;
+
+        for (String arg : args)
+        {
+
+            if (arg.equals("-trace") || arg.equals("-t"))
+                trace = true;
+            else
+                inputFile = arg;
+        }
+
+        if (inputFile == null)
+        {
+            inputFile = "inputs/input.tbc";
+            File file = new File(inputFile);
+            FileWriter writer = new FileWriter(inputFile);
+            writer.write(readInput());
+            writer.close();
+        }
+
+        if (!inputFile.split("\\.")[1].equals("tbc"))
+        {
+            ErrorHandler.throwError("Invalid file extension, File must have the extension tbc.");
+        }
+
+        tVM virtualMachine = new tVM(trace);
+        virtualMachine.execute(inputFile);
     }
 }

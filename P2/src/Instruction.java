@@ -33,7 +33,7 @@ public class Instruction {
     public void addArgument(Value argument) throws Exception
     {
         if(hasArgument())
-            Flaw.Error("Instruction already as an argument.");
+            ErrorHandler.throwError("Instruction already as an argument.");
 
         this.argument = argument;
     }

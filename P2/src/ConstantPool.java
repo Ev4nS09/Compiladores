@@ -1,9 +1,9 @@
 import java.util.*;
 
-public class ConstantPool
+public class ConstantPool<T>
 {
-    LinkedList<Value> pool;
-    HashMap<Value, Integer> cache;
+    LinkedList<T> pool;
+    HashMap<T, Integer> cache;
 
     public ConstantPool()
     {
@@ -11,28 +11,21 @@ public class ConstantPool
         this.cache = new HashMap<>();
     }
 
-    public int add(Value value)
+    public void add(T value)
     {
         if(!this.cache.containsKey(value))
         {
             this.cache.put(value, this.pool.size());
             this.pool.add(value);
         }
-
-        return this.cache.get(value);
     }
 
-    public Value get(int index)
-    {
-        return this.pool.get(index);
-    }
-
-    public int getPoolPosition(Value value)
+    public int getPoolPosition(T value)
     {
         return this.cache.get(value);
     }
 
-    public LinkedList<Value> getValueList()
+    public LinkedList<T> getValueList()
     {
         return this.pool;
     }

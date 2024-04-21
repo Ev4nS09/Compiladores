@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P2/src/Sol.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P2/src/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

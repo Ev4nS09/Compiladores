@@ -19,8 +19,7 @@ public class Value
         }
 
         if(this.value == null)
-            Flaw.Error("Invalid Type, the valid types are: " + Arrays.toString(VALID_TYPES));
-
+            ErrorHandler.throwError("Invalid Type, the valid types are: ".concat(Arrays.toString(VALID_TYPES)));
     }
 
     public Object getObject()
@@ -31,7 +30,7 @@ public class Value
     public Integer getInteger()
     {
         if(!(this.value instanceof Integer))
-            Flaw.Error("Couldn't cast to Integer, because the value is not an instance of Integer");
+            ErrorHandler.throwError("Couldn't cast to Integer, because the value is not an instance of Integer");
 
         return (Integer) this.value;
     }
@@ -39,7 +38,7 @@ public class Value
     public Double getDouble()
     {
         if(!(this.value instanceof Double))
-            Flaw.Error("Couldn't cast to Double, because the value is not an instance of Double");
+            ErrorHandler.throwError("Couldn't cast to Double, because the value is not an instance of Double");
 
         return (Double) this.value;
     }
@@ -47,7 +46,7 @@ public class Value
     public String getString()
     {
         if(!(this.value instanceof String))
-            Flaw.Error("Couldn't cast to String, because the value is not an instance of String");
+            ErrorHandler.throwError("Couldn't cast to String, because the value is not an instance of String");
 
         return (String) this.value;
     }
@@ -55,7 +54,7 @@ public class Value
     public Boolean getBoolean()
     {
         if(!(this.value instanceof Boolean))
-            Flaw.Error("Couldn't cast to Boolean, because the value is not an instance of Boolean");
+            ErrorHandler.throwError("Couldn't cast to Boolean, because the value is not an instance of Boolean");
 
         return (Boolean) this.value;
     }
@@ -63,6 +62,12 @@ public class Value
     public Class<?> getValueType()
     {
         return this.type;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.value.hashCode();
     }
 
     @Override
@@ -77,7 +82,6 @@ public class Value
 
         return this.value.equals(((Value)that).value);
     }
-
 
     @Override
     public String toString()

@@ -11,8 +11,8 @@ public class ByteCodeBuffer
 
     public byte getByte() throws IOException
     {
-        if (!isAvailable())
-            Flaw.Error("End of file");
+        if(!isAvailable())
+            ErrorHandler.throwError("Out of file.");
 
         return this.byteBuffer.readByte();
     }
@@ -20,7 +20,7 @@ public class ByteCodeBuffer
     public int getInt() throws IOException
     {
         if(!isAvailable())
-            Flaw.Error("End of file.");
+            ErrorHandler.throwError("Out of file.");
         return this.byteBuffer.readInt();
     }
 

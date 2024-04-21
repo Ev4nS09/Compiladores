@@ -4,7 +4,7 @@ sol : instruction+ ;
 
 instruction : PRINT expression ';' '\n'?;
 
-expression : LPAREN expression RPAREN                                       #LRParen
+expression : '(' expression ')'                                       #LRParen
   | op=('not' | '-') expression                                             #Unary
   | expression op=('*' | '/' | '%') expression 		                        #MultDivMod
   | expression op=('+' | '-') expression 		                            #AddSub
@@ -19,19 +19,6 @@ expression : LPAREN expression RPAREN                                       #LRP
   ;
 
 
-MULT: '*' ;
-DIV : '/' ;
-MOD : '%';
-ADD : '+' ;
-SUB : '-' ;
-NOT : 'not';
-LESS: '<';
-GREATER: '>';
-LESSEQUAL: '<=';
-GREATEREQUAL: '>=';
-LPAREN: '(' ;
-RPAREN: ')' ;
-NEWLINE: '\n';
 PRINT: 'print';
 BOOL: 'true' | 'false';
 INT: [0-9]+;
