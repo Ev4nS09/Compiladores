@@ -5,8 +5,8 @@ import Antlr.*;
 
 public class TypeRecord extends SolBaseListener
 {
-    ParseTreeProperty<Class<?>> types;
-    int programErrors;
+    private final ParseTreeProperty<Class<?>> types;
+    private int programErrors;
 
     public TypeRecord()
     {

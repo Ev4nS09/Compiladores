@@ -365,7 +365,6 @@ public class solCompiler extends SolBaseVisitor<Void>
 
         //generates the bytecode file of the compiled program
         this.generateByteCode(this.instructions, this.pool.getValueList(), outputFile);
-        System.out.println(this.pool.getValueList());
     }
 
     private static String readInput()
@@ -385,7 +384,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         if(args.length > 2)
         {
-            ErrorHandler.throwError("Too many Program arguments. The arguments must the file you want to compile.");
+            ErrorHandler.throwError("Too many Program arguments. tVM [OPTION] [FILE]");
         }
 
         String inputFile = null;
@@ -407,6 +406,11 @@ public class solCompiler extends SolBaseVisitor<Void>
             FileWriter writer = new FileWriter(inputFile);
             writer.write(readInput());
             writer.close();
+        }
+
+        if(!new File(inputFile).exists())
+        {
+            ErrorHandler.throwError("File " + inputFile + " does not exist." );
         }
 
         if (!inputFile.split("\\.")[1].equals("sol"))

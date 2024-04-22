@@ -2,8 +2,8 @@ import java.util.*;
 
 public class ConstantPool<T>
 {
-    LinkedList<T> pool;
-    HashMap<T, Integer> cache;
+    private final LinkedList<T> pool;
+    private final HashMap<T, Integer> cache;
 
     public ConstantPool()
     {

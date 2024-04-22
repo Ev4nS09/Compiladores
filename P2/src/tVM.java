@@ -617,7 +617,7 @@ public class tVM
     {
         if(args.length > 2)
         {
-            ErrorHandler.throwError("Too many Program arguments. VirtualMachineExecute [OPTION] [FILE]");
+            ErrorHandler.throwError("Too many Program arguments. tVM [OPTION] [FILE]");
         }
 
         String inputFile = null;
@@ -639,6 +639,11 @@ public class tVM
             FileWriter writer = new FileWriter(inputFile);
             writer.write(readInput());
             writer.close();
+        }
+
+        if(!new File(inputFile).exists())
+        {
+            ErrorHandler.throwError("File " + inputFile + " does not exist." );
         }
 
         if (!inputFile.split("\\.")[1].equals("tbc"))
