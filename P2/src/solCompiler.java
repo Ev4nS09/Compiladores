@@ -8,6 +8,8 @@ import java.util.logging.Handler;
 
 import Antlr.*;
 
+import javax.xml.parsers.SAXParser;
+
 public class solCompiler extends SolBaseVisitor<Void>
 {
 
@@ -419,10 +421,8 @@ public class solCompiler extends SolBaseVisitor<Void>
         }
 
         String outputFile = inputFile.split("\\.")[0].concat(".tbc");
-
         solCompiler compiler = new solCompiler();
         compiler.compile(inputFile, outputFile, asm);
-
     }
 
 }
