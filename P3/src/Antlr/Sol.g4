@@ -1,10 +1,16 @@
 grammar Sol;
 
-sol : declaration* line*
+sol : declaration* line+
     ;
 
-line : (block | affectation ';' | instruction ';' | if | loop | BREAK ';' | ';'+ )
+declaration : TYPE labelExpression (',' labelExpression)* ';' line+
+            ;
+
+line : block | affectation ';' | instruction ';' | if | loop | break | ';'
      ;
+
+break : BREAK ';'
+      ;
 
 loop : 'while' expression 'do' line                                                     #While
      | 'for' affectation 'to' (expression) 'do' line                                    #For
@@ -16,8 +22,6 @@ if : 'if' expression 'then' line ('else' line)?
 block : 'begin' (line)* 'end'
       ;
 
-declaration : TYPE labelExpression (',' labelExpression)* ';'
-            ;
 
 labelExpression : LABEL ('=' expression)?
                 ;

@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -26,6 +26,13 @@ public class SolBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements So
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitLine(SolParser.LineContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitBreak(SolParser.BreakContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

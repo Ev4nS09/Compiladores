@@ -3,8 +3,11 @@ grammar Sol;
 sol : declaration* line*
     ;
 
-line : (block | affectation ';' | instruction ';' | if | loop | BREAK ';' | ';'+ )
+line : (block | affectation ';' | instruction ';' | if | loop | break | ';'+ )
      ;
+
+break : BREAK ';'
+      ;
 
 loop : 'while' expression 'do' line                                                     #While
      | 'for' affectation 'to' (expression) 'do' line                                    #For

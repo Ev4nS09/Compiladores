@@ -31,14 +31,30 @@ public class TypeRecord extends SolBaseListener
         };
     }
 
-    private boolean typeCheck(String type1, Class<?> type2)
-    {
+    private boolean typeCheck(String type1, Class<?> type2) {
         return
-        type2 == null ||
-        type1.equals("int") && type2 == int.class ||
-        type1.equals("real") && (type2 == double.class || type2 == int.class) ||
-        type1.equals("string") && type2 == String.class ||
-        type1.equals("bool") && type2 == boolean.class;
+                type2 == null ||
+                        type1.equals("int") && type2 == int.class ||
+                        type1.equals("real") && (type2 == double.class || type2 == int.class) ||
+                        type1.equals("string") && type2 == String.class ||
+                        type1.equals("bool") && type2 == boolean.class;
+    }
+
+    @Override
+    public void exitBreak(SolParser.BreakContext ctx)
+    {
+        ParserRuleContext parent = ctx.getParent();
+
+        while (parent != null)
+        {
+            if(parent instanceof SolParser.LoopContext)
+                return;
+
+            parent = parent.getParent();
+        }
+
+        ErrorHandler.throwError("Break must be in loop");
+
     }
 
     @Override
@@ -46,7 +62,6 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != boolean.class)
             ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), boolean.class.getName());
-
     }
 
     @Override
@@ -59,9 +74,7 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitFor(SolParser.ForContext ctx)
     {
-        if(this.types.get(ctx.affectation()) != int.class && this.types.get(ctx.affectation()) != double.class)
-            ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), boolean.class.getName());
-        else if(this.types.get(ctx.expression()) != int.class && this.types.get(ctx.expression()) != double.class)
+        if(this.types.get(ctx.expression()) != int.class && this.types.get(ctx.expression()) != double.class)
             ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), double.class.getName());
     }
 
@@ -71,7 +84,7 @@ public class TypeRecord extends SolBaseListener
         Class<?> labelType = this.labelCache.get(ctx.LABEL().getText());
         Class<?> valueType = this.types.get(ctx.expression());
 
-        if(this.labelCache.containsKey(ctx.LABEL().getText()))
+        if(!this.labelCache.containsKey(ctx.LABEL().getText()))
             ErrorHandler.undefinedVariables(ctx, ctx.LABEL().getText());
 
         else if(labelType != valueType)
@@ -95,7 +108,7 @@ public class TypeRecord extends SolBaseListener
             Class<?> valueType = this.types.get(ctx.labelExpression(i));
 
             if(valueType != null && stringToClass(labelType) != valueType)
-                ErrorHandler.incompatibleTypes(ctx, ctx.TYPE().getText(), valueType.getName());
+                ErrorHandler.incompatibleTypes(ctx, labelType, valueType.getName());
             else if(this.labelCache.containsKey(ctx.labelExpression(i).LABEL().getText()))
                 ErrorHandler.redefinedVariables(ctx, ctx.labelExpression(i).LABEL().getText());
 

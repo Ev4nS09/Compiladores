@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -36,6 +36,18 @@ public class SolBaseListener implements SolListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLine(SolParser.LineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBreak(SolParser.BreakContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBreak(SolParser.BreakContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

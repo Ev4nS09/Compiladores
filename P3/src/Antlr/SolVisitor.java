@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -22,6 +22,12 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLine(SolParser.LineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SolParser#break}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBreak(SolParser.BreakContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code While}
 	 * labeled alternative in {@link SolParser#loop}.

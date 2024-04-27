@@ -1,9 +1,6 @@
-int a, b = 2;
-int c = 2;
-int d = 1;
-
-for c = 1 to b do
-    print "Ola!";
+int c = 1;
+for b = 1 to 10 do
+ print 10;
 
 while 1 < 2 do
-    print 1;
+    break;
