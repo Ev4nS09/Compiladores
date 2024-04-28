@@ -17,6 +17,12 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSol(SolParser.SolContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SolParser#declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclaration(SolParser.DeclarationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SolParser#line}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -54,12 +60,6 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitBlock(SolParser.BlockContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SolParser#declaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDeclaration(SolParser.DeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SolParser#labelExpression}.
 	 * @param ctx the parse tree

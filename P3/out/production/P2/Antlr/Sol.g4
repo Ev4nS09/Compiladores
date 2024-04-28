@@ -3,7 +3,10 @@ grammar Sol;
 sol : declaration* line*
     ;
 
-line : (block | affectation ';' | instruction ';' | if | loop | break | ';'+ )
+declaration : TYPE labelExpression (',' labelExpression)* ';'
+            ;
+
+line : block | affectation ';' | instruction ';' | if | loop | break | ';'
      ;
 
 break : BREAK ';'
@@ -19,8 +22,6 @@ if : 'if' expression 'then' line ('else' line)?
 block : 'begin' (line)* 'end'
       ;
 
-declaration : TYPE labelExpression (',' labelExpression)* ';'
-            ;
 
 labelExpression : LABEL ('=' expression)?
                 ;
@@ -50,11 +51,11 @@ expression : '(' expression ')'                                             #LRP
 BREAK: 'break';
 TYPE: 'int' | 'real' | 'string' | 'bool';
 PRINT: 'print';
-LABEL: [_a-zA-Z]([a-zA-Z0-9_]*);
 BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' ('\\"' | .)*? '"';
+LABEL: [_a-zA-Z]([a-zA-Z0-9_]*);
 WS : [ \n\t\r]+ -> skip ;
 
 SL_COMMENT : '//' .*? (EOF|'\n') -> skip; // single-line comment

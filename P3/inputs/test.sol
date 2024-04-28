@@ -1,6 +1,8 @@
-int c = 1;
-for b = 1 to 10 do
- print 10;
+int a = 0;
+int b = 10;
 
-while 1 < 2 do
-    break;
+while a < b do
+begin
+    print a;
+    a = a + 1;
+end

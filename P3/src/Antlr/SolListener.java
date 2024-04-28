@@ -18,6 +18,16 @@ public interface SolListener extends ParseTreeListener {
 	 */
 	void exitSol(SolParser.SolContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SolParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclaration(SolParser.DeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SolParser#declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclaration(SolParser.DeclarationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SolParser#line}.
 	 * @param ctx the parse tree
 	 */
@@ -81,16 +91,6 @@ public interface SolListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBlock(SolParser.BlockContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SolParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterDeclaration(SolParser.DeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SolParser#declaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitDeclaration(SolParser.DeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SolParser#labelExpression}.
 	 * @param ctx the parse tree

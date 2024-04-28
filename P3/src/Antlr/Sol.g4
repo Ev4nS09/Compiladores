@@ -1,9 +1,9 @@
 grammar Sol;
 
-sol : declaration* line+
+sol : declaration* line*
     ;
 
-declaration : TYPE labelExpression (',' labelExpression)* ';' line+
+declaration : TYPE labelExpression (',' labelExpression)* ';'
             ;
 
 line : block | affectation ';' | instruction ';' | if | loop | break | ';'
@@ -51,11 +51,11 @@ expression : '(' expression ')'                                             #LRP
 BREAK: 'break';
 TYPE: 'int' | 'real' | 'string' | 'bool';
 PRINT: 'print';
-LABEL: [_a-zA-Z]([a-zA-Z0-9_]*);
 BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' ('\\"' | .)*? '"';
+LABEL: [_a-zA-Z]([a-zA-Z0-9_]*);
 WS : [ \n\t\r]+ -> skip ;
 
 SL_COMMENT : '//' .*? (EOF|'\n') -> skip; // single-line comment

@@ -305,6 +305,11 @@ public class TypeRecord extends SolBaseListener
         return this.types;
     }
 
+    public int getGlobalMemorySize()
+    {
+        return this.labelCache.size();
+    }
+
     public int getNumberOfErrors()
     {
         return this.programErrors;

@@ -15,13 +15,17 @@ public class solCompiler extends SolBaseVisitor<Void>
 
     private final LinkedList<Instruction> instructions;
     private final ConstantPool<Value> pool;
+    private final HashMap<String, Integer> labelCache;
     private ParseTreeProperty<Class<?>> types;
+    private int globalMemoryPointer;
 
     public solCompiler()
     {
         this.instructions = new LinkedList<>();
         this.pool = new ConstantPool<>();
+        this.labelCache = new HashMap<>();
         this.types = new ParseTreeProperty<>();
+        this.globalMemoryPointer = 0;
     }
 
     private Class<?> mergeTypes(Class<?> left, Class<?> right)
@@ -62,6 +66,76 @@ public class solCompiler extends SolBaseVisitor<Void>
         if(code != null)
             this.instructions.add(new Instruction(code));
     }
+
+    @Override
+    public Void visitWhile(SolParser.WhileContext ctx)
+    {
+        int beginLoop = this.instructions.size();
+        visit(ctx.expression());
+        int jumpInstructionIndex = this.instructions.size();
+        visit(ctx.line());
+        this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
+        this.instructions.add(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
+
+        return null;
+    }
+
+    @Override
+    public Void visitIf(SolParser.IfContext ctx)
+    {
+        visit(ctx.expression());
+        int jumpInstructionIndex = this.instructions.size();
+
+        for(int i = 0; i < ctx.line().size(); i++)
+            visit(ctx.line(i));
+
+        this.instructions.add(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size() + 1)));
+
+        return null;
+    }
+
+    @Override
+    public Void visitBlock(SolParser.BlockContext ctx)
+    {
+        for(int i = 0; i < ctx.line().size(); i++)
+            visit(ctx.line(i));
+
+        return null;
+    }
+
+    @Override
+    public Void visitAffectation(SolParser.AffectationContext ctx)
+    {
+        visit(ctx.expression());
+        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.LABEL().getText()))));
+
+        return null;
+    }
+
+    @Override
+    public Void visitLabelExpression(SolParser.LabelExpressionContext ctx)
+    {
+        if(ctx.expression() != null)
+        {
+            visit(ctx.expression());
+            this.labelCache.put(ctx.LABEL().getText(), globalMemoryPointer);
+            this.instructions.add(new Instruction(OpCode.gstore, new Value(globalMemoryPointer++)));
+        }
+        else
+            globalMemoryPointer++;
+
+        return null;
+    }
+
+    @Override
+    public Void visitDeclaration(SolParser.DeclarationContext ctx)
+    {
+        for(int i = 0; i < ctx.labelExpression().size(); i++)
+           visit(ctx.labelExpression(i));
+
+        return null;
+    }
+
     @Override
     public Void visitAddSub(SolParser.AddSubContext ctx)
     {
@@ -202,6 +276,14 @@ public class solCompiler extends SolBaseVisitor<Void>
     }
 
     @Override
+    public Void visitLable(SolParser.LableContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.getText()))));
+
+        return null;
+    }
+
+    @Override
     public Void visitInt(SolParser.IntContext ctx)
     {
         int integer = Integer.parseInt(ctx.INT().getText());
@@ -312,7 +394,6 @@ public class solCompiler extends SolBaseVisitor<Void>
 
         }
 
-        outputStream.writeByte(OpCode.halt.ordinal());
         outputStream.close();
     }
 
@@ -349,9 +430,11 @@ public class solCompiler extends SolBaseVisitor<Void>
         //Annotates and saves the types.
         TypeRecord typeRecord = new TypeRecord();
         this.types = typeRecord.getTypes(tree);
+        this.instructions.add(new Instruction(OpCode.galloc, new Value(typeRecord.getGlobalMemorySize())));
 
         //Iterate through the tree
         this.visit(tree);
+        this.instructions.add(new Instruction(OpCode.halt));
 
         //Checks if type errors existed, if yes it exits the program
         if(typeRecord.getNumberOfErrors() > 0)
@@ -367,6 +450,7 @@ public class solCompiler extends SolBaseVisitor<Void>
 
         //generates the bytecode file of the compiled program
         this.generateByteCode(this.instructions, this.pool.getValueList(), outputFile);
+        System.out.println(instructions);
     }
 
     private static String readInput()
