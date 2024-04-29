@@ -1,16 +1,16 @@
-
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import Antlr.SolBaseVisitor;
+import Antlr.SolLexer;
+import Antlr.SolParser;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.io.*;
-import java.lang.classfile.Opcode;
-import java.lang.foreign.ValueLayout;
-import java.util.*;
-import java.util.logging.Handler;
-
-import Antlr.*;
-
-import javax.xml.parsers.SAXParser;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 public class solCompiler extends SolBaseVisitor<Void>
 {
@@ -77,16 +77,24 @@ public class solCompiler extends SolBaseVisitor<Void>
         visit(ctx.affectation());
         int beingloop = this.instructions.size();
         this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+
         visit(ctx.expression());
+
         this.instructions.add(new Instruction(mergeTypes(this.types.get(ctx.expression()), this.types.get(ctx.affectation())) == double.class ? OpCode.dlt : OpCode.ilt));
+
         int jumpInstructionIndex = this.instructions.size();
+
         this.instructions.add(null);
+
         visit(ctx.line());
-        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iconst : OpCode.dconst, new Value(1)));
-        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
-        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd));
-        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
-        this.instructions.add(new Instruction(OpCode.jump, new Value(beingloop)));
+
+        this.instructions.addAll(Arrays.asList(
+                new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iconst : OpCode.dconst, new Value(1)),
+                new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))),
+                new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd),
+                new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))),
+                new Instruction(OpCode.jump, new Value(beingloop))
+        ));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
         return null;
