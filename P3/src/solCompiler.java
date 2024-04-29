@@ -1,16 +1,13 @@
-import Antlr.SolBaseVisitor;
-import Antlr.SolLexer;
-import Antlr.SolParser;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
+
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
+
+import Antlr.*;
+
 
 public class solCompiler extends SolBaseVisitor<Void>
 {
@@ -77,24 +74,16 @@ public class solCompiler extends SolBaseVisitor<Void>
         visit(ctx.affectation());
         int beingloop = this.instructions.size();
         this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
-
         visit(ctx.expression());
-
         this.instructions.add(new Instruction(mergeTypes(this.types.get(ctx.expression()), this.types.get(ctx.affectation())) == double.class ? OpCode.dlt : OpCode.ilt));
-
         int jumpInstructionIndex = this.instructions.size();
-
         this.instructions.add(null);
-
         visit(ctx.line());
-
-        this.instructions.addAll(Arrays.asList(
-                new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iconst : OpCode.dconst, new Value(1)),
-                new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))),
-                new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd),
-                new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))),
-                new Instruction(OpCode.jump, new Value(beingloop))
-        ));
+        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iconst : OpCode.dconst, new Value(1)));
+        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd));
+        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        this.instructions.add(new Instruction(OpCode.jump, new Value(beingloop)));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
         return null;
@@ -462,7 +451,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         }
     }
 
-    public void compile(String inputFile, String outputFile, boolean asm) throws Exception
+    public void compile(String inputFile, String outputFile, String outputFile_tasm, boolean asm) throws Exception
     {
         InputStream inputStream = inputFile == null ? System.in : new FileInputStream(inputFile);
         SolParser parser = generateParser(inputStream);
@@ -492,9 +481,12 @@ public class solCompiler extends SolBaseVisitor<Void>
             asm();
 
         System.out.println("\nSaving the bytecodes to " + outputFile);
-
         //generates the bytecode file of the compiled program
         this.generateByteCode(this.instructions, this.pool.getValueList(), outputFile);
+
+        System.out.println("\nSaving the tasm code to " + outputFile_tasm);
+        new tasmGenerator(instructions,outputFile_tasm);
+
         System.out.println(instructions);
     }
 
@@ -550,8 +542,9 @@ public class solCompiler extends SolBaseVisitor<Void>
         }
 
         String outputFile = inputFile.split("\\.")[0].concat(".tbc");
+        String outputFile_tasm = inputFile.split("\\.")[0].concat(".tasm");
         solCompiler compiler = new solCompiler();
-        compiler.compile(inputFile, outputFile, asm);
+        compiler.compile(inputFile, outputFile, outputFile_tasm, asm);
     }
 
 }

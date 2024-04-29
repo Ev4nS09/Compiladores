@@ -1,0 +1,3 @@
+Tag_0: iconst 1
+jump Tag_0
+jump Tag_0
