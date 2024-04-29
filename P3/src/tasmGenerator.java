@@ -25,10 +25,10 @@ public class tasmGenerator {
             
             if (isJump(line.split(" ")[0])){ //confirma se há um jump na linha
                 int jump_position = Integer.parseInt(line.split(" ")[1]); //numero da linha onde vai para o jump
-                instructions_String.set(i, line.split(" ")[0] + " Tag_" + (jump_position)); //linha onde esta neste momento
-                if (!hashJump.contains("Tag_"+ jump_position)) //impede que a Tag seja escrita de novo
-                    instructions_String.set(jump_position,"Tag_" + (jump_position) + ": " +  instructions_String.get(jump_position)); //mudar a linha onde vai parar
-                hashJump.add("Tag_" + jump_position);
+                instructions_String.set(i, line.split(" ")[0] + " Tag_" + (jump_position+1)); //linha onde esta neste momento
+                if (!hashJump.contains("Tag_"+ jump_position+1)) //impede que a Tag seja escrita de novo
+                    instructions_String.set(jump_position,"Tag_" + (jump_position+1) + ": " +  instructions_String.get(jump_position)); //mudar a linha onde vai parar
+                hashJump.add("Tag_" + jump_position+1);
             }
         }
         for (String line : instructions_String){
