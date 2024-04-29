@@ -3,6 +3,8 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
+import java.lang.classfile.Opcode;
+import java.lang.foreign.ValueLayout;
 import java.util.*;
 import java.util.logging.Handler;
 
@@ -67,15 +69,39 @@ public class solCompiler extends SolBaseVisitor<Void>
             this.instructions.add(new Instruction(code));
     }
 
+
+
+    @Override
+    public Void visitFor(SolParser.ForContext ctx)
+    {
+        visit(ctx.affectation());
+        int beingloop = this.instructions.size();
+        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        visit(ctx.expression());
+        this.instructions.add(new Instruction(mergeTypes(this.types.get(ctx.expression()), this.types.get(ctx.affectation())) == double.class ? OpCode.dlt : OpCode.ilt));
+        int jumpInstructionIndex = this.instructions.size();
+        this.instructions.add(null);
+        visit(ctx.line());
+        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iconst : OpCode.dconst, new Value(1)));
+        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd));
+        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        this.instructions.add(new Instruction(OpCode.jump, new Value(beingloop)));
+        this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
+
+        return null;
+    }
+
     @Override
     public Void visitWhile(SolParser.WhileContext ctx)
     {
         int beginLoop = this.instructions.size();
         visit(ctx.expression());
         int jumpInstructionIndex = this.instructions.size();
+        this.instructions.add(null);
         visit(ctx.line());
         this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
-        this.instructions.add(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
+        this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
         return null;
     }
@@ -85,11 +111,22 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         visit(ctx.expression());
         int jumpInstructionIndex = this.instructions.size();
+        this.instructions.add(null);
 
-        for(int i = 0; i < ctx.line().size(); i++)
-            visit(ctx.line(i));
+        visit(ctx.line(0));
+        int afterIfIndex =this.instructions.size();
+        this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(afterIfIndex)));
 
-        this.instructions.add(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size() + 1)));
+        //else exists
+        if(ctx.line().size() > 1)
+        {
+            this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(afterIfIndex+1)));
+            this.instructions.add(null);
+            visit(ctx.line(1));
+            int afterElseIndex = this.instructions.size();
+
+            this.instructions.set(afterIfIndex, new Instruction(OpCode.jump, new Value(afterElseIndex)));
+        }
 
         return null;
     }
@@ -309,7 +346,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         Value string = new Value(ctx.STRING().getText());
 
         this.pool.add(string);
-        this.instructions.add(new Instruction(OpCode.dconst, new Value(this.pool.getPoolPosition(string))));
+        this.instructions.add(new Instruction(OpCode.sconst, new Value(this.pool.getPoolPosition(string))));
 
         return null;
     }

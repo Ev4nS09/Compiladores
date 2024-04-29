@@ -1,10 +1,13 @@
 grammar Sol;
 
-sol : instruction+ ;
+sol : declaration+ ;
+
+declaration : TYPE LABEL '=' expression
+            ;
 
 instruction : PRINT expression ';' '\n'?;
 
-expression : '(' expression ')'                                       #LRParen
+expression : '(' expression ')'                                             #LRParen
   | op=('not' | '-') expression                                             #Unary
   | expression op=('*' | '/' | '%') expression 		                        #MultDivMod
   | expression op=('+' | '-') expression 		                            #AddSub
@@ -19,11 +22,13 @@ expression : '(' expression ')'                                       #LRParen
   ;
 
 
+TYPE: 'int' | 'real' | 'string' | 'bool';
 PRINT: 'print';
 BOOL: 'true' | 'false';
 INT: [0-9]+;
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' ('\\"' | .)*? '"';
+LABEL: [_a-zA-Z]([a-zA-Z0-9_]*);
 WS : [ \n\t\r]+ -> skip ;
 
 SL_COMMENT : '//' .*? (EOF|'\n') -> skip; // single-line comment
