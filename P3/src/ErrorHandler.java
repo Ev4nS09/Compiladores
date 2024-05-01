@@ -1,7 +1,7 @@
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 
-public abstract class ErrorHandler
+public class ErrorHandler
 {
     public static void throwError(String message)
     {
@@ -65,5 +65,10 @@ public abstract class ErrorHandler
                 .append(". Variable ").append("'").append(label).append("'").append(" has not been defined")
 
         );
+    }
+
+    public static void invalidBreak()
+    {
+        System.err.println("break outside a loop");
     }
 }

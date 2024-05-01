@@ -3,14 +3,10 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
-import java.lang.classfile.Opcode;
-import java.lang.foreign.ValueLayout;
 import java.util.*;
-import java.util.logging.Handler;
 
 import Antlr.*;
 
-import javax.xml.parsers.SAXParser;
 
 public class solCompiler extends SolBaseVisitor<Void>
 {
@@ -69,13 +65,19 @@ public class solCompiler extends SolBaseVisitor<Void>
             this.instructions.add(new Instruction(code));
     }
 
+    @Override
+    public Void visitBreak(SolParser.BreakContext ctx)
+    {
+        this.instructions.add(null);
 
+        return null;
+    }
 
     @Override
     public Void visitFor(SolParser.ForContext ctx)
     {
         visit(ctx.affectation());
-        int beingloop = this.instructions.size();
+        int beginLoop = this.instructions.size();
         this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
         visit(ctx.expression());
         this.instructions.add(new Instruction(mergeTypes(this.types.get(ctx.expression()), this.types.get(ctx.affectation())) == double.class ? OpCode.dlt : OpCode.ilt));
@@ -86,8 +88,13 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
         this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd));
         this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
-        this.instructions.add(new Instruction(OpCode.jump, new Value(beingloop)));
+        this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
+
+        for(int i = beginLoop; i < this.instructions.size(); i++)
+            if(this.instructions.get(i) == null)
+                this.instructions.set(i, new Instruction(OpCode.jump, new Value(this.instructions.size())));
+
 
         return null;
     }
@@ -102,6 +109,10 @@ public class solCompiler extends SolBaseVisitor<Void>
         visit(ctx.line());
         this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
+
+        for(int i = beginLoop; i < this.instructions.size(); i++)
+            if(this.instructions.get(i) == null)
+                this.instructions.set(i, new Instruction(OpCode.jump, new Value(this.instructions.size())));
 
         return null;
     }
@@ -159,7 +170,9 @@ public class solCompiler extends SolBaseVisitor<Void>
             this.instructions.add(new Instruction(OpCode.gstore, new Value(globalMemoryPointer++)));
         }
         else
-            globalMemoryPointer++;
+        {
+            this.labelCache.put(ctx.LABEL().getText(), globalMemoryPointer++);
+        }
 
         return null;
     }
@@ -487,13 +500,13 @@ public class solCompiler extends SolBaseVisitor<Void>
 
         //generates the bytecode file of the compiled program
         this.generateByteCode(this.instructions, this.pool.getValueList(), outputFile);
-        System.out.println(instructions);
     }
 
     private static String readInput()
     {
         String result = "";
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in)
+        ;
 
         while (scanner.hasNextLine())
         {

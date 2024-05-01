@@ -4,13 +4,28 @@ import org.antlr.v4.runtime.tree.*;
 import Antlr.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class TypeRecord extends SolBaseListener
 {
     private final ParseTreeProperty<Class<?>> types;
-    private final HashMap<String, Class<?>> labelCache;
+    private final HashMap<String, Label> labelCache;
     private int programErrors;
+
+    private static class Label
+    {
+        String label;
+        Class<?> labelType;
+        boolean isInitialized;
+
+        public Label(String label, Class<?> labelType, boolean isInitialized)
+        {
+            this.label = label;
+            this.labelType = labelType;
+            this.isInitialized = isInitialized;
+        }
+    }
 
     public TypeRecord()
     {
@@ -53,42 +68,57 @@ public class TypeRecord extends SolBaseListener
             parent = parent.getParent();
         }
 
-        ErrorHandler.throwError("Break must be in loop");
-
+        ErrorHandler.invalidBreak();
+        this.programErrors++;
     }
 
     @Override
     public void exitIf(SolParser.IfContext ctx)
     {
         if(this.types.get(ctx.expression()) != boolean.class)
+        {
             ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), boolean.class.getName());
+            this.programErrors++;
+        }
     }
 
     @Override
     public void exitWhile(SolParser.WhileContext ctx)
     {
         if(this.types.get(ctx.expression()) != boolean.class)
+        {
             ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), boolean.class.getName());
+            this.programErrors++;
+        }
     }
 
     @Override
     public void exitFor(SolParser.ForContext ctx)
     {
         if(this.types.get(ctx.expression()) != int.class && this.types.get(ctx.expression()) != double.class)
+        {
             ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), double.class.getName());
+            this.programErrors++;
+        }
     }
 
     @Override
     public void exitAffectation(SolParser.AffectationContext ctx)
     {
-        Class<?> labelType = this.labelCache.get(ctx.LABEL().getText());
+        Class<?> labelType = this.labelCache.get(ctx.LABEL().getText()).labelType;
         Class<?> valueType = this.types.get(ctx.expression());
 
         if(!this.labelCache.containsKey(ctx.LABEL().getText()))
+        {
             ErrorHandler.undefinedVariables(ctx, ctx.LABEL().getText());
+            this.programErrors++;
+        }
 
         else if(labelType != valueType)
+        {
             ErrorHandler.incompatibleTypes(ctx, labelType.getName(), valueType.getName());
+            this.programErrors++;
+        }
 
         this.types.put(ctx, labelType);
     }
@@ -105,14 +135,21 @@ public class TypeRecord extends SolBaseListener
         String labelType = ctx.TYPE().getText();
         for(int i = 0; i < ctx.labelExpression().size(); i++)
         {
+            String label = ctx.labelExpression(i).LABEL().getText();
             Class<?> valueType = this.types.get(ctx.labelExpression(i));
 
             if(valueType != null && stringToClass(labelType) != valueType)
+            {
                 ErrorHandler.incompatibleTypes(ctx, labelType, valueType.getName());
-            else if(this.labelCache.containsKey(ctx.labelExpression(i).LABEL().getText()))
-                ErrorHandler.redefinedVariables(ctx, ctx.labelExpression(i).LABEL().getText());
+                this.programErrors++;
+            }
+            else if(this.labelCache.containsKey(label))
+            {
+                ErrorHandler.redefinedVariables(ctx, label);
+                this.programErrors++;
+            }
 
-            this.labelCache.put(ctx.labelExpression(i).LABEL().getText(), stringToClass(labelType));
+            this.labelCache.put(label, new Label(label, stringToClass(labelType), valueType != null));
         }
     }
 
@@ -126,9 +163,16 @@ public class TypeRecord extends SolBaseListener
     public void exitLable(SolParser.LableContext ctx)
     {
         if(!this.labelCache.containsKey(ctx.getText()))
+        {
             ErrorHandler.undefinedVariables(ctx, ctx.getText());
-
-        this.types.put(ctx, this.labelCache.get(ctx.getText()));
+            this.programErrors++;
+        }
+        else if(!this.labelCache.get(ctx.getText()).isInitialized)
+        {
+            ErrorHandler.undefinedVariables(ctx, ctx.getText());
+            this.programErrors++;
+        }
+        this.types.put(ctx, this.labelCache.get(ctx.getText()).labelType);
     }
 
     @Override
