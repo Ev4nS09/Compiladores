@@ -121,6 +121,7 @@ public class TypeRecord extends SolBaseListener
         }
 
         this.types.put(ctx, labelType);
+        this.labelCache.get(ctx.LABEL().getText()).isInitialized = true;
     }
 
     @Override
