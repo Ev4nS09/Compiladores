@@ -100,6 +100,17 @@ public class TypeRecord extends SolBaseListener
             ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), double.class.getName());
             this.programErrors++;
         }
+
+        Class<?> result = null;
+        Class<?> affectionType = this.types.get(ctx.affectation());
+        Class<?> expressionType = this.types.get(ctx.expression());
+
+        if(affectionType == double.class || expressionType == double.class)
+            result = double.class;
+        else if(affectionType == int.class || expressionType== int.class)
+            result = int.class;
+
+        this.types.put(ctx, result);
     }
 
     @Override

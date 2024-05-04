@@ -45,12 +45,9 @@ public class solCompiler extends SolBaseVisitor<Void>
         return mergedType;
     }
 
-    private void possibleConversion(Class<?> parentType, ParseTree child)
+    private void possibleConversionWithTypes(Class<?> parentType, Class<?> childType)
     {
-        visit(child);
-
         OpCode code = null;
-        Class<?> childType = this.types.get(child);
 
         if(parentType == String.class && childType == int.class)
             code = OpCode.itos;
@@ -65,6 +62,13 @@ public class solCompiler extends SolBaseVisitor<Void>
             this.instructions.add(new Instruction(code));
     }
 
+    private void possibleConversion(Class<?> parentType, ParseTree child)
+    {
+        visit(child);
+        Class<?> childType = this.types.get(child);
+        possibleConversionWithTypes(parentType, childType);
+    }
+
     @Override
     public Void visitBreak(SolParser.BreakContext ctx)
     {
@@ -76,21 +80,36 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitFor(SolParser.ForContext ctx)
     {
+        String affectionLabel = ctx.affectation().LABEL().getText();
+
         visit(ctx.affectation());
         int beginLoop = this.instructions.size();
-        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
-        visit(ctx.expression());
-        this.instructions.add(new Instruction(mergeTypes(this.types.get(ctx.expression()), this.types.get(ctx.affectation())) == double.class ? OpCode.dlt : OpCode.ilt));
+
+        //The following code just creates an expression just like a while but just uses the symbol '<' per example
+        // for i = 1 to 10 equals -> while i < 10
+        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(affectionLabel))));
+        possibleConversionWithTypes(this.types.get(ctx), this.types.get(ctx.affectation()));
+        possibleConversion(this.types.get(ctx), ctx.expression());
+        this.instructions.add(new Instruction(this.types.get(ctx) == int.class ? OpCode.ilt : OpCode.dlt));
+
         int jumpInstructionIndex = this.instructions.size();
         this.instructions.add(null);
+
+        //The following code just sums 1 to the affection variable
         visit(ctx.line());
-        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iconst : OpCode.dconst, new Value(1)));
-        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        this.instructions.add(new Instruction(OpCode.iconst, new Value(1)));
+        possibleConversionWithTypes(this.types.get(ctx.affectation()), int.class);
+        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(affectionLabel))));
+
         this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd));
-        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.affectation().LABEL().getText()))));
+        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(affectionLabel))));
+
+        //the following code just sets the jumps, if we are at the end of the loop we go to the beginning
+        //if the affection equals the expression we leave the loop
         this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
+        //Searches for positions to put a jump that was the beak
         for(int i = beginLoop; i < this.instructions.size(); i++)
             if(this.instructions.get(i) == null)
                 this.instructions.set(i, new Instruction(OpCode.jump, new Value(this.instructions.size())));
@@ -104,12 +123,15 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         int beginLoop = this.instructions.size();
         visit(ctx.expression());
+
         int jumpInstructionIndex = this.instructions.size();
         this.instructions.add(null);
+
         visit(ctx.line());
         this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
+        //Searches for positions to put a jump that was the beak
         for(int i = beginLoop; i < this.instructions.size(); i++)
             if(this.instructions.get(i) == null)
                 this.instructions.set(i, new Instruction(OpCode.jump, new Value(this.instructions.size())));
@@ -166,13 +188,11 @@ public class solCompiler extends SolBaseVisitor<Void>
         if(ctx.expression() != null)
         {
             visit(ctx.expression());
-            this.labelCache.put(ctx.LABEL().getText(), globalMemoryPointer);
-            this.instructions.add(new Instruction(OpCode.gstore, new Value(globalMemoryPointer++)));
+            this.instructions.add(new Instruction(OpCode.gstore, new Value(this.globalMemoryPointer)));
         }
-        else
-        {
-            this.labelCache.put(ctx.LABEL().getText(), globalMemoryPointer++);
-        }
+
+        this.labelCache.put(ctx.LABEL().getText(), this.globalMemoryPointer);
+        this.globalMemoryPointer++;
 
         return null;
     }
@@ -292,7 +312,7 @@ public class solCompiler extends SolBaseVisitor<Void>
             possibleConversion(mergedNodeType, ctx.expression(0)); //Left
             this.instructions.add(new Instruction(mergedNodeType == int.class ?  OpCode.ilt : OpCode.dlt));
         }
-        else
+        else if(ctx.op.getText().equals(">="))
         {
             possibleConversion(mergedNodeType, ctx.expression(1)); //Right
             possibleConversion(mergedNodeType, ctx.expression(0)); //Left

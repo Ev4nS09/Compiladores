@@ -1,21 +1,22 @@
-int x = 0;
-int i;
-while x < 10 do
-    begin
-        if x == 5 then
-            break;
-        for i = 0 to 10 do
-            begin
-                if i % 2 == 0 then
-                    print i + " is even";
-                else
-                    print i + " is odd";
-                if i * 5 == 25 then
-                    break;
-            end
-        print "for is over";
-        if x == 3 then
-            break;
-    x = x + 1;
-    end
-print "program is over";
+int x = 1;
+int i = 2;
+
+while x < 20 do
+begin
+    if x >= 100000 then
+        break;
+    for i = 0 to x do
+        print x;
+    if i == 19 then
+        break;
+    if x != 0 then
+        if x % 2 == 0 then
+            if (x / 2) % 2 == 0 then
+                x = x * 2;
+            else
+                x = x + 1;
+        else
+            x = x + 1;
+    else
+        x = x + 1;
+end
