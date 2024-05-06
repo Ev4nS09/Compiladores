@@ -1,4 +1,4 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P3/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 
 import org.antlr.v4.runtime.ParserRuleContext;

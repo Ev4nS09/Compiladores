@@ -1,6 +1,6 @@
 grammar Sol;
 
-sol : declaration* line* EOF
+sol : declaration* line+ EOF
     ;
 
 declaration : TYPE labelExpression (',' labelExpression)* ';'

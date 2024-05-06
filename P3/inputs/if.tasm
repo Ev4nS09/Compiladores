@@ -1,0 +1,55 @@
+galloc 4
+iconst 1
+gstore 0
+dconst 0
+gstore 1
+sconst 1
+gstore 2
+tconst
+gstore 3
+gload 0
+iconst 1
+ieq
+jumpf Tag_16
+sconst 2
+sprint
+Tag_16: gload 1
+dconst 0
+deq
+jumpf Tag_22
+sconst 3
+sprint
+Tag_22: gload 2
+sconst 1
+seq
+jumpf Tag_28
+sconst 4
+sprint
+Tag_28: gload 3
+tconst
+beq
+jumpf Tag_34
+sconst 5
+sprint
+Tag_34: gload 0
+iconst 1
+ieq
+jumpf Tag_55
+gload 1
+dconst 0
+deq
+jumpf Tag_55
+gload 2
+sconst 1
+seq
+jumpf Tag_55
+gload 3
+tconst
+beq
+jumpf Tag_53
+sconst 6
+sprint
+jump Tag_55
+Tag_53: sconst 7
+sprint
+Tag_55: halt

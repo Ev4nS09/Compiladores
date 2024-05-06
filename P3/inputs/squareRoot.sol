@@ -5,4 +5,4 @@ begin
     t = squareRoot;
     squareRoot = (t + (inputNumber / t)) / 2;
 end
-print "The square root of " + inputNumber + " is :" + squareroot;
+print "The square root of " + inputNumber + " is :" + squareRoot;

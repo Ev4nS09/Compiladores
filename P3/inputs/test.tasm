@@ -1,16 +1,72 @@
-galloc 3
-sconst 0
+galloc 2
+iconst 0
 gstore 0
-tconst
+gload 0
+iconst 10
+ilt
+jumpf Tag_70
+gload 0
+iconst 5
+ieq
+jumpf Tag_13
+jump Tag_70
+Tag_13: iconst 0
 gstore 1
-iconst 1
-gstore 2
-gload 2
+Tag_15: gload 1
+iconst 10
+ileq
+jumpf Tag_58
+gload 1
+iconst 2
+imod
+iconst 0
+ieq
+jumpf Tag_31
+gload 1
+itos
+sconst 0
+sadd
+sprint
+jump Tag_36
+Tag_31: gload 1
 itos
 sconst 1
 sadd
+sprint
+Tag_36: gload 1
+iconst 5
+imult
+iconst 25
+ieq
+jumpf Tag_53
 gload 1
-btos
+itos
+sconst 2
 sadd
+gload 1
+itos
+sadd
+sconst 3
+sadd
+sprint
+jump Tag_58
+Tag_53: iconst 1
+gload 1
+iadd
+gstore 1
+jump Tag_15
+Tag_58: sconst 4
+sprint
+gload 0
+iconst 1
+iadd
+gstore 0
+gload 0
+iconst 3
+ieq
+jumpf Tag_69
+jump Tag_70
+Tag_69: jump 3
+Tag_70: sconst 5
 sprint
 halt

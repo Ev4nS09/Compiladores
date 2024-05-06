@@ -13,14 +13,14 @@ public class TypeRecord extends SolBaseListener
 
     private static class Label
     {
-        String label;
-        Class<?> labelType;
+        String name;
+        Class<?> type;
         boolean isInitialized;
 
-        public Label(String label, Class<?> labelType, boolean isInitialized)
+        public Label(String name, Class<?> type, boolean isInitialized)
         {
-            this.label = label;
-            this.labelType = labelType;
+            this.name = name;
+            this.type = type;
             this.isInitialized = isInitialized;
         }
     }
@@ -103,7 +103,7 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitAffectation(SolParser.AffectationContext ctx)
     {
-        Class<?> labelType = this.labelCache.get(ctx.LABEL().getText()).labelType;
+        Class<?> labelType = this.labelCache.get(ctx.LABEL().getText()).type;
         Class<?> valueType = this.types.get(ctx.expression());
 
         if(!this.labelCache.containsKey(ctx.LABEL().getText()))
@@ -112,7 +112,7 @@ public class TypeRecord extends SolBaseListener
             this.programErrors++;
         }
 
-        else if(labelType != valueType)
+        else if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
         {
             ErrorHandler.incompatibleTypes(ctx, labelType.getName(), valueType.getName());
             this.programErrors++;
@@ -174,7 +174,7 @@ public class TypeRecord extends SolBaseListener
 
         Label label = this.labelCache.get(ctx.getText());
 
-        this.types.put(ctx, label != null ? label.labelType : null);
+        this.types.put(ctx, label != null ? label.type: null);
     }
 
     @Override

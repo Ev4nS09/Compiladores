@@ -1,0 +1,76 @@
+galloc 10
+iconst 1
+gstore 0
+dconst 0
+gstore 1
+sconst 1
+gstore 2
+tconst
+gstore 3
+iconst 2
+gstore 4
+iconst 3
+gstore 5
+iconst 1
+gstore 6
+iconst 2
+gstore 8
+gload 0
+itod
+gload 1
+dadd
+dprint
+gload 0
+itod
+gload 1
+ddiv
+dprint
+gload 0
+itod
+gload 1
+dmult
+dprint
+gload 0
+itos
+gload 2
+sadd
+sprint
+gload 1
+dtos
+gload 2
+sadd
+sprint
+gload 3
+btos
+gload 2
+sadd
+sprint
+gload 4
+itos
+sconst 2
+sadd
+gload 5
+itos
+sadd
+sconst 2
+sadd
+gload 6
+itos
+sadd
+sprint
+gload 8
+iprint
+iconst 1
+iconst 2
+iadd
+gstore 0
+iconst 1
+itod
+dconst 3
+dadd
+gstore 1
+gload 2
+sconst 4
+sadd
+gstore 2
+halt

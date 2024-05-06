@@ -173,7 +173,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitAffectation(SolParser.AffectationContext ctx)
     {
-        visit(ctx.expression());
+        possibleConversion(this.types.get(ctx), ctx.expression());
         this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(ctx.LABEL().getText()))));
 
         return null;
