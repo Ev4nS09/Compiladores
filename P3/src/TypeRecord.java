@@ -4,8 +4,6 @@ import org.antlr.v4.runtime.tree.*;
 import Antlr.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 
 public class TypeRecord extends SolBaseListener
 {
@@ -95,22 +93,11 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitFor(SolParser.ForContext ctx)
     {
-        if(this.types.get(ctx.expression()) != int.class && this.types.get(ctx.expression()) != double.class)
+        if(this.types.get(ctx.expression()) != int.class || this.types.get(ctx.affectation()) != int.class)
         {
-            ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), double.class.getName());
+            ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), int.class.getName());
             this.programErrors++;
         }
-
-        Class<?> result = null;
-        Class<?> affectionType = this.types.get(ctx.affectation());
-        Class<?> expressionType = this.types.get(ctx.expression());
-
-        if(affectionType == double.class || expressionType == double.class)
-            result = double.class;
-        else if(affectionType == int.class || expressionType== int.class)
-            result = int.class;
-
-        this.types.put(ctx, result);
     }
 
     @Override
@@ -184,7 +171,10 @@ public class TypeRecord extends SolBaseListener
             ErrorHandler.undefinedVariables(ctx, ctx.getText());
             this.programErrors++;
         }
-        this.types.put(ctx, this.labelCache.get(ctx.getText()).labelType);
+
+        Label label = this.labelCache.get(ctx.getText());
+
+        this.types.put(ctx, label != null ? label.labelType : null);
     }
 
     @Override

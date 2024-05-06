@@ -1,0 +1,16 @@
+galloc 3
+sconst 0
+gstore 0
+tconst
+gstore 1
+iconst 1
+gstore 2
+gload 2
+itos
+sconst 1
+sadd
+gload 1
+btos
+sadd
+sprint
+halt

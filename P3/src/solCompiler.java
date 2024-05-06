@@ -80,17 +80,16 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitFor(SolParser.ForContext ctx)
     {
-        String affectionLabel = ctx.affectation().LABEL().getText();
+        Integer affectationLabelPosition = this.labelCache.get(ctx.affectation().LABEL().getText());
 
         visit(ctx.affectation());
         int beginLoop = this.instructions.size();
 
         //The following code just creates an expression just like a while but just uses the symbol '<' per example
         // for i = 1 to 10 equals -> while i < 10
-        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(affectionLabel))));
-        possibleConversionWithTypes(this.types.get(ctx), this.types.get(ctx.affectation()));
-        possibleConversion(this.types.get(ctx), ctx.expression());
-        this.instructions.add(new Instruction(this.types.get(ctx) == int.class ? OpCode.ilt : OpCode.dlt));
+        this.instructions.add(new Instruction(OpCode.gload, new Value(affectationLabelPosition)));
+        visit(ctx.expression());
+        this.instructions.add(new Instruction(OpCode.ileq));
 
         int jumpInstructionIndex = this.instructions.size();
         this.instructions.add(null);
@@ -98,11 +97,9 @@ public class solCompiler extends SolBaseVisitor<Void>
         //The following code just sums 1 to the affection variable
         visit(ctx.line());
         this.instructions.add(new Instruction(OpCode.iconst, new Value(1)));
-        possibleConversionWithTypes(this.types.get(ctx.affectation()), int.class);
-        this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(affectionLabel))));
-
-        this.instructions.add(new Instruction(this.types.get(ctx.affectation()) == int.class ? OpCode.iadd : OpCode.dadd));
-        this.instructions.add(new Instruction(OpCode.gstore, new Value(this.labelCache.get(affectionLabel))));
+        this.instructions.add(new Instruction(OpCode.gload, new Value(affectationLabelPosition)));
+        this.instructions.add(new Instruction(OpCode.iadd));
+        this.instructions.add(new Instruction(OpCode.gstore, new Value(affectationLabelPosition)));
 
         //the following code just sets the jumps, if we are at the end of the loop we go to the beginning
         //if the affection equals the expression we leave the loop
@@ -502,10 +499,6 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.types = typeRecord.getTypes(tree);
         this.instructions.add(new Instruction(OpCode.galloc, new Value(typeRecord.getGlobalMemorySize())));
 
-        //Iterate through the tree
-        this.visit(tree);
-        this.instructions.add(new Instruction(OpCode.halt));
-
         //Checks if type errors existed, if yes it exits the program
         if(typeRecord.getNumberOfErrors() > 0)
         {
@@ -513,13 +506,19 @@ public class solCompiler extends SolBaseVisitor<Void>
             System.exit(1);
         }
 
+        //Iterate through the tree and creates the instructions
+        this.visit(tree);
+        this.instructions.add(new Instruction(OpCode.halt));
+
         if(asm)
             asm();
-
         System.out.println("\nSaving the bytecodes to " + outputFile);
+
 
         //generates the bytecode file of the compiled program
         this.generateByteCode(this.instructions, this.pool.getValueList(), outputFile);
+
+        new tasmGenerator(this.instructions, inputFile.split("\\.")[0] + ".tasm");
     }
 
     private static String readInput()

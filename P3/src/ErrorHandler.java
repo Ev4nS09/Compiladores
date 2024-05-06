@@ -44,7 +44,7 @@ public class ErrorHandler
                 .append("line ")
                 .append(node.start.getLine())
                 .append(". Incopatible types, ")
-                .append(type1).append(" cannot be converted to ").append(type2)
+                .append(type2).append(" cannot be converted to ").append(type1)
         );
     }
 

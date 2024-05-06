@@ -226,9 +226,7 @@ public class tVM
         System.arraycopy(this.globalMemory, 0, newGlobal, 0, this.globalMemory.length);
 
         for(int i = this.globalMemory.length; i < newGlobalSize; i++)
-        {
             newGlobal[i] = new Value("NIL");
-        }
 
         this.globalMemory = newGlobal;
     }

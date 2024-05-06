@@ -64,6 +64,11 @@ public class Value
         return this.type;
     }
 
+    public boolean isType(Class<?> thatType)
+    {
+        return this.type == thatType;
+    }
+
     @Override
     public int hashCode()
     {

@@ -32,12 +32,10 @@ public class Instruction {
         return this.argument != null;
     }
 
-    public void addArgument(Value argument) throws Exception
+    public void addArgument(Value argument)
     {
         if(hasArgument())
             ErrorHandler.throwError("Instruction already as an argument.");
-        ArrayList<?> a;
-        LinkedList<?> b;
         this.argument = argument;
     }
 
