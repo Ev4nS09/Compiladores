@@ -31,6 +31,6 @@ public class Error
     @Override
     public String toString()
     {
-        return errorLine + ": " + errorMessage + " " + "\n" + errorString;
+        return "line " + errorLine + ": " + errorMessage + " " + "\n" + errorString;
     }
 }

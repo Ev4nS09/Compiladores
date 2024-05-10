@@ -1,4 +1,4 @@
-Int a = "hello";
+int a = "hello";
 int b;
 
 while 1 do

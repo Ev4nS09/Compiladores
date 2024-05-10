@@ -2,6 +2,7 @@ package ErrorHandler;
 
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Interval;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,7 @@ public class ErrorLog
 
     public void throwError(ParserRuleContext node, String message)
     {
-        throwError(node.start.getLine(), node.start.getText(), message);
+        throwError(node.start.getLine(), "", message);
     }
 
     public static void fatalError(String message)
