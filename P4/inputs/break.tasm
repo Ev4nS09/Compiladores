@@ -1,0 +1,25 @@
+galloc 4
+iconst 1
+gstore 0
+dconst 0
+gstore 1
+sconst 1
+gstore 2
+tconst
+gstore 3
+Tag_10: tconst
+jumpf Tag_25
+iconst 456785
+gload 0
+ileq
+jumpf Tag_18
+jump Tag_25
+jump Tag_20
+Tag_18: gload 0
+iprint
+Tag_20: gload 0
+iconst 1
+iadd
+gstore 0
+jump Tag_10
+Tag_25: halt

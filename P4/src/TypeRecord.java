@@ -35,7 +35,7 @@ public class TypeRecord extends SolBaseListener
     private Class<?> stringToClass(String type)
     {
         return switch (type)
-       {
+        {
             case "int" -> int.class;
             case "real" -> double.class;
             case "string" -> String.class;
