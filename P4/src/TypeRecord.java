@@ -1,3 +1,4 @@
+import ErrorHandler.ErrorLog;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -9,8 +10,7 @@ public class TypeRecord extends SolBaseListener
 {
     private final ParseTreeProperty<Class<?>> types;
     private final HashMap<String, Label> labelCache;
-    private int programErrors;
-
+    private final ErrorLog errorLog;
     private static class Label
     {
         String name;
@@ -25,11 +25,16 @@ public class TypeRecord extends SolBaseListener
         }
     }
 
-    public TypeRecord()
+    public TypeRecord(ErrorLog errorLog)
     {
         this.types = new ParseTreeProperty<>();
         this.labelCache = new HashMap<>();
-        this.programErrors = 0;
+        this.errorLog = errorLog;
+    }
+
+    public TypeRecord()
+    {
+        this(new ErrorLog());
     }
 
     private Class<?> stringToClass(String type)
@@ -66,38 +71,36 @@ public class TypeRecord extends SolBaseListener
             parent = parent.getParent();
         }
 
-        ErrorHandler.invalidBreak();
-        this.programErrors++;
+        this.errorLog.throwError(ctx, "break outside loop.");
     }
 
     @Override
     public void exitIf(SolParser.IfContext ctx)
     {
         if(this.types.get(ctx.expression()) != boolean.class)
-        {
-            ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), boolean.class.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName()
+                            + " cannot be converted to " + boolean.class.getName());
     }
 
     @Override
     public void exitWhile(SolParser.WhileContext ctx)
     {
         if(this.types.get(ctx.expression()) != boolean.class)
-        {
-            ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), boolean.class.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName()
+                            + " cannot be converted to " + boolean.class.getName());
+
     }
 
     @Override
     public void exitFor(SolParser.ForContext ctx)
     {
         if(this.types.get(ctx.expression()) != int.class || this.types.get(ctx.affectation()) != int.class)
-        {
-            ErrorHandler.incompatibleTypes(ctx, this.types.get(ctx.expression()).getName(), int.class.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName()
+                            + " cannot be converted to " + int.class.getName());
+
     }
 
     @Override
@@ -107,16 +110,14 @@ public class TypeRecord extends SolBaseListener
         Class<?> valueType = this.types.get(ctx.expression());
 
         if(!this.labelCache.containsKey(ctx.LABEL().getText()))
-        {
-            ErrorHandler.undefinedVariables(ctx, ctx.LABEL().getText());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,
+                    "Variable '" + ctx.LABEL().getText() + "'" + " has not been defined");
+
 
         else if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
-        {
-            ErrorHandler.incompatibleTypes(ctx, labelType.getName(), valueType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName()
+                    + " cannot be converted to " + valueType.getName());
+
 
         this.types.put(ctx, labelType);
         this.labelCache.get(ctx.LABEL().getText()).isInitialized = true;
@@ -138,15 +139,12 @@ public class TypeRecord extends SolBaseListener
             Class<?> valueType = this.types.get(ctx.labelExpression(i));
 
             if(valueType != null && stringToClass(labelType) != valueType)
-            {
-                ErrorHandler.incompatibleTypes(ctx, labelType, valueType.getName());
-                this.programErrors++;
-            }
+                this.errorLog.throwError(ctx, "Incopatible types, " + labelType
+                        + " cannot be converted to " + valueType.getName());
+
             else if(this.labelCache.containsKey(label))
-            {
-                ErrorHandler.redefinedVariables(ctx, label);
-                this.programErrors++;
-            }
+                this.errorLog.throwError(ctx, "Variable '" + label + "' is already defined");
+
 
             this.labelCache.put(label, new Label(label, stringToClass(labelType), valueType != null));
         }
@@ -161,16 +159,8 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitLable(SolParser.LableContext ctx)
     {
-        if(!this.labelCache.containsKey(ctx.getText()))
-        {
-            ErrorHandler.undefinedVariables(ctx, ctx.getText());
-            this.programErrors++;
-        }
-        else if(!this.labelCache.get(ctx.getText()).isInitialized)
-        {
-            ErrorHandler.undefinedVariables(ctx, ctx.getText());
-            this.programErrors++;
-        }
+        if(!this.labelCache.containsKey(ctx.getText()) || !this.labelCache.get(ctx.getText()).isInitialized)
+            this.errorLog.throwError(ctx, "Variable '" + ctx.getText()+ "'" + " has not been defined");
 
         Label label = this.labelCache.get(ctx.getText());
 
@@ -192,10 +182,9 @@ public class TypeRecord extends SolBaseListener
         boolean isNodeValidForNot = !ctx.op.getText().equals("not") || nodeType == boolean.class;
 
         if(!(isNodeValidForSub && isNodeValidForNot))
-        {
-            ErrorHandler.unaryOperatorError(ctx, ctx.op.getText(), nodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx, "Invalid type " + nodeType.getName() +
+                    " for unary operator '" + ctx.op.getText() + "'");
+
 
         this.types.put(ctx, this.types.get(ctx.expression()));
     }
@@ -211,10 +200,9 @@ public class TypeRecord extends SolBaseListener
         boolean isRightNodeIntOrDouble = rightNodeType == int.class || rightNodeType == double.class;
 
         if(!isLeftNodeIntOrDouble || !isRightNodeIntOrDouble)
-        {
-            ErrorHandler.binaryOperatorError(ctx, ctx.op.getText(), leftNodeType.getName(), rightNodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
+                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+
 
         if(leftNodeType == double.class || rightNodeType == double.class)
             result = double.class;
@@ -235,10 +223,9 @@ public class TypeRecord extends SolBaseListener
         boolean isLeftOrRightBoolean = leftNodeType == boolean.class || rightNodeType == boolean.class;
 
         if(isLeftAndRightNotString && isLeftOrRightBoolean)
-        {
-            ErrorHandler.binaryOperatorError(ctx, ctx.op.getText(), leftNodeType.getName(), rightNodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
+                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+
 
         if(leftNodeType == String.class || rightNodeType == String.class)
             result = String.class;
@@ -260,10 +247,8 @@ public class TypeRecord extends SolBaseListener
         boolean isLeftOrRightBoolean = leftNodeType == boolean.class || rightNodeType == boolean.class;
 
         if(isLeftOrRightString || isLeftOrRightBoolean)
-        {
-            ErrorHandler.binaryOperatorError(ctx, ctx.op.getText(), leftNodeType.getName(), rightNodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
+                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
 
         this.types.put(ctx, boolean.class);
     }
@@ -280,10 +265,9 @@ public class TypeRecord extends SolBaseListener
         boolean isRightAndLeftNumber = isLeftNodeIntOrDouble && isRightNodeIntOrDouble;
 
         if(leftNotEqualsRight && !(isRightAndLeftNumber))
-        {
-            ErrorHandler.incomparableTypesError(ctx, leftNodeType.getName(), rightNodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,  "Incopatible types, " + rightNodeType.getName()
+                    + " cannot be converted to " + leftNodeType.getName());
+
 
 
         this.types.put(ctx, boolean.class);
@@ -296,10 +280,9 @@ public class TypeRecord extends SolBaseListener
         Class<?> rightNodeType = this.types.get(ctx.expression(1));
 
         if(leftNodeType != boolean.class || rightNodeType != boolean.class)
-        {
-            ErrorHandler.binaryOperatorError(ctx, ctx.op.getText(), leftNodeType.getName(), rightNodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
+                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+
 
         this.types.put(ctx, boolean.class);
     }
@@ -311,10 +294,10 @@ public class TypeRecord extends SolBaseListener
         Class<?> rightNodeType = this.types.get(ctx.expression(1));
 
         if(leftNodeType != boolean.class || rightNodeType != boolean.class)
-        {
-            ErrorHandler.binaryOperatorError(ctx, ctx.op.getText(), leftNodeType.getName(), rightNodeType.getName());
-            this.programErrors++;
-        }
+            this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
+                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+
+
 
         this.types.put(ctx, boolean.class);
     }
@@ -356,9 +339,9 @@ public class TypeRecord extends SolBaseListener
         return this.labelCache.size();
     }
 
-    public int getNumberOfErrors()
+    public ErrorLog getErrorLog()
     {
-        return this.programErrors;
+        return this.errorLog;
     }
 
 }

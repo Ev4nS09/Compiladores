@@ -1,3 +1,5 @@
+import ErrorHandler.ErrorLog;
+
 import java.io.*;
 import java.util.*;
 
@@ -170,7 +172,7 @@ public class tVM
         this.generateInstructions();
 
         if(!this.instructions.contains(new Instruction(OpCode.halt)))
-            ErrorHandler.throwError("Code doesn't halt.");
+            ErrorLog.fatalError("Code doesn't halt.");
 
         while(this.instructionPointer < this.instructions.size())
         {
@@ -258,7 +260,7 @@ public class tVM
     private void gload(Integer address)
     {
         if(address >= this.globalMemory.length)
-            ErrorHandler.throwError("Index out of bounds.");
+           ErrorLog.fatalError("Index out of bounds.");
 
         this.stack.push(this.globalMemory[address]);
     }
@@ -266,7 +268,7 @@ public class tVM
     private void gstore(Integer address)
     {
         if(address >= this.globalMemory.length)
-            ErrorHandler.throwError("Index out of bounds.");
+            ErrorLog.fatalError("Index out of bounds.");
 
         this.globalMemory[address] = this.stack.pop();
     }
@@ -282,7 +284,7 @@ public class tVM
         int position = this.framePointer + address;
 
         if(position < 0 || position > this.stack.size())
-            ErrorHandler.throwError("Accessing memory out of bounds");
+            ErrorLog.fatalError("Accessing memory out of bounds");
 
         this.stack.push(this.stack.get(this.framePointer + address));
     }
@@ -364,7 +366,7 @@ public class tVM
         int left = this.stack.pop().getInteger();
 
         if(right == 0)
-            ErrorHandler.throwError("Divisor mustn't be 0");
+            ErrorLog.fatalError("Divisor mustn't be 0");
 
         this.stack.push(new Value(left / right));
     }
@@ -375,7 +377,7 @@ public class tVM
         int left = this.stack.pop().getInteger();
 
         if(right == 0)
-            ErrorHandler.throwError("Divisor mustn't be 0");
+            ErrorLog.fatalError("Divisor mustn't be 0");
 
         this.stack.push(new Value(left % right));
     }
@@ -476,7 +478,7 @@ public class tVM
         double left = stack.pop().getDouble();
 
         if(right == 0)
-            ErrorHandler.throwError("Divisor mustn't be 0");
+            ErrorLog.fatalError("Divisor mustn't be 0");
 
         this.stack.push(new Value(left / right));
     }
@@ -704,7 +706,7 @@ public class tVM
     {
         if(args.length > 2)
         {
-            ErrorHandler.throwError("Too many Program arguments. tVM [OPTION] [FILE]");
+            ErrorLog.fatalError("Too many Program arguments. tVM [OPTION] [FILE]");
         }
 
         String inputFile = null;
@@ -730,12 +732,12 @@ public class tVM
 
         if(!new File(inputFile).exists())
         {
-            ErrorHandler.throwError("File " + inputFile + " does not exist." );
+            ErrorLog.fatalError("File " + inputFile + " does not exist." );
         }
 
         if (!inputFile.split("\\.")[1].equals("tbc"))
         {
-            ErrorHandler.throwError("Invalid file extension, File must have the extension tbc.");
+            ErrorLog.fatalError("Invalid file extension, File must have the extension tbc.");
         }
 
         tVM virtualMachine = new tVM(trace);

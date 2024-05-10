@@ -26,7 +26,7 @@ instruction : constant
 
             | printf
 
-            | '\n'
+            | ('\n' | '\r')
 
             | HALT
 

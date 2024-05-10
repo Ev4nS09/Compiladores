@@ -1,11 +1,16 @@
-
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+import Antlr.SolBaseVisitor;
+import Antlr.SolLexer;
+import Antlr.SolParser;
+import ErrorHandler.ErrorLog;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
 import java.io.*;
-import java.util.*;
-
-import Antlr.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 
 public class solCompiler extends SolBaseVisitor<Void>
@@ -17,6 +22,8 @@ public class solCompiler extends SolBaseVisitor<Void>
     private ParseTreeProperty<Class<?>> types;
     private int globalMemoryPointer;
 
+    private final ErrorLog errorLog;
+
     public solCompiler()
     {
         this.instructions = new LinkedList<>();
@@ -24,6 +31,8 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.labelCache = new HashMap<>();
         this.types = new ParseTreeProperty<>();
         this.globalMemoryPointer = 0;
+
+        this.errorLog = new ErrorLog();
     }
 
     private Class<?> mergeTypes(Class<?> left, Class<?> right)
@@ -494,17 +503,20 @@ public class solCompiler extends SolBaseVisitor<Void>
         if(parser.getNumberOfSyntaxErrors() > 0)
             System.exit(1);
 
+        ErrorLog errorLog = new ErrorLog();
+
         //Annotates and saves the types.
-        TypeRecord typeRecord = new TypeRecord();
+        TypeRecord typeRecord = new TypeRecord(errorLog);
         this.types = typeRecord.getTypes(tree);
+        errorLog = typeRecord.getErrorLog();
 
         if(typeRecord.getGlobalMemorySize() > 0)
             this.instructions.add(new Instruction(OpCode.galloc, new Value(typeRecord.getGlobalMemorySize())));
 
         //Checks if type errors existed, if yes it exits the program
-        if(typeRecord.getNumberOfErrors() > 0)
+        if(errorLog.getNumberOfErrors() > 0)
         {
-            System.err.println(inputFile + " has " + typeRecord.getNumberOfErrors() + " type cheking errors");
+            System.err.println(inputFile + " has " + errorLog.getNumberOfErrors() + " type cheking errors");
             System.exit(1);
         }
 
@@ -541,7 +553,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         if(args.length > 2)
         {
-            ErrorHandler.throwError("Too many Program arguments. tVM [OPTION] [FILE]");
+            new ErrorLog().fatalError("Too many Program arguments. tVM [OPTION] [FILE]");
         }
 
         String inputFile = null;
@@ -567,12 +579,12 @@ public class solCompiler extends SolBaseVisitor<Void>
 
         if(!new File(inputFile).exists())
         {
-            ErrorHandler.throwError("File " + inputFile + " does not exist." );
+            new ErrorLog().fatalError("File " + inputFile + " does not exist." );
         }
 
         if (!inputFile.split("\\.")[1].equals("sol"))
         {
-            ErrorHandler.throwError("Invalid file extension, File must have the extension sol.");
+            new ErrorLog().fatalError("Invalid file extension, File must have the extension sol.");
         }
 
         String outputFile = inputFile.split("\\.")[0].concat(".tbc");

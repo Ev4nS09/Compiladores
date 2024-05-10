@@ -1,4 +1,5 @@
 
+import ErrorHandler.ErrorLog;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -9,18 +10,17 @@ import Antlr.*;
 
 public class tAssembler extends TasmBaseListener
 {
-
         private final LinkedList<Instruction> instructions;
         private final ConstantPool<Value> constantPool;
         private HashMap<String, Integer> tagCache;
-        private int programErrorCounter;
+        private ErrorLog errorLog;
 
         public tAssembler()
         {
             this.instructions = new LinkedList<>();
             this.constantPool = new ConstantPool<>();
             this.tagCache = new HashMap<>();
-            this.programErrorCounter = 0;
+            this.errorLog = new ErrorLog();
         }
 
 
@@ -72,10 +72,7 @@ public class tAssembler extends TasmBaseListener
         int argument = Integer.parseInt(ctx.INT().getText());
 
         if(argument < 0 && ctx.alloc.getText().equals("lalloc"))
-        {
-            ErrorHandler.error(ctx.start.getLine() + " Cannot allocate negative memory");
-            this.programErrorCounter++;
-        }
+            this.errorLog.throwError(ctx, " Cannot allocate negative memory");
 
         this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()), new Value(argument)));
     }
@@ -84,10 +81,8 @@ public class tAssembler extends TasmBaseListener
     public void exitCall(TasmParser.CallContext ctx)
     {
         if(!this.tagCache.containsKey(ctx.TAG().getText()))
-        {
-            ErrorHandler.undefinedTag(ctx, ctx.TAG().getText());
-            this.programErrorCounter++;
-        }
+            this.errorLog.throwError(ctx, "Variable '" + ctx.TAG().getText() + "' has not been defined.");
+
 
         Integer line = this.tagCache.get(ctx.TAG().getText());
         this.instructions.add(new Instruction(OpCode.call, new Value(line)));
@@ -132,14 +127,9 @@ public class tAssembler extends TasmBaseListener
             Integer line = this.tagCache.get(ctx.tag.getText());
 
             if(line == null)
-            {
-                ErrorHandler.undefinedTag(ctx, ctx.tag.getText());
-                this.programErrorCounter++;
-            }
+                this.errorLog.throwError(ctx, "Variable '" + ctx.TAG().getText() + "' has not been defined.");
             else
-            {
                 this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), new Value(line)));
-            }
         }
 
         @Override
@@ -223,17 +213,19 @@ public class tAssembler extends TasmBaseListener
         if(parser.getNumberOfSyntaxErrors() > 0)
             System.exit(1);
 
-        TagRecord tagRecord = new TagRecord();
+        TagRecord tagRecord = new TagRecord(this.errorLog);
+        this.errorLog = tagRecord.getErrorLog();
 
         this.tagCache = tagRecord.getTags(tree);
         walker.walk(this, tree);
 
-        if(this.programErrorCounter + tagRecord.getProgramErrors() > 0)
+        if(this.errorLog.getNumberOfErrors() > 0)
+        {
+            System.err.println(inputFile + " has " + this.errorLog.getNumberOfErrors() + " type cheking errors");
             System.exit(1);
+        }
 
         this.generateByteCode(this.instructions, this.constantPool.getValueList(), outputFile);
-
-        System.out.println(this.instructions);
     }
 
     private static String readInput()
@@ -253,7 +245,7 @@ public class tAssembler extends TasmBaseListener
     {
         if(args.length > 1)
         {
-            ErrorHandler.throwError("Too many Program arguments. The arguments must the file you want to compile.");
+           ErrorLog.fatalError("Too many Program arguments. The arguments must the file you want to compile.");
         }
 
         String inputFile = null;
@@ -273,7 +265,7 @@ public class tAssembler extends TasmBaseListener
 
         if (!inputFile.split("\\.")[1].equals("tasm"))
         {
-            ErrorHandler.throwError("Invalid file extension, File must have the extension tasm.");
+            ErrorLog.fatalError("Invalid file extension, File must have the extension tasm.");
         }
 
         String outputFile = inputFile.split("\\.")[0].concat(".tbc");

@@ -1,3 +1,5 @@
+import ErrorHandler.ErrorLog;
+
 import java.util.*;
 
 public class Instruction {
@@ -35,7 +37,7 @@ public class Instruction {
     public void addArgument(Value argument)
     {
         if(hasArgument())
-            ErrorHandler.throwError("Instruction already as an argument.");
+            ErrorLog.fatalError("Instruction already as an argument.");
         this.argument = argument;
     }
 

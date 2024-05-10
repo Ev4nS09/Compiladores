@@ -1,3 +1,5 @@
+import ErrorHandler.ErrorLog;
+
 import java.io.*;
 
 public class ByteCodeBuffer
@@ -12,7 +14,7 @@ public class ByteCodeBuffer
     public byte getByte() throws IOException
     {
         if(!isAvailable())
-            ErrorHandler.throwError("Out of file.");
+            ErrorLog.fatalError("Out of file.");
 
         return this.byteBuffer.readByte();
     }
@@ -20,7 +22,7 @@ public class ByteCodeBuffer
     public int getInt() throws IOException
     {
         if(!isAvailable())
-            ErrorHandler.throwError("Out of file.");
+            ErrorLog.fatalError("Out of file.");
         return this.byteBuffer.readInt();
     }
 

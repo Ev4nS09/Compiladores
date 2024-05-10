@@ -1,3 +1,5 @@
+import ErrorHandler.ErrorLog;
+
 import java.util.Arrays;
 
 public class Value
@@ -24,7 +26,7 @@ public class Value
            this.type = null;
         }
         else if(this.value == null)
-            ErrorHandler.throwError("Invalid Type, the valid types are: ".concat(Arrays.toString(VALID_TYPES)));
+            ErrorLog.fatalError("Invalid Type, the valid types are: ".concat(Arrays.toString(VALID_TYPES)));
     }
 
     public Object getObject()
@@ -35,7 +37,7 @@ public class Value
     public Integer getInteger()
     {
         if(!(this.value instanceof Integer))
-            ErrorHandler.throwError("Couldn't cast to Integer, because the value is not an instance of Integer");
+            ErrorLog.fatalError("Couldn't cast to Integer, because the value is not an instance of Integer");
 
         return (Integer) this.value;
     }
@@ -43,7 +45,7 @@ public class Value
     public Double getDouble()
     {
         if(!(this.value instanceof Double))
-            ErrorHandler.throwError("Couldn't cast to Double, because the value is not an instance of Double");
+            ErrorLog.fatalError("Couldn't cast to Double, because the value is not an instance of Double");
 
         return (Double) this.value;
     }
@@ -51,7 +53,7 @@ public class Value
     public String getString()
     {
         if(!(this.value instanceof String))
-            ErrorHandler.throwError("Couldn't cast to String, because the value is not an instance of String");
+            ErrorLog.fatalError("Couldn't cast to String, because the value is not an instance of String");
 
         return (String) this.value;
     }
@@ -59,7 +61,7 @@ public class Value
     public Boolean getBoolean()
     {
         if(!(this.value instanceof Boolean))
-            ErrorHandler.throwError("Couldn't cast to Boolean, because the value is not an instance of Boolean");
+            ErrorLog.fatalError("Couldn't cast to Boolean, because the value is not an instance of Boolean");
 
         return (Boolean) this.value;
     }
