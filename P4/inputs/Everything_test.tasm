@@ -55,7 +55,7 @@ gload 1
 iadd
 gstore 1
 jump Tag_12
-Tag_59: sconst "a: "
+Tag_58: sconst "a: "
 gload 0
 itos
 sadd

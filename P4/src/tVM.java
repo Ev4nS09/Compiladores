@@ -3,6 +3,8 @@ import java.util.*;
 
 public class tVM
 {
+    private static final Value NIL = new Value("NIL");
+
     private final Stack<Value> stack;
     private Value[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
@@ -12,6 +14,7 @@ public class tVM
     private final boolean trace;
 
     private int instructionPointer;
+    private int framePointer;
 
     public tVM(boolean trace)
     {
@@ -24,6 +27,7 @@ public class tVM
 
         this.instructions = new LinkedList<>();
         this.instructionPointer = 0;
+        this.framePointer = 0;
 
     }
 
@@ -38,6 +42,7 @@ public class tVM
         {
             System.out.println("                " + "Globals: " + Arrays.toString(this.globalMemory));
             System.out.println("                " +  "Stack: " + this.stack);
+            System.out.println("                " +  "FramePointer: " + this.framePointer);
             System.out.println(this.instructionPointer + ": " + this.instructions.get(instructionPointer));
         }
 
@@ -65,6 +70,20 @@ public class tVM
             case gload -> gload(argument);
 
             case gstore -> gstore(argument);
+
+            case lalloc -> lalloc(argument);
+
+            case lload -> lload(argument);
+
+            case lstore -> lstore(argument);
+
+            case call -> call(argument);
+
+            case ret -> ret(argument);
+
+            case retval -> retval(argument);
+
+            case pop -> pop(argument);
 
             case tconst -> tconst();
 
@@ -140,6 +159,7 @@ public class tVM
 
             case not -> not();
 
+            case halt -> halt();
         }
 
     }
@@ -149,12 +169,16 @@ public class tVM
         this.byteCodeBuffer = new ByteCodeBuffer(byteCodeFile);
         this.generateInstructions();
 
-        if(this.instructions.getLast().getInstruction() != OpCode.halt)
+        if(!this.instructions.contains(new Instruction(OpCode.halt)))
             ErrorHandler.throwError("Code doesn't halt.");
 
         while(this.instructionPointer < this.instructions.size())
         {
             Instruction instruction = this.instructions.get(this.instructionPointer);
+
+            if(instruction.getInstruction() == OpCode.halt)
+                break;
+
             doInstruction(instruction);
         }
 
@@ -226,7 +250,7 @@ public class tVM
         System.arraycopy(this.globalMemory, 0, newGlobal, 0, this.globalMemory.length);
 
         for(int i = this.globalMemory.length; i < newGlobalSize; i++)
-            newGlobal[i] = new Value("NIL");
+            newGlobal[i] = NIL;
 
         this.globalMemory = newGlobal;
     }
@@ -245,6 +269,62 @@ public class tVM
             ErrorHandler.throwError("Index out of bounds.");
 
         this.globalMemory[address] = this.stack.pop();
+    }
+
+    private void lalloc(Integer size)
+    {
+        while(size-- > 0)
+            this.stack.push(NIL);
+    }
+
+    private void lload(Integer address)
+    {
+        int position = this.framePointer + address;
+
+        if(position < 0 || position > this.stack.size())
+            ErrorHandler.throwError("Accessing memory out of bounds");
+
+        this.stack.push(this.stack.get(this.framePointer + address));
+    }
+
+    private void lstore(Integer address)
+    {
+        this.stack.set(this.framePointer + address, this.stack.pop());
+    }
+
+    private void call(Integer line)
+    {
+        this.stack.push(new Value(this.framePointer));
+        this.framePointer = this.stack.size() - 1;
+
+        this.stack.push(new Value(this.instructionPointer));
+        this.instructionPointer = line;
+    }
+
+
+    private void ret(Integer numberOfArgs)
+    {
+        this.instructionPointer = this.stack.pop().getInteger();
+        this.framePointer = this.stack.pop().getInteger();
+
+        this.pop(numberOfArgs);
+    }
+
+    private void retval(Integer numberOfArgs)
+    {
+        Value returnedValue = this.stack.pop();
+
+        this.instructionPointer = this.stack.pop().getInteger();
+        this.framePointer = this.stack.pop().getInteger();
+
+        this.pop(numberOfArgs);
+        this.stack.push(returnedValue);
+    }
+
+    private void pop(Integer size)
+    {
+        while(size-- > 0)
+            this.stack.pop();
     }
 
     private void iprint()
@@ -552,11 +632,20 @@ public class tVM
         this.stack.push(new Value(!bool));
     }
 
+    private void halt()
+    {
+        System.exit(0);
+    }
+
     private boolean opCodeHasArgument(OpCode instruction)
     {
         return instruction == OpCode.iconst || instruction == OpCode.dconst || instruction == OpCode.sconst ||
                 instruction == OpCode.galloc || instruction == OpCode.gload || instruction == OpCode.gstore ||
-                instruction == OpCode.jump || instruction == OpCode.jumpf || instruction == OpCode.jumpt;
+                instruction == OpCode.lalloc || instruction == OpCode.lload || instruction == OpCode.lstore ||
+                instruction == OpCode.call || instruction == OpCode.retval || instruction == OpCode.ret ||
+                instruction == OpCode.jump || instruction == OpCode.jumpf || instruction == OpCode.jumpt ||
+                instruction == OpCode.pop
+                ;
     }
 
 

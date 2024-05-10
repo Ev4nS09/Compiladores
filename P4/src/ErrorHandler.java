@@ -3,6 +3,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public class ErrorHandler
 {
+
+    public static void error(String message)
+    {
+        System.err.println("Error: " + message);
+    }
+
     public static void throwError(String message)
     {
         System.err.println("Error: " + message);

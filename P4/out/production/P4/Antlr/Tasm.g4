@@ -44,7 +44,7 @@ constant: ICONST INT                                #Iconst
 
 
 allocation: alloc=(GALLOC | GLOAD | GSTORE) INT                                                    #Global
-          | alloc=(LALLOC | LLOAD | LSTORE) ('-'? INT)                                             #Local
+          | alloc=(LALLOC | LLOAD | LSTORE) INT                                                    #Local
           ;
 
 call: CALL TAG
@@ -77,7 +77,7 @@ jump: jp=(JUMP | JUMPF | JUMPT) tag=TAG                                         
 
 HALT: 'halt';
 BOOL: 'true' | 'false';
-INT: [0-9]+;
+INT: ([0-9]+) | ('-' [0-9]+);
 DOUBLE: [0-9]+(('.'[0-9]+)?);
 STRING: '"' ('\\"' | .)*? '"';
 

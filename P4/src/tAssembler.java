@@ -59,19 +59,52 @@ public class tAssembler extends TasmBaseListener
             this.instructions.add(new Instruction(OpCode.fconst));
         }
 
-        public void exitGlobal(TasmParser.GlobalContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()),
-                                    new Value(Integer.parseInt(ctx.INT().getText())))
-            );
-        }
-
-    @Override
-    public void exitLocal(TasmParser.LocalContext ctx)
+    public void exitGlobal(TasmParser.GlobalContext ctx)
     {
         this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()),
                                 new Value(Integer.parseInt(ctx.INT().getText())))
         );
+    }
+
+    @Override
+    public void exitLocal(TasmParser.LocalContext ctx)
+    {
+        int argument = Integer.parseInt(ctx.INT().getText());
+
+        if(argument < 0 && ctx.alloc.getText().equals("lalloc"))
+        {
+            ErrorHandler.error(ctx.start.getLine() + " Cannot allocate negative memory");
+            this.programErrorCounter++;
+        }
+
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.alloc.getText()), new Value(argument)));
+    }
+
+    @Override
+    public void exitCall(TasmParser.CallContext ctx)
+    {
+        if(!this.tagCache.containsKey(ctx.TAG().getText()))
+        {
+            ErrorHandler.undefinedTag(ctx, ctx.TAG().getText());
+            this.programErrorCounter++;
+        }
+
+        Integer line = this.tagCache.get(ctx.TAG().getText());
+        this.instructions.add(new Instruction(OpCode.call, new Value(line)));
+    }
+
+    @Override
+    public void exitReturn(TasmParser.ReturnContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.ret.getText()),
+                new Value(Integer.parseInt(ctx.INT().getText())))
+        );
+    }
+
+    @Override
+    public void exitPop(TasmParser.PopContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.pop, new Value(Integer.parseInt(ctx.INT().getText()))));
     }
 
     public void exitConditions(TasmParser.ConditionsContext ctx)
@@ -161,6 +194,7 @@ public class tAssembler extends TasmBaseListener
             }
         }
 
+
         //Generates bytes for instructions
         for (Instruction instruction : instructions)
         {
@@ -198,6 +232,8 @@ public class tAssembler extends TasmBaseListener
             System.exit(1);
 
         this.generateByteCode(this.instructions, this.constantPool.getValueList(), outputFile);
+
+        System.out.println(this.instructions);
     }
 
     private static String readInput()
@@ -244,6 +280,7 @@ public class tAssembler extends TasmBaseListener
 
         tAssembler compiler = new tAssembler();
         compiler.compile(inputFile, outputFile);
+
 
         System.out.println("Program compiled successfully.");
     }
