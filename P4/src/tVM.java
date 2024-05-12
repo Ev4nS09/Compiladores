@@ -702,6 +702,12 @@ public class tVM
         return result;
     }
 
+    int x (int x)
+    {
+      while(1 == 1)
+        return 1;
+    }
+
     public static void main(String[] args) throws Exception
     {
         if(args.length > 2)

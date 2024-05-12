@@ -1,0 +1,8 @@
+iconst 1
+iconst 2
+ieq
+jumpf Tag_7
+iconst 1
+jump Tag_8
+Tag_7: iconst 2
+Tag_8: halt

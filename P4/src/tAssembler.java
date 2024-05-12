@@ -220,10 +220,7 @@ public class tAssembler extends TasmBaseListener
         walker.walk(this, tree);
 
         if(this.errorLog.getNumberOfErrors() > 0)
-        {
-            System.err.println(inputFile + " has " + this.errorLog.getNumberOfErrors() + " type cheking errors");
-            System.exit(1);
-        }
+            ErrorLog.fatalError(inputFile + " has " + this.errorLog.getNumberOfErrors() + " type cheking errors");
 
         this.generateByteCode(this.instructions, this.constantPool.getValueList(), outputFile);
     }

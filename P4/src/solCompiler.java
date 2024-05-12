@@ -22,7 +22,6 @@ public class solCompiler extends SolBaseVisitor<Void>
     private ParseTreeProperty<Class<?>> types;
     private int globalMemoryPointer;
 
-    private final ErrorLog errorLog;
 
     public solCompiler()
     {
@@ -32,7 +31,6 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.types = new ParseTreeProperty<>();
         this.globalMemoryPointer = 0;
 
-        this.errorLog = new ErrorLog();
     }
 
     private Class<?> mergeTypes(Class<?> left, Class<?> right)
@@ -204,7 +202,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     }
 
     @Override
-    public Void visitDeclaration(SolParser.DeclarationContext ctx)
+    public Void visitLocalDeclaration(SolParser.LocalDeclarationContext ctx)
     {
         for(int i = 0; i < ctx.labelExpression().size(); i++)
            visit(ctx.labelExpression(i));
@@ -553,7 +551,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         if(args.length > 2)
         {
-            new ErrorLog().fatalError("Too many Program arguments. tVM [OPTION] [FILE]");
+            ErrorLog.fatalError("Too many Program arguments. tVM [OPTION] [FILE]");
         }
 
         String inputFile = null;

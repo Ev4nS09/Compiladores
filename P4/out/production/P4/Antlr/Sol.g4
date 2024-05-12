@@ -1,13 +1,32 @@
 grammar Sol;
 
-sol : declaration* line+ EOF
+sol : globalDeclaration* function+ EOF
     ;
 
-declaration : TYPE labelExpression (',' labelExpression)* ';'
+globalDeclaration : TYPE labelExpression (',' labelExpression)* ';'
+                  ;
+
+localDeclaration : TYPE labelExpression (',' labelExpression)* ';'
             ;
 
-line : block | affectation ';' | instruction ';' | if | loop | break | ';'
+scope: block
+     | loop
+     | if
      ;
+
+function : rtype=(TYPE | 'void') fname=LABEL '(' (TYPE LABEL (',' TYPE LABEL)*)? ')' block
+         ;
+
+line : scope
+        |localDeclaration
+        | affectation ';'
+        | instruction ';'
+        | break
+        | return ';'
+        | functionCall ';'
+        | ';'
+     ;
+
 
 break : BREAK ';'
       ;
@@ -32,6 +51,12 @@ affectation: (LABEL '=' expression)
 instruction : PRINT expression
             ;
 
+return: 'return' expression?
+      ;
+
+functionCall: fname=LABEL '(' expression (',' expression)* ')'
+            ;
+
 expression : '(' expression ')'                                             #LRParen
   | op=('not' | '-') expression                                             #Unary
   | expression op=('*' | '/' | '%') expression 		                        #MultDivMod
@@ -40,6 +65,7 @@ expression : '(' expression ')'                                             #LRP
   | expression op=('==' | '!=') expression                                  #Iguality
   | expression op='and' expression                                          #And
   | expression op='or' expression                                           #Or
+  | functionCall                                                            #FunctionC
   | LABEL                                                                   #Lable
   | DOUBLE         		                                                    #Double
   | INT                                                                     #Int

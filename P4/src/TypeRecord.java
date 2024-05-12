@@ -10,7 +10,8 @@ public class TypeRecord extends SolBaseListener
 {
     private final ParseTreeProperty<Class<?>> types;
     private final HashMap<String, Label> labelCache;
-    private final ErrorLog errorLog;
+    private HashMap<String, Function> functionCache;
+    private ErrorLog errorLog;
     private static class Label
     {
         String name;
@@ -29,6 +30,7 @@ public class TypeRecord extends SolBaseListener
     {
         this.types = new ParseTreeProperty<>();
         this.labelCache = new HashMap<>();
+        this.functionCache = new HashMap<>();
         this.errorLog = errorLog;
     }
 
@@ -79,8 +81,7 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != boolean.class)
             this.errorLog.throwError(ctx,
-                    "Incompatible types, " + this.types.get(ctx.expression()).getName()
-                            + " cannot be converted to " + boolean.class.getName());
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to " + boolean.class.getName());
     }
 
     @Override
@@ -88,8 +89,7 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != boolean.class)
             this.errorLog.throwError(ctx,
-                    "Incompatible types, " + this.types.get(ctx.expression()).getName()
-                            + " cannot be converted to " + boolean.class.getName());
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to " + boolean.class.getName());
 
     }
 
@@ -98,8 +98,7 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != int.class || this.types.get(ctx.affectation()) != int.class)
             this.errorLog.throwError(ctx,
-                    "Incompatible types, " + this.types.get(ctx.expression()).getName()
-                            + " cannot be converted to " + int.class.getName());
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to " + int.class.getName());
 
     }
 
@@ -115,8 +114,7 @@ public class TypeRecord extends SolBaseListener
 
 
         else if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
-            this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName()
-                    + " cannot be converted to " + valueType.getName());
+            this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());
 
 
         this.types.put(ctx, labelType);
@@ -130,7 +128,7 @@ public class TypeRecord extends SolBaseListener
     }
 
     @Override
-    public void exitDeclaration(SolParser.DeclarationContext ctx)
+    public void exitLocalDeclaration(SolParser.LocalDeclarationContext ctx)
     {
         String labelType = ctx.TYPE().getText();
         for(int i = 0; i < ctx.labelExpression().size(); i++)
@@ -139,8 +137,7 @@ public class TypeRecord extends SolBaseListener
             Class<?> valueType = this.types.get(ctx.labelExpression(i));
 
             if(valueType != null && stringToClass(labelType) != valueType)
-                this.errorLog.throwError(ctx, "Incopatible types, " + labelType
-                        + " cannot be converted to " + valueType.getName());
+                this.errorLog.throwError(ctx, "Incopatible types, " + labelType + " cannot be converted to " + valueType.getName());
 
             else if(this.labelCache.containsKey(label))
                 this.errorLog.throwError(ctx, "Variable '" + label + "' is already defined");
@@ -148,6 +145,11 @@ public class TypeRecord extends SolBaseListener
 
             this.labelCache.put(label, new Label(label, stringToClass(labelType), valueType != null));
         }
+    }
+
+    @Override
+    public void exitGlobalDeclaration(SolParser.GlobalDeclarationContext ctx)
+    {
     }
 
     @Override
@@ -165,6 +167,22 @@ public class TypeRecord extends SolBaseListener
         Label label = this.labelCache.get(ctx.getText());
 
         this.types.put(ctx, label != null ? label.type: null);
+    }
+
+    @Override
+    public void exitFunctionCall(SolParser.FunctionCallContext ctx)
+    {
+        if(!this.functionCache.containsKey(ctx.fname.getText()))
+            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText() + "' does not exist.");
+
+        Function function = this.functionCache.get(ctx.fname.getText());
+
+        if(function.numberOfArgs() < ctx.expression().size())
+            this.errorLog.throwError(ctx, "Too many arguments for function '" + function.name() + "'");
+        else if(function.numberOfArgs() > ctx.expression().size())
+            this.errorLog.throwError(ctx, "Too few arguments for function '" + function.name() + "'");
+
+        this.types.put(ctx, function.returnType());
     }
 
     @Override
@@ -328,6 +346,10 @@ public class TypeRecord extends SolBaseListener
 
     public ParseTreeProperty<Class<?>> getTypes(ParseTree tree)
     {
+        FunctionRecord functionRecord = new FunctionRecord();
+        this.functionCache = functionRecord.getFunctions(tree);
+        this.errorLog = functionRecord.getErrorLog();
+
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, tree);
 
