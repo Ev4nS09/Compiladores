@@ -172,16 +172,7 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitFunctionCall(SolParser.FunctionCallContext ctx)
     {
-        if(!this.functionCache.containsKey(ctx.fname.getText()))
-            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText() + "' does not exist.");
-
         Function function = this.functionCache.get(ctx.fname.getText());
-
-        if(function.numberOfArgs() < ctx.expression().size())
-            this.errorLog.throwError(ctx, "Too many arguments for function '" + function.name() + "'");
-        else if(function.numberOfArgs() > ctx.expression().size())
-            this.errorLog.throwError(ctx, "Too few arguments for function '" + function.name() + "'");
-
         this.types.put(ctx, function.returnType());
     }
 
