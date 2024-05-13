@@ -7,7 +7,6 @@ import java.util.HashMap;
 
 public class VariableRecord extends SolBaseListener
 {
-    private record Variable(String name, Class<?> type, boolean isInitialized){}
     private HashMap<String, Variable> variableCache;
     private ErrorLog errorLog;
 
@@ -23,11 +22,12 @@ public class VariableRecord extends SolBaseListener
     }
 
 
-    public HashMap<String, Variable> getVariables(ParseTree tree)
+
+
+    public void checkVariables(ParseTree tree)
     {
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, tree);
-
 
         return this.variableCache;
     }
