@@ -1343,6 +1343,26 @@ public class SolParser extends Parser {
 		}
 	}
 	@SuppressWarnings("CheckReturnValue")
+	public static class FunctionCallExpressionContext extends ExpressionContext {
+		public FunctionCallContext functionCall() {
+			return getRuleContext(FunctionCallContext.class,0);
+		}
+		public FunctionCallExpressionContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof SolListener ) ((SolListener)listener).enterFunctionCallExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof SolListener ) ((SolListener)listener).exitFunctionCallExpression(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof SolVisitor ) return ((SolVisitor<? extends T>)visitor).visitFunctionCallExpression(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class IntContext extends ExpressionContext {
 		public TerminalNode INT() { return getToken(SolParser.INT, 0); }
 		public IntContext(ExpressionContext ctx) { copyFrom(ctx); }
@@ -1446,26 +1466,6 @@ public class SolParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	@SuppressWarnings("CheckReturnValue")
-	public static class FunctionCContext extends ExpressionContext {
-		public FunctionCallContext functionCall() {
-			return getRuleContext(FunctionCallContext.class,0);
-		}
-		public FunctionCContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof SolListener ) ((SolListener)listener).enterFunctionC(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof SolListener ) ((SolListener)listener).exitFunctionC(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof SolVisitor ) return ((SolVisitor<? extends T>)visitor).visitFunctionC(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 
 	public final ExpressionContext expression() throws RecognitionException {
 		return expression(0);
@@ -1522,7 +1522,7 @@ public class SolParser extends Parser {
 				break;
 			case 3:
 				{
-				_localctx = new FunctionCContext(_localctx);
+				_localctx = new FunctionCallExpressionContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(170);

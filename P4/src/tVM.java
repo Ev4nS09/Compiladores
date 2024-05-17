@@ -8,6 +8,7 @@ public class tVM
     private static final Value NIL = new Value("NIL");
 
     private final Stack<Value> stack;
+    private final Stack<Integer> localMemorySizeStack;
     private Value[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
     private final LinkedList<Instruction> instructions;
@@ -22,6 +23,7 @@ public class tVM
     {
         this.byteCodeBuffer = null;
         this.stack = new Stack<>();
+        this.localMemorySizeStack = new Stack<>();
         this.trace = trace;
         this.constPool = new LinkedList<>();
 
@@ -306,6 +308,9 @@ public class tVM
 
     private void ret(Integer numberOfArgs)
     {
+        while(stack.size() > this.framePointer + 2)
+            this.stack.pop();
+
         this.instructionPointer = this.stack.pop().getInteger();
         this.framePointer = this.stack.pop().getInteger();
 
@@ -315,6 +320,9 @@ public class tVM
     private void retval(Integer numberOfArgs)
     {
         Value returnedValue = this.stack.pop();
+
+        while(stack.size() > this.framePointer + 1)
+            this.stack.pop();
 
         this.instructionPointer = this.stack.pop().getInteger();
         this.framePointer = this.stack.pop().getInteger();

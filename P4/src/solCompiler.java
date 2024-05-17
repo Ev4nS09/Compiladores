@@ -4,6 +4,8 @@ import Antlr.SolParser;
 import ErrorHandler.ErrorLog;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
@@ -21,6 +23,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     private final HashMap<String, Integer> labelCache;
     private ParseTreeProperty<Class<?>> types;
     private int globalMemoryPointer;
+    private int localMemoryPointer;
 
 
     public solCompiler()
@@ -30,6 +33,30 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.labelCache = new HashMap<>();
         this.types = new ParseTreeProperty<>();
         this.globalMemoryPointer = 0;
+        this.localMemoryPointer = 0;
+    }
+
+    private boolean isGlobal(RuleContext currentNode)
+    {
+        while(currentNode != null && !(currentNode instanceof SolParser.ScopeContext))
+            currentNode = currentNode.parent;
+
+        return currentNode == null;
+    }
+
+    private OpCode returnGlobalAllocCode(boolean isGlobal)
+    {
+        return isGlobal ? OpCode.galloc : OpCode.lalloc;
+    }
+
+    private OpCode returnGlobalLoadCode(boolean isGlobal)
+    {
+        return isGlobal ? OpCode.gload : OpCode.lload;
+    }
+
+    private OpCode returnGlobalStoreCode(boolean isGlobal)
+    {
+        return isGlobal ? OpCode.gstore : OpCode.lstore;
     }
 
     private Class<?> mergeTypes(Class<?> left, Class<?> right)
@@ -503,14 +530,15 @@ public class solCompiler extends SolBaseVisitor<Void>
         ErrorLog errorLog = new ErrorLog();
 
         //Annotates and saves the types.
-        TypeRecord typeRecord = new TypeRecord(errorLog);
-        this.types = typeRecord.getTypes(tree);
-        errorLog = typeRecord.getErrorLog();
+        SemanticChecker semanticChecker = new SemanticChecker(errorLog);
+        semanticChecker.sementicCheckTree(tree);
+
+        this.types = semanticChecker.getTypes();
 
         //Checks if type errors existed, if yes it exits the program
         if(errorLog.getNumberOfErrors() > 0)
         {
-            System.err.println(inputFile + " has " + errorLog.getNumberOfErrors() + " type cheking errors");
+            System.err.println(inputFile + " has " + errorLog.getNumberOfErrors() + " type checking errors");
             System.exit(1);
         }
 

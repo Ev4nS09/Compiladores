@@ -130,7 +130,7 @@ public class FunctionRecord extends SolBaseListener
         }
 
         if(!isValidReturn && !ctx.rtype.getText().equals("void"))
-            this.errorLog.throwError(ctx, "Invalid returns");
+            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText()  + "' may noy return");
 
         if(ctx.fname.getText().equals("main") && stringToClass(ctx.rtype.getText()) != void.class)
             this.errorLog.throwError(ctx, "Invalid return type for main.");

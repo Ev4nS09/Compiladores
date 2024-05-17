@@ -13,17 +13,25 @@ public class TypeRecord extends SolBaseListener
     private ParseTreeProperty<HashMap<String, Variable>> variableScopeCache;
     private ErrorLog errorLog;
 
-    public TypeRecord(ErrorLog errorLog)
+    public TypeRecord(HashMap<String, Function> functionCache, ParseTreeProperty<HashMap<String, Variable>> variableScopeCache, ErrorLog errorLog)
     {
         this.types = new ParseTreeProperty<>();
-        this.functionCache = new HashMap<>();
-        this.variableScopeCache = new ParseTreeProperty<>();
+        this.functionCache = functionCache;
+        this.variableScopeCache = variableScopeCache;
         this.errorLog = errorLog;
     }
 
     public TypeRecord()
     {
-        this(new ErrorLog());
+        this(new HashMap<>(), new ParseTreeProperty<>(), new ErrorLog());
+    }
+
+    private SolParser.FunctionContext getFunction(RuleContext ctx)
+    {
+        while(ctx != null && !(ctx instanceof SolParser.FunctionContext))
+            ctx = ctx.parent;
+
+        return ctx != null ? (SolParser.FunctionContext) ctx : null;
     }
 
     private SolParser.ScopeContext getScope(RuleContext ctx)
@@ -87,6 +95,19 @@ public class TypeRecord extends SolBaseListener
     }
 
     @Override
+    public void exitReturn(SolParser.ReturnContext ctx)
+    {
+        Function function = this.functionCache.get(getFunction(ctx).fname.getText());
+
+        if(ctx.expression() == null && function.returnType() != void.class)
+            this.errorLog.throwError(ctx, "Invalid return type 'void' for function '"
+                    + function.name() + "' with return type '" + function.returnType() + "'");
+        else if(ctx.expression() != null && (function.returnType() != this.types.get(ctx.expression())))
+            this.errorLog.throwError(ctx, "Invalid return type '" + this.types.get(ctx.expression()) +
+                    "' for function '" + function.name() + "' with return type '" + function.returnType() + "'");
+    }
+
+    @Override
     public void exitLine(SolParser.LineContext ctx)
     {
         if(ctx.functionCall() != null && this.functionCache.get(ctx.functionCall().fname.getText()).returnType() != void.class)
@@ -124,6 +145,8 @@ public class TypeRecord extends SolBaseListener
     {
         Class<?> labelType = this.getVariable(ctx.LABEL().getText(), getScope(ctx)).type;
         Class<?> valueType = this.types.get(ctx.expression());
+
+        System.out.println(ctx.start.getLine());
 
         if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
             this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());
@@ -171,13 +194,19 @@ public class TypeRecord extends SolBaseListener
     {
         Function function = this.functionCache.get(ctx.fname.getText());
 
-        if(ctx.expression().size() == function.numberOfArgs())
+        if(ctx.expression().size() == function.numberOfArgs() && ctx.expression().size() == function.argumentTypes().size())
             for(int i = 0; i < ctx.expression().size(); i++)
                 if(this.types.get(ctx.expression(i)) != function.argumentTypes().get(i))
                     this.errorLog.throwError(ctx, "Invalid type '" + this.types.get(ctx.expression(i)) +
                     "' for argument with type '" + function.argumentTypes().get(i));
 
         this.types.put(ctx, function.returnType());
+    }
+
+    @Override
+    public void exitFunctionCallExpression(SolParser.FunctionCallExpressionContext ctx)
+    {
+        this.types.put(ctx, this.types.get(ctx.functionCall()));
     }
 
     @Override
@@ -341,21 +370,9 @@ public class TypeRecord extends SolBaseListener
 
     public ParseTreeProperty<Class<?>> getTypes(ParseTree tree)
     {
-        FunctionRecord functionRecord = new FunctionRecord(this.errorLog);
-        this.functionCache = functionRecord.getFunctions(tree);
-
-        VariableRecord variableRecord = new VariableRecord(this.functionCache, this.errorLog);
-        this.variableScopeCache= variableRecord.getVariables(tree);
-
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, tree);
 
         return this.types;
     }
-
-    public ErrorLog getErrorLog()
-    {
-        return this.errorLog;
-    }
-
 }

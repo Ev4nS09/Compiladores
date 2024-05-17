@@ -159,6 +159,13 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitUnary(SolParser.UnaryContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code FunctionCallExpression}
+	 * labeled alternative in {@link SolParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionCallExpression(SolParser.FunctionCallExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Int}
 	 * labeled alternative in {@link SolParser#expression}.
 	 * @param ctx the parse tree
@@ -193,11 +200,4 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLRParen(SolParser.LRParenContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code FunctionC}
-	 * labeled alternative in {@link SolParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionC(SolParser.FunctionCContext ctx);
 }

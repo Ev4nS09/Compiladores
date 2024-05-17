@@ -103,11 +103,14 @@ public class VariableRecord extends SolBaseListener
     {
         HashMap<String, Variable> argumentDeclarations = new HashMap<>();
 
-        for(int i = 0; i < ctx.TYPE().size(); i++)
+        int voidException = ctx.rtype.getText().equals("void") ? -1 : 0;
+
+        for(int i = 1; i < ctx.LABEL().size(); i++)
             argumentDeclarations.put(ctx.LABEL(i).getText(), new Variable(
                     ctx.LABEL(i).getText(),
-                    stringToClass(ctx.TYPE(i).getText()),
+                    stringToClass(ctx.TYPE(i + voidException).getText()),
                     true));
+
 
         this.scopeVariableCache.put(ctx.scope(), argumentDeclarations);
     }
@@ -116,6 +119,7 @@ public class VariableRecord extends SolBaseListener
     public void exitLabel(SolParser.LabelContext ctx)
     {
         SolParser.ScopeContext scope = getScope(ctx);
+
 
         if(!this.scopeVariableCache.get(scope).containsKey(ctx.LABEL().getText()) && getVariable(ctx.LABEL().getText(), scope) == null)
             this.errorLog.throwError(ctx, "Variable '" + ctx.LABEL().getText() + "' was not defined.");

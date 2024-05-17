@@ -62,7 +62,7 @@ expression : '(' expression ')'                                             #LRP
   | expression op=('==' | '!=') expression                                  #Iguality
   | expression op='and' expression                                          #And
   | expression op='or' expression                                           #Or
-  | functionCall                                                            #FunctionC
+  | functionCall                                                            #FunctionCallExpression
   | LABEL                                                                   #Label
   | DOUBLE         		                                                    #Double
   | INT                                                                     #Int
