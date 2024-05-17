@@ -1,4 +1,4 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -29,25 +29,13 @@ public class SolBaseListener implements SolListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterGlobalDeclaration(SolParser.GlobalDeclarationContext ctx) { }
+	@Override public void enterDeclaration(SolParser.DeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitGlobalDeclaration(SolParser.GlobalDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLocalDeclaration(SolParser.LocalDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLocalDeclaration(SolParser.LocalDeclarationContext ctx) { }
+	@Override public void exitDeclaration(SolParser.DeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -245,6 +233,18 @@ public class SolBaseListener implements SolListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLabel(SolParser.LabelContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLabel(SolParser.LabelContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRelational(SolParser.RelationalContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -360,18 +360,6 @@ public class SolBaseListener implements SolListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunctionC(SolParser.FunctionCContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLable(SolParser.LableContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLable(SolParser.LableContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

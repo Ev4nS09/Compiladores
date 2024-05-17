@@ -704,6 +704,7 @@ public class tVM
 
     public static void main(String[] args) throws Exception
     {
+
         if(args.length > 2)
         {
             ErrorLog.fatalError("Too many Program arguments. tVM [OPTION] [FILE]");

@@ -1,8 +1,16 @@
+galloc 7
 iconst 1
+gstore 0
 iconst 2
-ieq
-jumpf Tag_7
-iconst 1
-jump Tag_8
-Tag_7: iconst 2
-Tag_8: halt
+gstore 2
+iconst 3
+gstore 3
+iconst 4
+gstore 5
+iconst 5
+gstore 4
+iconst 6
+gstore 1
+iconst 7
+gstore 6
+halt

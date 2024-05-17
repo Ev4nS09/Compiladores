@@ -3,8 +3,8 @@ import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.*;
 
 import Antlr.*;
-import org.antlr.v4.tool.Rule;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FunctionRecord extends SolBaseListener
@@ -38,13 +38,23 @@ public class FunctionRecord extends SolBaseListener
         };
     }
 
+    private SolParser.ScopeContext getScope(RuleContext ctx)
+    {
+        while(ctx != null && !(ctx instanceof SolParser.ScopeContext))
+            ctx = ctx.parent;
+
+        return ctx != null ? (SolParser.ScopeContext) ctx : null;
+    }
+
     @Override
     public void exitIf(SolParser.IfContext ctx)
     {
-        boolean ifHasValidReturn = ctx.line(0).return_() != null || this.isReturnValidCache.get(ctx.line(0).scope());
-        boolean elseHasValidReturn = ctx.line(1) != null && (ctx.line(1).return_() != null || this.isReturnValidCache.get(ctx.line(1).scope()));
+        boolean ifHasValidReturn = ctx.line(0).return_() != null || (ctx.line(0).scope() != null && this.isReturnValidCache.get(ctx.line(0).scope()));
+        boolean elseHasValidReturn = ctx.line(1) != null && (ctx.line(1).return_() != null || (ctx.line(0).scope() != null && this.isReturnValidCache.get(ctx.line(1).scope())));
 
         boolean result = ifHasValidReturn && elseHasValidReturn;
+
+
 
         this.isReturnValidCache.put(ctx, result);
     }
@@ -68,7 +78,13 @@ public class FunctionRecord extends SolBaseListener
 
         for(SolParser.LineContext line : ctx.line())
         {
-            if(line.return_() != null || (line.scope() != null && this.isReturnValidCache.get(line.scope())))
+            if(line == null)
+                continue;
+
+            boolean scopeIsValid = (line.scope() != null && this.isReturnValidCache.get(line.scope()));
+            boolean ifIsValid = (line.if_() != null && this.isReturnValidCache.get(line.if_()));
+
+            if(line.return_() != null || scopeIsValid || ifIsValid)
             {
                 result = true;
                 break;
@@ -83,37 +99,29 @@ public class FunctionRecord extends SolBaseListener
     {
         boolean result = false;
 
-        if(ctx.if_() != null)
-            result = this.isReturnValidCache.get(ctx.if_());
-        else if(ctx.block() != null)
+        if(ctx.block() != null)
             result = this.isReturnValidCache.get(ctx.block());
-        else if(ctx.loop() != null)
-            result = this.isReturnValidCache.get(ctx.loop());
 
         this.isReturnValidCache.put(ctx, result);
     }
 
-    @Override
-    public void exitFunctionCall(SolParser.FunctionCallContext ctx)
-    {
-        if(!this.functionCache.containsKey(ctx.fname.getText()))
-            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText() + "' does not exist.");
-
-        Function function = this.functionCache.get(ctx.fname.getText());
-
-        if(function.numberOfArgs() < ctx.expression().size())
-            this.errorLog.throwError(ctx, "Too many arguments for function '" + function.name() + "'");
-        else if(function.numberOfArgs() > ctx.expression().size())
-            this.errorLog.throwError(ctx, "Too few arguments for function '" + function.name() + "'");
-    }
 
     @Override
     public void exitFunction(SolParser.FunctionContext ctx)
     {
         boolean isValidReturn = false;
 
-        for(SolParser.LineContext line : ctx.block().line())
+        for(SolParser.LineContext line : ctx.scope().block().line())
         {
+            if(this.isReturnValidCache.get(ctx.scope()) != null && this.isReturnValidCache.get(ctx.scope()))
+            {
+                isValidReturn = true;
+                break;
+            }
+
+            if(line == null)
+                continue;
+
             if(line.return_() != null || (line.scope() != null && this.isReturnValidCache.get(line.scope())))
             {
                 isValidReturn = true;
@@ -124,9 +132,6 @@ public class FunctionRecord extends SolBaseListener
         if(!isValidReturn && !ctx.rtype.getText().equals("void"))
             this.errorLog.throwError(ctx, "Invalid returns");
 
-        if(this.functionCache.containsKey(ctx.fname.getText()))
-            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText() + "' already exists");
-
         if(ctx.fname.getText().equals("main") && stringToClass(ctx.rtype.getText()) != void.class)
             this.errorLog.throwError(ctx, "Invalid return type for main.");
 
@@ -134,25 +139,30 @@ public class FunctionRecord extends SolBaseListener
             this.errorLog.throwError(ctx, "Invalid number of arguments for main, main has no arguments.");
 
 
+        ArrayList<Class<?>> functionTypes = new ArrayList<>();
+
+        for(int i = 1; i < ctx.TYPE().size(); i++)
+            functionTypes.add(stringToClass(ctx.TYPE(i).getText()));
+
         this.functionCache.put(ctx.fname.getText(),
-                new Function(ctx.fname.getText(), ctx.LABEL().size() - 1, stringToClass(ctx.rtype.getText())));
+                new Function(ctx.fname.getText(), ctx.LABEL().size() - 1, stringToClass(ctx.rtype.getText())
+                , functionTypes));
+
+
     }
 
     public HashMap<String, Function> getFunctions(ParseTree tree)
     {
+
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, tree);
 
-        Function mainFunction = new Function("main", 0, void.class);
+        Function mainFunction = new Function("main", 0, void.class, new ArrayList<>());
 
-        if(!this.functionCache.containsValue(mainFunction))
+        if(!this.functionCache.containsKey("main"))
             this.errorLog.throwError(0, "", "Missing main() function.");
 
         return this.functionCache;
     }
 
-    public ErrorLog getErrorLog()
-    {
-        return this.errorLog;
-    }
 }

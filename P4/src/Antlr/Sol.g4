@@ -1,24 +1,21 @@
 grammar Sol;
 
-sol : globalDeclaration* function+ EOF
+sol : declaration* function+ EOF
     ;
 
-globalDeclaration : TYPE labelExpression (',' labelExpression)* ';'
-                  ;
 
-localDeclaration : TYPE labelExpression (',' labelExpression)* ';'
-            ;
+declaration: TYPE labelExpression (',' labelExpression)* ';'
+           ;
 
 scope: block
-     | loop
-     | if
      ;
 
-function : rtype=(TYPE | 'void') fname=LABEL '(' (TYPE LABEL (',' TYPE LABEL)*)? ')' block
+function : rtype=(TYPE | 'void') fname=LABEL '(' (TYPE LABEL (',' TYPE LABEL)*)? ')' scope
          ;
 
 line : scope
-        |localDeclaration
+        | if
+        | loop
         | affectation ';'
         | instruction ';'
         | break
@@ -38,7 +35,7 @@ loop : 'while' expression 'do' line                                             
 if : 'if' expression 'then' line ('else' line)?
    ;
 
-block : 'begin' (line)* 'end'
+block : 'begin' declaration* line* 'end'
       ;
 
 
@@ -54,7 +51,7 @@ instruction : PRINT expression
 return: 'return' expression?
       ;
 
-functionCall: fname=LABEL '(' expression (',' expression)* ')'
+functionCall: fname=LABEL '(' (expression (',' expression)*)? ')'
             ;
 
 expression : '(' expression ')'                                             #LRParen
@@ -66,7 +63,7 @@ expression : '(' expression ')'                                             #LRP
   | expression op='and' expression                                          #And
   | expression op='or' expression                                           #Or
   | functionCall                                                            #FunctionC
-  | LABEL                                                                   #Lable
+  | LABEL                                                                   #Label
   | DOUBLE         		                                                    #Double
   | INT                                                                     #Int
   | BOOL                                                                    #Bool

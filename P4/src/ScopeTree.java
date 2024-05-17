@@ -40,18 +40,23 @@ public class ScopeTree
         return this.children.get(index);
     }
 
+    public ScopeTree getParent()
+    {
+        return this.parent;
+    }
+
     public void addVariable(Variable variable)
     {
         this.scopeVariables.add(variable);
     }
 
-    private Variable getVariableFromList(String variableName)
+    public Variable getVariableFromList(String variableName)
     {
         Variable result = null;
 
         for(Variable variable : this.scopeVariables)
         {
-            if (variable.name().equals(variableName))
+            if (variable.name.equals(variableName))
             {
                 result = variable;
                 break;
@@ -68,7 +73,7 @@ public class ScopeTree
 
         while(currentNode != null)
         {
-            Variable v = this.getVariableFromList(variableName);
+            Variable v = currentNode.getVariableFromList(variableName);
             if (v != null) {
                 result = v;
                 break;
@@ -80,6 +85,9 @@ public class ScopeTree
     }
 
 
-
-
+    @Override
+    public String toString()
+    {
+        return this.scopeVariables.toString() + "\n" + this.children.toString();
+    }
 }

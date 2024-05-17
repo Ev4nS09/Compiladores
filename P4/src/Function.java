@@ -1,4 +1,6 @@
-public record Function(String name, int numberOfArgs, Class<?> returnType)
+import java.util.ArrayList;
+
+public record Function(String name, int numberOfArgs, Class<?> returnType, ArrayList<Class<?>> argumentTypes)
 {
     @Override
     public boolean equals(Object that)

@@ -1,4 +1,4 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -18,25 +18,15 @@ public interface SolListener extends ParseTreeListener {
 	 */
 	void exitSol(SolParser.SolContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SolParser#globalDeclaration}.
+	 * Enter a parse tree produced by {@link SolParser#declaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterGlobalDeclaration(SolParser.GlobalDeclarationContext ctx);
+	void enterDeclaration(SolParser.DeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SolParser#globalDeclaration}.
+	 * Exit a parse tree produced by {@link SolParser#declaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitGlobalDeclaration(SolParser.GlobalDeclarationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SolParser#localDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterLocalDeclaration(SolParser.LocalDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SolParser#localDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitLocalDeclaration(SolParser.LocalDeclarationContext ctx);
+	void exitDeclaration(SolParser.DeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SolParser#scope}.
 	 * @param ctx the parse tree
@@ -208,6 +198,18 @@ public interface SolListener extends ParseTreeListener {
 	 */
 	void exitAddSub(SolParser.AddSubContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code Label}
+	 * labeled alternative in {@link SolParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLabel(SolParser.LabelContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code Label}
+	 * labeled alternative in {@link SolParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLabel(SolParser.LabelContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code Relational}
 	 * labeled alternative in {@link SolParser#expression}.
 	 * @param ctx the parse tree
@@ -327,16 +329,4 @@ public interface SolListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionC(SolParser.FunctionCContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code Lable}
-	 * labeled alternative in {@link SolParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLable(SolParser.LableContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Lable}
-	 * labeled alternative in {@link SolParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLable(SolParser.LableContext ctx);
 }

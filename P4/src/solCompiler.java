@@ -30,7 +30,6 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.labelCache = new HashMap<>();
         this.types = new ParseTreeProperty<>();
         this.globalMemoryPointer = 0;
-
     }
 
     private Class<?> mergeTypes(Class<?> left, Class<?> right)
@@ -202,7 +201,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     }
 
     @Override
-    public Void visitLocalDeclaration(SolParser.LocalDeclarationContext ctx)
+    public Void visitDeclaration(SolParser.DeclarationContext ctx)
     {
         for(int i = 0; i < ctx.labelExpression().size(); i++)
            visit(ctx.labelExpression(i));
@@ -350,7 +349,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     }
 
     @Override
-    public Void visitLable(SolParser.LableContext ctx)
+    public Void visitLabel(SolParser.LabelContext ctx)
     {
         this.instructions.add(new Instruction(OpCode.gload, new Value(this.labelCache.get(ctx.getText()))));
 
@@ -507,9 +506,6 @@ public class solCompiler extends SolBaseVisitor<Void>
         TypeRecord typeRecord = new TypeRecord(errorLog);
         this.types = typeRecord.getTypes(tree);
         errorLog = typeRecord.getErrorLog();
-
-        if(typeRecord.getGlobalMemorySize() > 0)
-            this.instructions.add(new Instruction(OpCode.galloc, new Value(typeRecord.getGlobalMemorySize())));
 
         //Checks if type errors existed, if yes it exits the program
         if(errorLog.getNumberOfErrors() > 0)

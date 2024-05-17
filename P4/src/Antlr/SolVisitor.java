@@ -1,4 +1,4 @@
-// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from /home/rio/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -17,17 +17,11 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSol(SolParser.SolContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SolParser#globalDeclaration}.
+	 * Visit a parse tree produced by {@link SolParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitGlobalDeclaration(SolParser.GlobalDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SolParser#localDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLocalDeclaration(SolParser.LocalDeclarationContext ctx);
+	T visitDeclaration(SolParser.DeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SolParser#scope}.
 	 * @param ctx the parse tree
@@ -130,6 +124,13 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAddSub(SolParser.AddSubContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code Label}
+	 * labeled alternative in {@link SolParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLabel(SolParser.LabelContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Relational}
 	 * labeled alternative in {@link SolParser#expression}.
 	 * @param ctx the parse tree
@@ -199,11 +200,4 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunctionC(SolParser.FunctionCContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Lable}
-	 * labeled alternative in {@link SolParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLable(SolParser.LableContext ctx);
 }

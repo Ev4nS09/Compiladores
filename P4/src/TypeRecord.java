@@ -9,34 +9,44 @@ import java.util.HashMap;
 public class TypeRecord extends SolBaseListener
 {
     private final ParseTreeProperty<Class<?>> types;
-    private final HashMap<String, Label> labelCache;
     private HashMap<String, Function> functionCache;
+    private ParseTreeProperty<HashMap<String, Variable>> variableScopeCache;
     private ErrorLog errorLog;
-    private static class Label
-    {
-        String name;
-        Class<?> type;
-        boolean isInitialized;
-
-        public Label(String name, Class<?> type, boolean isInitialized)
-        {
-            this.name = name;
-            this.type = type;
-            this.isInitialized = isInitialized;
-        }
-    }
 
     public TypeRecord(ErrorLog errorLog)
     {
         this.types = new ParseTreeProperty<>();
-        this.labelCache = new HashMap<>();
         this.functionCache = new HashMap<>();
+        this.variableScopeCache = new ParseTreeProperty<>();
         this.errorLog = errorLog;
     }
 
     public TypeRecord()
     {
         this(new ErrorLog());
+    }
+
+    private SolParser.ScopeContext getScope(RuleContext ctx)
+    {
+        while(ctx != null && !(ctx instanceof SolParser.ScopeContext))
+            ctx = ctx.parent;
+
+        return ctx != null ? (SolParser.ScopeContext) ctx : null;
+    }
+
+    private Variable getVariable(String variableName, SolParser.ScopeContext currentScope)
+    {
+        Variable result = null;
+
+        while(currentScope != null)
+        {
+            if(this.variableScopeCache.get(currentScope).get(variableName) != null)
+                break;
+
+            currentScope = getScope(currentScope.parent);
+        }
+
+        return this.variableScopeCache.get(currentScope).get(variableName);
     }
 
     private Class<?> stringToClass(String type)
@@ -77,6 +87,13 @@ public class TypeRecord extends SolBaseListener
     }
 
     @Override
+    public void exitLine(SolParser.LineContext ctx)
+    {
+        if(ctx.functionCall() != null && this.functionCache.get(ctx.functionCall().fname.getText()).returnType() != void.class)
+            this.errorLog.throwError(ctx, "Value of '" + ctx.functionCall().fname.getText() + "' should be assign to a variable");
+    }
+
+    @Override
     public void exitIf(SolParser.IfContext ctx)
     {
         if(this.types.get(ctx.expression()) != boolean.class)
@@ -105,20 +122,14 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitAffectation(SolParser.AffectationContext ctx)
     {
-        Class<?> labelType = this.labelCache.get(ctx.LABEL().getText()).type;
+        Class<?> labelType = this.getVariable(ctx.LABEL().getText(), getScope(ctx)).type;
         Class<?> valueType = this.types.get(ctx.expression());
 
-        if(!this.labelCache.containsKey(ctx.LABEL().getText()))
-            this.errorLog.throwError(ctx,
-                    "Variable '" + ctx.LABEL().getText() + "'" + " has not been defined");
-
-
-        else if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
+        if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
             this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());
 
 
         this.types.put(ctx, labelType);
-        this.labelCache.get(ctx.LABEL().getText()).isInitialized = true;
     }
 
     @Override
@@ -128,7 +139,7 @@ public class TypeRecord extends SolBaseListener
     }
 
     @Override
-    public void exitLocalDeclaration(SolParser.LocalDeclarationContext ctx)
+    public void exitDeclaration(SolParser.DeclarationContext ctx)
     {
         String labelType = ctx.TYPE().getText();
         for(int i = 0; i < ctx.labelExpression().size(); i++)
@@ -138,18 +149,7 @@ public class TypeRecord extends SolBaseListener
 
             if(valueType != null && stringToClass(labelType) != valueType)
                 this.errorLog.throwError(ctx, "Incopatible types, " + labelType + " cannot be converted to " + valueType.getName());
-
-            else if(this.labelCache.containsKey(label))
-                this.errorLog.throwError(ctx, "Variable '" + label + "' is already defined");
-
-
-            this.labelCache.put(label, new Label(label, stringToClass(labelType), valueType != null));
         }
-    }
-
-    @Override
-    public void exitGlobalDeclaration(SolParser.GlobalDeclarationContext ctx)
-    {
     }
 
     @Override
@@ -159,20 +159,24 @@ public class TypeRecord extends SolBaseListener
     }
 
     @Override
-    public void exitLable(SolParser.LableContext ctx)
+    public void exitLabel(SolParser.LabelContext ctx)
     {
-        if(!this.labelCache.containsKey(ctx.getText()) || !this.labelCache.get(ctx.getText()).isInitialized)
-            this.errorLog.throwError(ctx, "Variable '" + ctx.getText()+ "'" + " has not been defined");
+        Variable variable = this.getVariable(ctx.getText(), getScope(ctx));
 
-        Label label = this.labelCache.get(ctx.getText());
-
-        this.types.put(ctx, label != null ? label.type: null);
+        this.types.put(ctx, variable != null ? variable.type: null);
     }
 
     @Override
     public void exitFunctionCall(SolParser.FunctionCallContext ctx)
     {
         Function function = this.functionCache.get(ctx.fname.getText());
+
+        if(ctx.expression().size() == function.numberOfArgs())
+            for(int i = 0; i < ctx.expression().size(); i++)
+                if(this.types.get(ctx.expression(i)) != function.argumentTypes().get(i))
+                    this.errorLog.throwError(ctx, "Invalid type '" + this.types.get(ctx.expression(i)) +
+                    "' for argument with type '" + function.argumentTypes().get(i));
+
         this.types.put(ctx, function.returnType());
     }
 
@@ -337,19 +341,16 @@ public class TypeRecord extends SolBaseListener
 
     public ParseTreeProperty<Class<?>> getTypes(ParseTree tree)
     {
-        FunctionRecord functionRecord = new FunctionRecord();
+        FunctionRecord functionRecord = new FunctionRecord(this.errorLog);
         this.functionCache = functionRecord.getFunctions(tree);
-        this.errorLog = functionRecord.getErrorLog();
+
+        VariableRecord variableRecord = new VariableRecord(this.functionCache, this.errorLog);
+        this.variableScopeCache= variableRecord.getVariables(tree);
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(this, tree);
 
         return this.types;
-    }
-
-    public int getGlobalMemorySize()
-    {
-        return this.labelCache.size();
     }
 
     public ErrorLog getErrorLog()
