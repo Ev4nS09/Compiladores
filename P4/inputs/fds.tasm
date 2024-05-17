@@ -1,17 +1,32 @@
-call 13
+galloc 3
+iconst 3
+gstore 0
+iconst 4
+gstore 1
+iconst 4
+gstore 2
+call 9
 halt
-lload -1
-iconst 1000000000
+Tag_10: gload 0
+gload 1
 ilt
-jumpf Tag_12
-lload -1
+jumpf Tag_27
+lalloc 1
+iconst 2
+lstore 2
+lload 2
+iprint
+lload 2
 iconst 1
 iadd
-call 2
-jump Tag_13
-Tag_12: lload -1
-Tag_13: retval 1
-iconst 1
-call 2
+lstore 2
+lload 2
 iprint
+pop 1
+jump Tag_10
+Tag_27: sconst "B final : "
+gload 1
+itos
+sadd
+sprint
 ret 0

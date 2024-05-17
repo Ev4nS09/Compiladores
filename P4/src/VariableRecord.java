@@ -47,7 +47,7 @@ public class VariableRecord extends SolBaseListener
 
         while(currentScope != null)
         {
-            if(this.scopeVariableCache.get(currentScope).get(variableName) != null)
+            if(this.scopeVariableCache.get(currentScope)!= null && this.scopeVariableCache.get(currentScope).get(variableName) != null)
                 break;
 
             currentScope = getScope(currentScope.parent);
@@ -125,10 +125,10 @@ public class VariableRecord extends SolBaseListener
         SolParser.ScopeContext scope = getScope(ctx);
 
 
-        if(!this.scopeVariableCache.get(scope).containsKey(ctx.LABEL().getText()) && getVariable(ctx.LABEL().getText(), scope) == null)
+        if(getVariable(ctx.LABEL().getText(), scope) == null)
             this.errorLog.throwError(ctx, "Variable '" + ctx.LABEL().getText() + "' was not defined.");
 
-        Variable variable = this.scopeVariableCache.get(scope).get(ctx.LABEL().getText()) != null ? this.scopeVariableCache.get(scope).get(ctx.LABEL().getText()) : getVariable(ctx.LABEL().getText(), scope);
+        Variable variable = getVariable(ctx.LABEL().getText(), scope);
 
         if(variable != null && !variable.isInitialized)
             this.errorLog.throwError(ctx, "Variable '" + variable.name + "' was not initialized");

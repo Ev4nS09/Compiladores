@@ -43,6 +43,22 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.localMemoryPointer = 2;
     }
 
+    private Variable getVariable(String variableName, SolParser.ScopeContext currentScope)
+    {
+        Variable result = null;
+
+        while(currentScope != null)
+        {
+            if(this.scopeVariableCache.get(currentScope)!= null && this.scopeVariableCache.get(currentScope).get(variableName) != null)
+                break;
+
+            currentScope = getScope(currentScope.parent);
+        }
+
+        return this.scopeVariableCache.get(currentScope).get(variableName);
+    }
+
+
     private SolParser.ScopeContext getScope(RuleContext ctx)
     {
         while(ctx != null && !(ctx instanceof SolParser.ScopeContext))
@@ -121,7 +137,14 @@ public class solCompiler extends SolBaseVisitor<Void>
     public Void visitSol(SolParser.SolContext ctx)
     {
         if(!ctx.declaration().isEmpty())
-            this.instructions.add(new Instruction(OpCode.galloc, new Value(ctx.declaration().size())));
+        {
+            int gallocSize = 0;
+            for(int i = 0; i < ctx.declaration().size(); i++)
+                for(int j = 0; j < ctx.declaration(i).labelExpression().size(); j++)
+                    gallocSize += 1;
+
+            this.instructions.addFirst(new Instruction(OpCode.galloc, new Value(gallocSize)));
+        }
 
         for(SolParser.DeclarationContext declaration : ctx.declaration())
             visit(declaration);
@@ -143,7 +166,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitFor(SolParser.ForContext ctx)
     {
-        Variable affectationValue = this.scopeVariableCache.get(ctx).get(ctx.affectation().LABEL().getText());
+        Variable affectationValue = getVariable(ctx.affectation().LABEL().getText(), getScope(ctx));
         OpCode store = returnGlobalStoreCode(affectationValue.isGlobal);
         OpCode load = returnGlobalLoadCode(affectationValue.isGlobal);
 
@@ -233,7 +256,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
        visit(ctx.block());
 
-       if(!(ctx.parent instanceof SolParser.FunctionContext))
+       if(!(ctx.parent instanceof SolParser.FunctionContext) && !ctx.block().declaration().isEmpty())
        {
            this.instructions.add(new Instruction(OpCode.pop, new Value(ctx.block().declaration().size())));
            this.localMemoryPointer -= ctx.block().declaration().size();
@@ -264,7 +287,7 @@ public class solCompiler extends SolBaseVisitor<Void>
 
         possibleConversion(this.types.get(ctx), ctx.expression());
         this.instructions.add(new Instruction(returnGlobalStoreCode(isGlobal), new Value(
-                this.scopeVariableCache.get(getScope(ctx)).get(ctx.LABEL().getText()).memoryValue
+                getVariable(ctx.LABEL().getText(), getScope(ctx)).memoryValue
                 )));
 
         return null;
@@ -282,10 +305,8 @@ public class solCompiler extends SolBaseVisitor<Void>
             this.instructions.add(new Instruction(returnGlobalStoreCode(isGlobal), new Value(pointer)));
         }
 
-        System.out.println(ctx.LABEL().getText());
-
-        this.scopeVariableCache.get(getScope(ctx)).get(ctx.LABEL().getText()).memoryValue = pointer;
-        this.scopeVariableCache.get(getScope(ctx)).get(ctx.LABEL().getText()).isGlobal = isGlobal;
+        getVariable(ctx.LABEL().getText(), getScope(ctx)).memoryValue = pointer;
+        getVariable(ctx.LABEL().getText(), getScope(ctx)).isGlobal = isGlobal;
 
         if(isGlobal)
             this.globalMemoryPointer++;
@@ -301,6 +322,12 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         for(int i = 0; i < ctx.labelExpression().size(); i++)
            visit(ctx.labelExpression(i));
+
+        if(isGlobal(ctx))
+        {
+            this.instructions.add(new Instruction(OpCode.call, new Value(-1)));
+            this.instructions.add(new Instruction(OpCode.halt));
+        }
 
         return null;
     }
@@ -473,7 +500,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitLabel(SolParser.LabelContext ctx)
     {
-        Variable labelVariable = this.scopeVariableCache.get(getScope(ctx)).get(ctx.LABEL().getText());
+        Variable labelVariable = getVariable(ctx.LABEL().getText(), getScope(ctx));
 
         this.instructions.add(new Instruction(
                 returnGlobalLoadCode(labelVariable.isGlobal), new Value(labelVariable.memoryValue))
@@ -659,13 +686,14 @@ public class solCompiler extends SolBaseVisitor<Void>
             System.exit(1);
         }
 
-
-        this.instructions.add(new Instruction(OpCode.call, new Value(-1)));
-        this.instructions.add(new Instruction(OpCode.halt));
         //Iterate through the tree and creates the instructions
         this.visit(tree);
 
-        this.instructions.set(0, new Instruction(OpCode.call, new Value(this.functionPosition.get("main"))));
+        for(int i = 0; i < this.instructions.size(); i++)
+            if (this.instructions.get(i).getInstruction() == OpCode.call && this.instructions.get(i).getArgument().getInteger() == -1)
+            {
+                this.instructions.set(i, new Instruction(OpCode.call, new Value(this.functionPosition.get("main"))));
+            }
 
         System.out.println(instructions);
 

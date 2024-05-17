@@ -48,7 +48,7 @@ public class TypeRecord extends SolBaseListener
 
         while(currentScope != null)
         {
-            if(this.variableScopeCache.get(currentScope).get(variableName) != null)
+            if(this.variableScopeCache.get(currentScope) != null && this.variableScopeCache.get(currentScope).get(variableName) != null)
                 break;
 
             currentScope = getScope(currentScope.parent);
@@ -145,8 +145,6 @@ public class TypeRecord extends SolBaseListener
     {
         Class<?> labelType = this.getVariable(ctx.LABEL().getText(), getScope(ctx)).type;
         Class<?> valueType = this.types.get(ctx.expression());
-
-        System.out.println(ctx.start.getLine());
 
         if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
             this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());

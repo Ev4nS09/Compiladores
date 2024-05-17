@@ -1,12 +1,13 @@
-int recursive(int x)
-begin
-    if (x < 1000000000) then
-        return recursive(x + 1);
-    else
-        return x;
-end
+int i = 3,b = 4, c = 4;
 
-void main()
+void main ()
 begin
-    print recursive(1);
+    while i < b do
+    begin
+        int b = 2;
+        print b;
+        b = b + 1;
+        print b;
+    end
+    print "B final : " + b;
 end
