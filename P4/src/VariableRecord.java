@@ -109,7 +109,11 @@ public class VariableRecord extends SolBaseListener
             argumentDeclarations.put(ctx.LABEL(i).getText(), new Variable(
                     ctx.LABEL(i).getText(),
                     stringToClass(ctx.TYPE(i + voidException).getText()),
-                    true));
+                    true,
+                    0,
+                    false,
+                    true
+            ));
 
 
         this.scopeVariableCache.put(ctx.scope(), argumentDeclarations);

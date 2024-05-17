@@ -10,48 +10,48 @@ import Antlr.*;
 
 public class tAssembler extends TasmBaseListener
 {
-        private final LinkedList<Instruction> instructions;
-        private final ConstantPool<Value> constantPool;
-        private HashMap<String, Integer> tagCache;
-        private ErrorLog errorLog;
+    private final LinkedList<Instruction> instructions;
+    private final ConstantPool<Value> constantPool;
+    private HashMap<String, Integer> tagCache;
+    private ErrorLog errorLog;
 
-        public tAssembler()
-        {
-            this.instructions = new LinkedList<>();
-            this.constantPool = new ConstantPool<>();
-            this.tagCache = new HashMap<>();
-            this.errorLog = new ErrorLog();
-        }
-
-
-        public void exitIconst(TasmParser.IconstContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.iconst, new Value(Integer.parseInt(ctx.INT().getText()))));
-        }
-
-        public void exitDconst(TasmParser.DconstContext ctx)
-        {
-            Double number = Double.valueOf(ctx.DOUBLE() != null ? ctx.DOUBLE().getText() : ctx.INT().getText());
-            this.constantPool.add(new Value(number));
-
-            Value poolPositionValue = new Value(this.constantPool.getPoolPosition(new Value(number)));
-            this.instructions.add(new Instruction(OpCode.dconst, poolPositionValue));
-        }
+    public tAssembler()
+    {
+        this.instructions = new LinkedList<>();
+        this.constantPool = new ConstantPool<>();
+        this.tagCache = new HashMap<>();
+        this.errorLog = new ErrorLog();
+    }
 
 
-        public void exitSconst(TasmParser.SconstContext ctx)
-        {
-            String string = ctx.STRING().getText();
-            this.constantPool.add(new Value(string));
+    public void exitIconst(TasmParser.IconstContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.iconst, new Value(Integer.parseInt(ctx.INT().getText()))));
+    }
 
-            Value poolPositionValue = new Value(this.constantPool.getPoolPosition(new Value(string)));
-            this.instructions.add(new Instruction(OpCode.sconst, poolPositionValue));
-        }
+    public void exitDconst(TasmParser.DconstContext ctx)
+    {
+        Double number = Double.valueOf(ctx.DOUBLE() != null ? ctx.DOUBLE().getText() : ctx.INT().getText());
+        this.constantPool.add(new Value(number));
 
-        public void exitTconst(TasmParser.TconstContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.tconst));
-        }
+        Value poolPositionValue = new Value(this.constantPool.getPoolPosition(new Value(number)));
+        this.instructions.add(new Instruction(OpCode.dconst, poolPositionValue));
+    }
+
+
+    public void exitSconst(TasmParser.SconstContext ctx)
+    {
+        String string = ctx.STRING().getText();
+        this.constantPool.add(new Value(string));
+
+        Value poolPositionValue = new Value(this.constantPool.getPoolPosition(new Value(string)));
+        this.instructions.add(new Instruction(OpCode.sconst, poolPositionValue));
+    }
+
+    public void exitTconst(TasmParser.TconstContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.tconst));
+    }
 
 
         public void exitFconst(TasmParser.FconstContext ctx)
@@ -103,44 +103,44 @@ public class tAssembler extends TasmBaseListener
     }
 
     public void exitConditions(TasmParser.ConditionsContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.cd.getText())));
-        }
+    {
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.cd.getText())));
+    }
 
-        public void exitChange(TasmParser.ChangeContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.change.getText())));
-        }
+    public void exitChange(TasmParser.ChangeContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.change.getText())));
+    }
 
-        public void exitOperations(TasmParser.OperationsContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.op.getText())));
-        }
+    public void exitOperations(TasmParser.OperationsContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.op.getText())));
+    }
 
-        public void exitPrint(TasmParser.PrintContext ctx)
-        {
-            this.instructions.add(new Instruction(OpCode.valueOf(ctx.print.getText())));
-        }
+    public void exitPrint(TasmParser.PrintContext ctx)
+    {
+        this.instructions.add(new Instruction(OpCode.valueOf(ctx.print.getText())));
+    }
 
-        public void exitJp(TasmParser.JpContext ctx)
-        {
-            Integer line = this.tagCache.get(ctx.tag.getText());
+    public void exitJp(TasmParser.JpContext ctx)
+    {
+        Integer line = this.tagCache.get(ctx.tag.getText());
 
-            if(line == null)
-                this.errorLog.throwError(ctx, "Variable '" + ctx.TAG().getText() + "' has not been defined.");
-            else
-                this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), new Value(line)));
-        }
+        if(line == null)
+            this.errorLog.throwError(ctx, "Variable '" + ctx.TAG().getText() + "' has not been defined.");
+        else
+            this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), new Value(line)));
+    }
 
-        @Override
-        public void exitInstruction(TasmParser.InstructionContext ctx)
-        {
-            if(ctx.HALT() != null)
-                this.instructions.add(new Instruction(OpCode.halt));
-        }
+    @Override
+    public void exitInstruction(TasmParser.InstructionContext ctx)
+    {
+        if(ctx.HALT() != null)
+            this.instructions.add(new Instruction(OpCode.halt));
+    }
 
 
-        @Override
+      @Override
     public String toString()
     {
         StringBuilder result = new StringBuilder();

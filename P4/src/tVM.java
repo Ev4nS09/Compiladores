@@ -321,7 +321,7 @@ public class tVM
     {
         Value returnedValue = this.stack.pop();
 
-        while(stack.size() > this.framePointer + 1)
+        while(stack.size() > this.framePointer + 2)
             this.stack.pop();
 
         this.instructionPointer = this.stack.pop().getInteger();

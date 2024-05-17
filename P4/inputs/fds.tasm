@@ -1,16 +1,17 @@
-galloc 7
-iconst 1
-gstore 0
-iconst 2
-gstore 2
-iconst 3
-gstore 3
-iconst 4
-gstore 5
-iconst 5
-gstore 4
-iconst 6
-gstore 1
-iconst 7
-gstore 6
+call 13
 halt
+lload -1
+iconst 1000000000
+ilt
+jumpf Tag_12
+lload -1
+iconst 1
+iadd
+call 2
+jump Tag_13
+Tag_12: lload -1
+Tag_13: retval 1
+iconst 1
+call 2
+iprint
+ret 0

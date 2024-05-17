@@ -25,7 +25,7 @@ public class SemanticChecker
         this(new ErrorLog());
     }
 
-    public void sementicCheckTree(ParseTree tree)
+    public void semanticCheckTree(ParseTree tree)
     {
         FunctionRecord functionRecord = new FunctionRecord(this.errorLog);
         this.functions = functionRecord.getFunctions(tree);
@@ -34,7 +34,7 @@ public class SemanticChecker
         this.scopeVariables = variableRecord.getVariables(tree);
 
         TypeRecord typeRecord = new TypeRecord(this.functions, this.scopeVariables, this.errorLog);
-        this.types =typeRecord.getTypes(tree);
+        this.types = typeRecord.getTypes(tree);
 
     }
 
