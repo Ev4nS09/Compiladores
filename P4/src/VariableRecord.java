@@ -89,12 +89,10 @@ public class VariableRecord extends SolBaseListener
     {
         SolParser.ScopeContext scope = getScope(ctx);
 
-        if(!this.scopeVariableCache.get(scope).containsKey(ctx.LABEL().getText()) && getVariable(ctx.LABEL().getText(), scope) == null)
+        if(getVariable(ctx.LABEL().getText(), scope) == null)
             this.errorLog.throwError(ctx, "Variable '" + ctx.LABEL().getText() + "' was not defined.");
 
-        if(this.scopeVariableCache.get(scope).get(ctx.LABEL().getText()) != null)
-            this.scopeVariableCache.get(scope).get(ctx.LABEL().getText()).isInitialized = true;
-        else if(getVariable(ctx.LABEL().getText(), scope) != null)
+        if(getVariable(ctx.LABEL().getText(), scope) != null)
             getVariable(ctx.LABEL().getText(), scope).isInitialized = true;
     }
 

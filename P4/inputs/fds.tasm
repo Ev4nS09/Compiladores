@@ -1,32 +1,49 @@
-galloc 3
-iconst 3
-gstore 0
-iconst 4
+galloc 2
+iconst 0
 gstore 1
-iconst 4
-gstore 2
-call 9
+call 32
 halt
-Tag_10: gload 0
-gload 1
-ilt
-jumpf Tag_27
 lalloc 1
-iconst 2
+lload -1
+iconst 0
+ieq
+jumpf Tag_13
+sconst "N"
 lstore 2
-lload 2
-iprint
-lload 2
+Tag_13: lload -1
+iconst 1
+ieq
+jumpf Tag_19
+sconst "E"
+lstore 2
+Tag_19: lload -1
+iconst 2
+ieq
+jumpf Tag_25
+sconst "S"
+lstore 2
+Tag_25: lload -1
+iconst 3
+ieq
+jumpf Tag_31
+sconst "W"
+lstore 2
+Tag_31: lload 2
+retval 1
+Tag_33: gload 1
+iconst 5
+ilt
+jumpf Tag_47
+gload 1
+call 5
+gstore 0
+gload 1
 iconst 1
 iadd
-lstore 2
-lload 2
-iprint
-pop 1
-jump Tag_10
-Tag_27: sconst "B final : "
-gload 1
-itos
-sadd
+gstore 1
+gload 0
+sprint
+jump Tag_33
+Tag_47: sconst "Acabou"
 sprint
 ret 0

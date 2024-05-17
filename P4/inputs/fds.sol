@@ -1,13 +1,29 @@
-int i = 3,b = 4, c = 4;
+string posicao;
+int i = 0;
 
-void main ()
+string change(int i)
 begin
-    while i < b do
+string posicao;
+    if i == 0 then
+        posicao = "N";
+    if i == 1 then
+        posicao = "E";
+    if i == 2 then
+        posicao = "S";
+    if i == 3 then
+        posicao = "W";
+
+    return posicao;
+end
+
+
+void main()
+begin
+    while i < 5 do
     begin
-        int b = 2;
-        print b;
-        b = b + 1;
-        print b;
+        posicao = change(i);
+        i = i + 1;
+        print posicao;
     end
-    print "B final : " + b;
+    print "Acabou";
 end

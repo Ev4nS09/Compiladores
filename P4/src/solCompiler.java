@@ -149,6 +149,9 @@ public class solCompiler extends SolBaseVisitor<Void>
         for(SolParser.DeclarationContext declaration : ctx.declaration())
             visit(declaration);
 
+        this.instructions.add(new Instruction(OpCode.call, new Value(-1)));
+        this.instructions.add(new Instruction(OpCode.halt));
+
         for(SolParser.FunctionContext function : ctx.function())
             visit(function);
 
@@ -283,11 +286,11 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitAffectation(SolParser.AffectationContext ctx)
     {
-        boolean isGlobal = isGlobal(ctx);
+        Variable variable = getVariable(ctx.LABEL().getText(), getScope(ctx));
 
         possibleConversion(this.types.get(ctx), ctx.expression());
-        this.instructions.add(new Instruction(returnGlobalStoreCode(isGlobal), new Value(
-                getVariable(ctx.LABEL().getText(), getScope(ctx)).memoryValue
+        this.instructions.add(new Instruction(returnGlobalStoreCode(variable.isGlobal), new Value(
+                variable.memoryValue
                 )));
 
         return null;
@@ -298,6 +301,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
        boolean isGlobal = isGlobal(ctx);
        int pointer = isGlobal ? this.globalMemoryPointer : this.localMemoryPointer;
+
 
         if(ctx.expression() != null)
         {
@@ -322,12 +326,6 @@ public class solCompiler extends SolBaseVisitor<Void>
     {
         for(int i = 0; i < ctx.labelExpression().size(); i++)
            visit(ctx.labelExpression(i));
-
-        if(isGlobal(ctx))
-        {
-            this.instructions.add(new Instruction(OpCode.call, new Value(-1)));
-            this.instructions.add(new Instruction(OpCode.halt));
-        }
 
         return null;
     }
