@@ -48,11 +48,6 @@ public class TagRecord extends TasmBaseListener
         this.lineCounter++;
     }
 
-    public ErrorLog getErrorLog()
-    {
-        return this.errorLog;
-    }
-
     public HashMap<String, Integer> getTags(ParseTree tree) throws IOException
     {
         ParseTreeWalker walker = new ParseTreeWalker();

@@ -46,15 +46,12 @@ public class FunctionRecord extends SolBaseListener
     @Override
     public void exitIf(SolParser.IfContext ctx)
     {
-        boolean ifConditionHasElse = ctx.line(1) != null ;
+        boolean ifConditionHasElse = ctx.instruction(1) != null;
 
-        boolean ifHasReturn = ctx.line(0).return_() != null || this.hasReturnCache.get(ctx.line(0).scope());
-        boolean elseHasReturn = ifConditionHasElse && (ctx.line(1).return_() != null || this.hasReturnCache.get(ctx.line(1).scope()));
+        boolean ifHasReturn = ctx.instruction(0).return_() != null || this.hasReturnCache.get(ctx.instruction(0).scope());
+        boolean elseHasReturn = ifConditionHasElse && (ctx.instruction(1).return_() != null || this.hasReturnCache.get(ctx.instruction(1).scope()));
 
         boolean result = ifHasReturn && elseHasReturn;
-
-
-
 
         this.hasReturnCache.put(ctx, result);
     }
@@ -76,12 +73,12 @@ public class FunctionRecord extends SolBaseListener
     {
         boolean result = false;
 
-        for(SolParser.LineContext line : ctx.line())
+        for(SolParser.InstructionContext instruction : ctx.instruction())
         {
-            boolean scopeHasReturn = this.hasReturnCache.get(line.scope());
-            boolean ifHasReturn = this.hasReturnCache.get(line.if_());
+            boolean scopeHasReturn = this.hasReturnCache.get(instruction.scope());
+            boolean ifHasReturn = this.hasReturnCache.get(instruction.if_());
 
-            if(line.return_() != null || scopeHasReturn || ifHasReturn)
+            if(instruction.return_() != null || scopeHasReturn || ifHasReturn)
             {
                 result = true;
                 break;
@@ -103,9 +100,9 @@ public class FunctionRecord extends SolBaseListener
     {
         boolean hasValidReturn = false;
 
-        for(SolParser.LineContext line : ctx.scope().block().line())
+        for(SolParser.InstructionContext instruction: ctx.scope().block().instruction())
         {
-            if(line.return_() != null || this.hasReturnCache.get(ctx.scope()))
+            if(instruction.return_() != null || this.hasReturnCache.get(ctx.scope()))
             {
                 hasValidReturn = true;
                 break;
@@ -113,13 +110,13 @@ public class FunctionRecord extends SolBaseListener
         }
 
         if(!hasValidReturn && !ctx.rtype.getText().equals("void"))
-            this.errorLog.throwError(ctx, "Utils.solUtils.Function '" + ctx.fname.getText()  + "' may noy return");
+            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText()  + "' may noy return");
 
         if(ctx.fname.getText().equals("main") && stringToClass(ctx.rtype.getText()) != void.class)
             this.errorLog.throwError(ctx, "Invalid return type for main.");
 
         if(ctx.fname.getText().equals("main") && ctx.LABEL().size() > 1)
-            this.errorLog.throwError(ctx, "Invalid number of arguments for main, main has no arguments.");
+            this.errorLog.throwError(ctx, "Invalid number of arguments for main, main has no arguments");
 
 
         ArrayList<Class<?>> functionTypes = new ArrayList<>();
@@ -141,7 +138,7 @@ public class FunctionRecord extends SolBaseListener
         Function mainFunction = new Function("main", 0, void.class, new ArrayList<>());
 
         if(!this.functionCache.containsKey("main"))
-            this.errorLog.throwError(0, "", "Missing main() function.");
+            this.errorLog.throwError(0, "", "Missing main() function");
 
         return this.functionCache;
     }

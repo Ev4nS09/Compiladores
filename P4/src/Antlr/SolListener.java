@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -48,15 +48,15 @@ public interface SolListener extends ParseTreeListener {
 	 */
 	void exitFunction(SolParser.FunctionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SolParser#line}.
+	 * Enter a parse tree produced by {@link SolParser#instruction}.
 	 * @param ctx the parse tree
 	 */
-	void enterLine(SolParser.LineContext ctx);
+	void enterInstruction(SolParser.InstructionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link SolParser#line}.
+	 * Exit a parse tree produced by {@link SolParser#instruction}.
 	 * @param ctx the parse tree
 	 */
-	void exitLine(SolParser.LineContext ctx);
+	void exitInstruction(SolParser.InstructionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SolParser#break}.
 	 * @param ctx the parse tree
@@ -132,16 +132,6 @@ public interface SolListener extends ParseTreeListener {
 	 */
 	void exitAffectation(SolParser.AffectationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link SolParser#instruction}.
-	 * @param ctx the parse tree
-	 */
-	void enterInstruction(SolParser.InstructionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SolParser#instruction}.
-	 * @param ctx the parse tree
-	 */
-	void exitInstruction(SolParser.InstructionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link SolParser#return}.
 	 * @param ctx the parse tree
 	 */
@@ -161,6 +151,16 @@ public interface SolListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionCall(SolParser.FunctionCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link SolParser#print}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrint(SolParser.PrintContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SolParser#print}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrint(SolParser.PrintContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Or}
 	 * labeled alternative in {@link SolParser#expression}.

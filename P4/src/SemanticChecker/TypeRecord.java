@@ -12,9 +12,9 @@ import solUtils.*;
 public class TypeRecord extends SolBaseListener
 {
     private final ParseTreeProperty<Class<?>> types;
-    private HashMap<String, Function> functionCache;
-    private ParseTreeProperty<HashMap<String, Variable>> variableScopeCache;
-    private ErrorLog errorLog;
+    private final HashMap<String, Function> functionCache;
+    private final ParseTreeProperty<HashMap<String, Variable>> variableScopeCache;
+    private final ErrorLog errorLog;
 
     public TypeRecord(HashMap<String, Function> functionCache, ParseTreeProperty<HashMap<String, Variable>> variableScopeCache, ErrorLog errorLog)
     {
@@ -72,15 +72,6 @@ public class TypeRecord extends SolBaseListener
         };
     }
 
-    private boolean typeCheck(String type1, Class<?> type2) {
-        return
-                type2 == null ||
-                        type1.equals("int") && type2 == int.class ||
-                        type1.equals("real") && (type2 == double.class || type2 == int.class) ||
-                        type1.equals("string") && type2 == String.class ||
-                        type1.equals("bool") && type2 == boolean.class;
-    }
-
     @Override
     public void exitBreak(SolParser.BreakContext ctx)
     {
@@ -111,10 +102,10 @@ public class TypeRecord extends SolBaseListener
     }
 
     @Override
-    public void exitLine(SolParser.LineContext ctx)
+    public void exitInstruction(SolParser.InstructionContext ctx)
     {
         if(ctx.functionCall() != null && this.functionCache.get(ctx.functionCall().fname.getText()).returnType() != void.class)
-            this.errorLog.throwError(ctx, "Utils.solUtils.Value of '" + ctx.functionCall().fname.getText() + "' should be assign to a variable");
+            this.errorLog.throwError(ctx, "Value of '" + ctx.functionCall().fname.getText() + "' should be assign to a variable");
     }
 
     @Override
@@ -159,28 +150,27 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitLabelExpression(SolParser.LabelExpressionContext ctx)
     {
-        this.types.put(ctx, stringToClass(((SolParser.DeclarationContext) ctx.parent).TYPE().getText()));
+        Class<?> labelType =  stringToClass(((SolParser.DeclarationContext) ctx.parent).TYPE().getText());
 
+        String label = ctx.LABEL().getText();
+        Class<?> valueType = this.types.get(ctx.expression());
+
+        boolean isValidConversion = (labelType == int.class || valueType == int.class) &&
+                (labelType == double.class || valueType == double.class);
+
+        if(valueType != null && !isValidConversion && labelType != valueType)
+            this.errorLog.throwError(ctx, "Incopatible types, " + valueType.getName() + " cannot be converted to " + labelType.getName());
+
+        this.types.put(ctx, labelType);
     }
 
     @Override
     public void exitDeclaration(SolParser.DeclarationContext ctx)
     {
-        Class<?> labelType = stringToClass(ctx.TYPE().getText());
-        for(int i = 0; i < ctx.labelExpression().size(); i++)
-        {
-            String label = ctx.labelExpression(i).LABEL().getText();
-            Class<?> valueType = this.types.get(ctx.labelExpression(i));
-            boolean isValidConversion = (labelType == int.class || valueType == int.class) &&
-                    (labelType == double.class || valueType == double.class);
-
-            if(valueType != null && !isValidConversion && labelType != valueType)
-                this.errorLog.throwError(ctx, "Incopatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());
-        }
     }
 
     @Override
-    public void exitInstruction(SolParser.InstructionContext ctx)
+    public void exitPrint(SolParser.PrintContext ctx)
     {
         this.types.put(ctx, this.types.get(ctx.expression()));
     }

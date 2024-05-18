@@ -87,7 +87,7 @@ public class tAssembler extends TasmBaseListener
     public void exitCall(TasmParser.CallContext ctx)
     {
         if(!this.tagCache.containsKey(ctx.TAG().getText()))
-            this.errorLog.throwError(ctx, "Utils.solUtils.Variable '" + ctx.TAG().getText() + "' has not been defined.");
+            this.errorLog.throwError(ctx, "Tag '" + ctx.TAG().getText() + "' has not been defined.");
 
 
         Integer line = this.tagCache.get(ctx.TAG().getText());
@@ -133,7 +133,7 @@ public class tAssembler extends TasmBaseListener
         Integer line = this.tagCache.get(ctx.tag.getText());
 
         if(line == null)
-            this.errorLog.throwError(ctx, "Utils.solUtils.Variable '" + ctx.TAG().getText() + "' has not been defined.");
+            this.errorLog.throwError(ctx, "Tag '" + ctx.TAG().getText() + "' has not been defined.");
         else
             this.instructions.add(new Instruction(OpCode.valueOf(ctx.jp.getText()), new Value(line)));
     }
@@ -220,7 +220,6 @@ public class tAssembler extends TasmBaseListener
             System.exit(1);
 
         TagRecord tagRecord = new TagRecord(this.errorLog);
-        this.errorLog = tagRecord.getErrorLog();
 
         this.tagCache = tagRecord.getTags(tree);
         walker.walk(this, tree);

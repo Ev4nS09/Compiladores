@@ -26,8 +26,8 @@ public class solCompiler extends SolBaseVisitor<Void>
     private ParseTreeProperty<HashMap<String, Variable>> scopeVariableCache;
     private ParseTreeProperty<Class<?>> types;
     private HashMap<String, Function> functionCache;
-    private HashMap<String, Integer> functionPosition;
-    private HashMap<String, Integer> getFunctionPositionWaitList;
+    private final HashMap<String, Integer> functionPosition;
+    private final HashMap<String, Integer> functionPositionWaitList;
     private int globalMemoryPointer;
     private int localMemoryPointer;
 
@@ -40,7 +40,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.types = new ParseTreeProperty<>();
         this.functionCache = new HashMap<>();
         this.functionPosition = new HashMap<>();
-        this.getFunctionPositionWaitList = new HashMap<>();
+        this.functionPositionWaitList = new HashMap<>();
         this.globalMemoryPointer = 0;
         this.localMemoryPointer = 2;
     }
@@ -69,12 +69,12 @@ public class solCompiler extends SolBaseVisitor<Void>
         return ctx != null ? (SolParser.ScopeContext) ctx : null;
     }
 
-    private OpCode returnGlobalLoadCode(boolean isGlobal)
+    private OpCode returnLoadCode(boolean isGlobal)
     {
         return isGlobal ? OpCode.gload : OpCode.lload;
     }
 
-    private OpCode returnGlobalStoreCode(boolean isGlobal)
+    private OpCode returnStoreCode(boolean isGlobal)
     {
         return isGlobal ? OpCode.gstore : OpCode.lstore;
     }
@@ -125,24 +125,32 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitSol(SolParser.SolContext ctx)
     {
-        if(!ctx.declaration().isEmpty())
+        //Calculates the size of the global memory and adds the instruction if
+        // needed to initialize the global memory (galloc)
         {
             int gallocSize = 0;
-            for(int i = 0; i < ctx.declaration().size(); i++)
-                for(int j = 0; j < ctx.declaration(i).labelExpression().size(); j++)
+            for (int i = 0; i < ctx.declaration().size(); i++)
+                for (int j = 0; j < ctx.declaration(i).labelExpression().size(); j++)
                     gallocSize += 1;
 
-            this.instructions.addFirst(new Instruction(OpCode.galloc, new Value(gallocSize)));
+            if (gallocSize > 0)
+                this.instructions.addFirst(new Instruction(OpCode.galloc, new Value(gallocSize)));
         }
 
         for(SolParser.DeclarationContext declaration : ctx.declaration())
             visit(declaration);
 
+        //Marks the position for the main call
         this.instructions.add(new Instruction(OpCode.call, new Value(-1)));
         this.instructions.add(new Instruction(OpCode.halt));
 
         for(SolParser.FunctionContext function : ctx.function())
             visit(function);
+
+        //Sets the call argument of the function main to the start of the function
+        for(int i = 0; i < this.instructions.size(); i++)
+            if (this.instructions.get(i).getInstruction() == OpCode.call && this.instructions.get(i).getArgument().getInteger() == -1)
+                this.instructions.set(i, new Instruction(OpCode.call, new Value(this.functionPosition.get("main"))));
 
         return null;
     }
@@ -159,8 +167,8 @@ public class solCompiler extends SolBaseVisitor<Void>
     public Void visitFor(SolParser.ForContext ctx)
     {
         Variable affectationValue = getVariable(ctx.affectation().LABEL().getText(), getScope(ctx));
-        OpCode store = returnGlobalStoreCode(affectationValue.isGlobal);
-        OpCode load = returnGlobalLoadCode(affectationValue.isGlobal);
+        OpCode store = returnStoreCode(affectationValue.isGlobal);
+        OpCode load = returnLoadCode(affectationValue.isGlobal);
 
         Integer affectationLabelPosition = affectationValue.memoryValue;
 
@@ -173,11 +181,14 @@ public class solCompiler extends SolBaseVisitor<Void>
         visit(ctx.expression());
         this.instructions.add(new Instruction(OpCode.ileq));
 
-        int jumpInstructionIndex = this.instructions.size();
+        int jumpToEndOfLoop = this.instructions.size();
         this.instructions.add(null);
 
+        System.out.println(instructions);
+
+
         //The following code just sums 1 to the affection variable
-        visit(ctx.line());
+        visit(ctx.instruction());
         this.instructions.add(new Instruction(OpCode.iconst, new Value(1)));
         this.instructions.add(new Instruction(load, new Value(affectationLabelPosition)));
         this.instructions.add(new Instruction(OpCode.iadd));
@@ -186,13 +197,12 @@ public class solCompiler extends SolBaseVisitor<Void>
         //the following code just sets the jumps, if we are at the end of the loop we go to the beginning
         //if the affection equals the expression we leave the loop
         this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
-        this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
+        this.instructions.set(jumpToEndOfLoop, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
-        //Searches for positions to put a jump that was the beak
+        //Searches for positions to put a jump that was the break
         for(int i = beginLoop; i < this.instructions.size(); i++)
             if(this.instructions.get(i) == null)
                 this.instructions.set(i, new Instruction(OpCode.jump, new Value(this.instructions.size())));
-
 
         return null;
     }
@@ -206,11 +216,11 @@ public class solCompiler extends SolBaseVisitor<Void>
         int jumpInstructionIndex = this.instructions.size();
         this.instructions.add(null);
 
-        visit(ctx.line());
+        visit(ctx.instruction());
         this.instructions.add(new Instruction(OpCode.jump, new Value(beginLoop)));
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(this.instructions.size())));
 
-        //Searches for positions to put a jump that was the beak
+        //Searches for positions to put a jump that was the break
         for(int i = beginLoop; i < this.instructions.size(); i++)
             if(this.instructions.get(i) == null)
                 this.instructions.set(i, new Instruction(OpCode.jump, new Value(this.instructions.size())));
@@ -225,16 +235,16 @@ public class solCompiler extends SolBaseVisitor<Void>
         int jumpInstructionIndex = this.instructions.size();
         this.instructions.add(null);
 
-        visit(ctx.line(0));
+        visit(ctx.instruction(0));
         int afterIfIndex =this.instructions.size();
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(afterIfIndex)));
 
         //else exists
-        if(ctx.line().size() > 1)
+        if(ctx.instruction().size() > 1)
         {
             this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(afterIfIndex+1)));
             this.instructions.add(null);
-            visit(ctx.line(1));
+            visit(ctx.instruction(1));
             int afterElseIndex = this.instructions.size();
 
             this.instructions.set(afterIfIndex, new Instruction(OpCode.jump, new Value(afterElseIndex)));
@@ -273,8 +283,8 @@ public class solCompiler extends SolBaseVisitor<Void>
         for(int i = 0; i < ctx.declaration().size(); i++)
             visit(ctx.declaration(i));
 
-        for(int i = 0; i < ctx.line().size(); i++)
-            visit(ctx.line(i));
+        for(int i = 0; i < ctx.instruction().size(); i++)
+            visit(ctx.instruction(i));
 
         return null;
     }
@@ -285,7 +295,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         Variable variable = getVariable(ctx.LABEL().getText(), getScope(ctx));
 
         possibleConversion(this.types.get(ctx), ctx.expression());
-        this.instructions.add(new Instruction(returnGlobalStoreCode(variable.isGlobal), new Value(
+        this.instructions.add(new Instruction(returnStoreCode(variable.isGlobal), new Value(
                 variable.memoryValue
                 )));
 
@@ -302,7 +312,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         if(ctx.expression() != null)
         {
             possibleConversion(this.types.get(ctx), ctx.expression());
-            this.instructions.add(new Instruction(returnGlobalStoreCode(isGlobal), new Value(pointer)));
+            this.instructions.add(new Instruction(returnStoreCode(isGlobal), new Value(pointer)));
         }
 
         getVariable(ctx.LABEL().getText(), getScope(ctx)).memoryValue = pointer;
@@ -332,8 +342,8 @@ public class solCompiler extends SolBaseVisitor<Void>
         for(int i = 1; i < ctx.LABEL().size(); i++)
             this.scopeVariableCache.get(ctx.scope()).get(ctx.LABEL(i).getText()).memoryValue = -(ctx.LABEL().size()  - i);
 
-        if(this.getFunctionPositionWaitList.get(ctx.fname.getText()) != null)
-            this.instructions.set(this.getFunctionPositionWaitList.get(ctx.fname.getText()), new Instruction(OpCode.call, new Value(this.instructions.size())));
+        if(this.functionPositionWaitList.containsKey(ctx.fname.getText()))
+            this.instructions.set(this.functionPositionWaitList.get(ctx.fname.getText()), new Instruction(OpCode.call, new Value(this.instructions.size())));
 
         this.functionPosition.put(ctx.fname.getText(), this.instructions.size());
         visit(ctx.scope());
@@ -345,18 +355,21 @@ public class solCompiler extends SolBaseVisitor<Void>
     public Void visitReturn(SolParser.ReturnContext ctx)
     {
         RuleContext currentCtx = ctx;
-        while(currentCtx != null && !(currentCtx instanceof SolParser.FunctionContext))
+        while(!(currentCtx instanceof SolParser.FunctionContext))
             currentCtx = currentCtx.parent;
 
         Function thisFunction = this.functionCache.get(((SolParser.FunctionContext) currentCtx).fname.getText());
 
+        OpCode returnCode;
         if(ctx.expression() != null)
         {
             visit(ctx.expression());
-            this.instructions.add(new Instruction(OpCode.retval, new Value(thisFunction.numberOfArgs())));
+            returnCode = OpCode.retval;
         }
         else
-            this.instructions.add(new Instruction(OpCode.ret, new Value(thisFunction.numberOfArgs())));
+            returnCode = OpCode.ret;
+
+        this.instructions.add(new Instruction(returnCode, new Value(thisFunction.numberOfArgs())));
 
         return null;
     }
@@ -506,7 +519,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         Variable labelVariable = getVariable(ctx.LABEL().getText(), getScope(ctx));
 
         this.instructions.add(new Instruction(
-                returnGlobalLoadCode(labelVariable.isGlobal), new Value(labelVariable.memoryValue))
+                returnLoadCode(labelVariable.isGlobal), new Value(labelVariable.memoryValue))
         );
 
         return null;
@@ -521,9 +534,9 @@ public class solCompiler extends SolBaseVisitor<Void>
         Integer functionPosition = this.functionPosition.get(ctx.fname.getText());
 
         if(functionPosition == null)
-            this.getFunctionPositionWaitList.put(ctx.fname.getText(), this.instructions.size());
+            this.functionPositionWaitList.put(ctx.fname.getText(), this.instructions.size());
 
-        this.instructions.add(new Instruction(OpCode.call, new Value(functionPosition != null ? functionPosition : -1)));
+        this.instructions.add(new Instruction(OpCode.call, new Value(functionPosition)));
 
         return null;
     }
@@ -574,7 +587,7 @@ public class solCompiler extends SolBaseVisitor<Void>
     }
 
     @Override
-    public Void visitInstruction(SolParser.InstructionContext ctx)
+    public Void visitPrint(SolParser.PrintContext ctx)
     {
         visit(ctx.expression());
 
@@ -685,23 +698,16 @@ public class solCompiler extends SolBaseVisitor<Void>
         //Checks if type errors existed, if yes it exits the program
         if(errorLog.getNumberOfErrors() > 0)
         {
-            System.err.println(inputFile + " has " + errorLog.getNumberOfErrors() + " type checking errors");
+            System.err.println(inputFile + " has " + errorLog.getNumberOfErrors() + " semantic errors");
             System.exit(1);
         }
 
         //Iterate through the tree and creates the instructions
         this.visit(tree);
 
-        for(int i = 0; i < this.instructions.size(); i++)
-            if (this.instructions.get(i).getInstruction() == OpCode.call && this.instructions.get(i).getArgument().getInteger() == -1)
-            {
-                this.instructions.set(i, new Instruction(OpCode.call, new Value(this.functionPosition.get("main"))));
-            }
 
-        System.out.println(instructions);
 
-        if(asm)
-            asm();
+        if(asm) asm();
         System.out.println("\nSaving the bytecodes to " + outputFile);
 
 

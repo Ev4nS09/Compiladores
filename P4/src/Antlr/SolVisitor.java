@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Sol.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -35,11 +35,11 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunction(SolParser.FunctionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SolParser#line}.
+	 * Visit a parse tree produced by {@link SolParser#instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLine(SolParser.LineContext ctx);
+	T visitInstruction(SolParser.InstructionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SolParser#break}.
 	 * @param ctx the parse tree
@@ -85,12 +85,6 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAffectation(SolParser.AffectationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link SolParser#instruction}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInstruction(SolParser.InstructionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link SolParser#return}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -102,6 +96,12 @@ public interface SolVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunctionCall(SolParser.FunctionCallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link SolParser#print}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrint(SolParser.PrintContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Or}
 	 * labeled alternative in {@link SolParser#expression}.

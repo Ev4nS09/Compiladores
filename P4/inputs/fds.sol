@@ -1,29 +1,21 @@
-string posicao;
-int i = 0;
-
-string change(int i)
+int change(int i)
 begin
-string posicao;
-    if i == 0 then
-        posicao = "N";
-    if i == 1 then
-        posicao = "E";
-    if i == 2 then
-        posicao = "S";
-    if i == 3 then
-        posicao = "W";
+    for i = 0 to 20 do
+    begin
+        print i;
+    end
 
-    return posicao;
+    return i * 230;
+end
+
+int x()
+begin
+    return 1;
 end
 
 
 void main()
 begin
-    while i < 5 do
-    begin
-        posicao = change(i);
-        i = i + 1;
-        print posicao;
-    end
-    print "Acabou";
+    real x = change(1);
+    print x;
 end

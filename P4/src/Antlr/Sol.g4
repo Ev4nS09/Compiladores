@@ -13,14 +13,14 @@ scope: block
 function : rtype=(TYPE | 'void') fname=LABEL '(' (TYPE LABEL (',' TYPE LABEL)*)? ')' scope
          ;
 
-line : scope
+instruction : scope
         | if
         | loop
         | affectation ';'
-        | instruction ';'
         | break
         | return ';'
         | functionCall ';'
+        | print ';'
         | ';'
      ;
 
@@ -28,14 +28,14 @@ line : scope
 break : BREAK ';'
       ;
 
-loop : 'while' expression 'do' line                                                     #While
-     | 'for' affectation 'to' (expression) 'do' line                                    #For
+loop : 'while' expression 'do' instruction                                              #While
+     | 'for' affectation 'to' (expression) 'do' instruction                             #For
      ;
 
-if : 'if' expression 'then' line ('else' line)?
+if : 'if' expression 'then' instruction ('else' instruction)?
    ;
 
-block : 'begin' declaration* line* 'end'
+block : 'begin' declaration* instruction* 'end'
       ;
 
 
@@ -45,14 +45,15 @@ labelExpression : LABEL ('=' expression)?
 affectation: (LABEL '=' expression)
             ;
 
-instruction : PRINT expression
-            ;
 
 return: 'return' expression?
       ;
 
 functionCall: fname=LABEL '(' (expression (',' expression)*)? ')'
             ;
+
+print : PRINT expression
+       ;
 
 expression : '(' expression ')'                                             #LRParen
   | op=('not' | '-') expression                                             #Unary

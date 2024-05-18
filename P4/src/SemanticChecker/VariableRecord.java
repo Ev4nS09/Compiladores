@@ -71,7 +71,7 @@ public class VariableRecord extends SolBaseListener
         SolParser.ScopeContext currentScope = getScope(ctx);
 
         if (this.scopeVariableCache.get(currentScope).containsKey(ctx.LABEL().getText()))
-            this.errorLog.throwError(ctx, "Utils.solUtils.Variable '" + ctx.LABEL().getText() + "' already exists.");
+            this.errorLog.throwError(ctx, "Utils.solUtils.Variable '" + ctx.LABEL().getText() + "' already exists");
 
         this.scopeVariableCache.get(currentScope).put(ctx.LABEL().getText(), new Variable(ctx.LABEL().getText()
                 , stringToClass(((SolParser.DeclarationContext)ctx.parent).TYPE().getText())
@@ -94,7 +94,7 @@ public class VariableRecord extends SolBaseListener
         SolParser.ScopeContext scope = getScope(ctx);
 
         if(getVariable(ctx.LABEL().getText(), scope) == null)
-            this.errorLog.throwError(ctx, "Utils.solUtils.Variable '" + ctx.LABEL().getText() + "' was not defined.");
+            this.errorLog.throwError(ctx, "Variable '" + ctx.LABEL().getText() + "' was not defined");
     }
 
     @Override
@@ -129,7 +129,7 @@ public class VariableRecord extends SolBaseListener
         SolParser.ScopeContext scope = getScope(ctx);
 
         if(getVariable(ctx.LABEL().getText(), scope) == null)
-            this.errorLog.throwError(ctx, "Utils.solUtils.Variable '" + ctx.LABEL().getText() + "' was not defined.");
+            this.errorLog.throwError(ctx, "Variable '" + ctx.LABEL().getText() + "' was not defined.");
     }
 
 
@@ -140,7 +140,7 @@ public class VariableRecord extends SolBaseListener
 
 
         if(function == null)
-            this.errorLog.throwError(ctx, "Utils.solUtils.Function '" + ctx.fname.getText() + "' does not exist.");
+            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText() + "' does not exist.");
         else if(function.numberOfArgs() < ctx.expression().size())
             this.errorLog.throwError(ctx, "Too many arguments for function '" + function.name() + "'");
         else if(function.numberOfArgs() > ctx.expression().size())
