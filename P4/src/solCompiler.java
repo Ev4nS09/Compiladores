@@ -260,10 +260,12 @@ public class solCompiler extends SolBaseVisitor<Void>
        visit(ctx.block());
 
        if(!(ctx.parent instanceof SolParser.FunctionContext) && !ctx.block().declaration().isEmpty())
-       {
            this.instructions.add(new Instruction(OpCode.pop, new Value(ctx.block().declaration().size())));
-           this.localMemoryPointer -= ctx.block().declaration().size();
-       }
+
+
+       for(SolParser.DeclarationContext declaration : ctx.block().declaration())
+           for(SolParser.LabelExpressionContext expression : declaration.labelExpression())
+               this.localMemoryPointer -= 1;
 
        return null;
     }
@@ -271,8 +273,13 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitBlock(SolParser.BlockContext ctx)
     {
-        if(!ctx.declaration().isEmpty())
-            this.instructions.add(new Instruction(OpCode.lalloc, new Value(ctx.declaration().size())));
+        int lallocSize = 0;
+        for(SolParser.DeclarationContext declaration : ctx.declaration())
+            for(SolParser.LabelExpressionContext expression : declaration.labelExpression())
+                lallocSize++;
+
+        if(lallocSize > 0)
+            this.instructions.add(new Instruction(OpCode.lalloc, new Value(lallocSize)));
 
         for(int i = 0; i < ctx.declaration().size(); i++)
             visit(ctx.declaration(i));
@@ -342,16 +349,25 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.functionPosition.put(ctx.fname.getText(), this.instructions.size());
         visit(ctx.scope());
 
-        Function thisFunction = this.functionCache.get(ctx.fname.getText());
+        return null;
+    }
 
-        if(thisFunction.returnType() == void.class)
-            this.instructions.add(new Instruction(OpCode.ret, new Value(thisFunction.numberOfArgs())));
+    @Override
+    public Void visitReturn(SolParser.ReturnContext ctx)
+    {
+        RuleContext currentCtx = ctx;
+        while(currentCtx != null && !(currentCtx instanceof SolParser.FunctionContext))
+            currentCtx = currentCtx.parent;
+
+        Function thisFunction = this.functionCache.get(((SolParser.FunctionContext) currentCtx).fname.getText());
+
+        if(ctx.expression() != null)
+        {
+            visit(ctx.expression());
+            this.instructions.add(new Instruction(OpCode.retval, new Value(thisFunction.numberOfArgs())));
+        }
         else
-            this.instructions.add(new Instruction(OpCode.retval, new Value((thisFunction.numberOfArgs()))));
-
-
-
-
+            this.instructions.add(new Instruction(OpCode.ret, new Value(thisFunction.numberOfArgs())));
 
         return null;
     }

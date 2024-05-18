@@ -159,17 +159,24 @@ public class TypeRecord extends SolBaseListener
         this.types.put(ctx, ctx.expression() != null ? this.types.get(ctx.expression()) : null);
     }
 
+    private boolean isValidConversion(Class<?> left, Class<?> right)
+    {
+        return (left == int.class || right == int.class) && (left == double.class || right == double.class);
+    }
+
     @Override
     public void exitDeclaration(SolParser.DeclarationContext ctx)
     {
-        String labelType = ctx.TYPE().getText();
+        Class<?> labelType = stringToClass(ctx.TYPE().getText());
         for(int i = 0; i < ctx.labelExpression().size(); i++)
         {
             String label = ctx.labelExpression(i).LABEL().getText();
             Class<?> valueType = this.types.get(ctx.labelExpression(i));
+            boolean isValidConversion = (labelType == int.class || valueType == int.class) &&
+                    (labelType == double.class || valueType == double.class);
 
-            if(valueType != null && stringToClass(labelType) != valueType)
-                this.errorLog.throwError(ctx, "Incopatible types, " + labelType + " cannot be converted to " + valueType.getName());
+            if(valueType != null && !isValidConversion && labelType != valueType)
+                this.errorLog.throwError(ctx, "Incopatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());
         }
     }
 
