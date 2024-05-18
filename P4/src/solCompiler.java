@@ -67,19 +67,6 @@ public class solCompiler extends SolBaseVisitor<Void>
         return ctx != null ? (SolParser.ScopeContext) ctx : null;
     }
 
-    private boolean isGlobal(RuleContext currentNode)
-    {
-        while(currentNode != null && !(currentNode instanceof SolParser.ScopeContext))
-            currentNode = currentNode.parent;
-
-        return currentNode == null;
-    }
-
-    private OpCode returnGlobalAllocCode(boolean isGlobal)
-    {
-        return isGlobal ? OpCode.galloc : OpCode.lalloc;
-    }
-
     private OpCode returnGlobalLoadCode(boolean isGlobal)
     {
         return isGlobal ? OpCode.gload : OpCode.lload;
@@ -306,13 +293,13 @@ public class solCompiler extends SolBaseVisitor<Void>
     @Override
     public Void visitLabelExpression(SolParser.LabelExpressionContext ctx)
     {
-       boolean isGlobal = isGlobal(ctx);
+       boolean isGlobal = getScope(ctx) == null;
        int pointer = isGlobal ? this.globalMemoryPointer : this.localMemoryPointer;
 
 
         if(ctx.expression() != null)
         {
-            visit(ctx.expression());
+            possibleConversion(this.types.get(ctx), ctx.expression());
             this.instructions.add(new Instruction(returnGlobalStoreCode(isGlobal), new Value(pointer)));
         }
 

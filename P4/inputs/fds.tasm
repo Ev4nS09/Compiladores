@@ -6,6 +6,7 @@ lalloc 1
 dconst 1.0
 iconst 2
 call 2
+itod
 lstore 2
 lload 2
 dprint

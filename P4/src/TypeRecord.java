@@ -156,12 +156,8 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitLabelExpression(SolParser.LabelExpressionContext ctx)
     {
-        this.types.put(ctx, ctx.expression() != null ? this.types.get(ctx.expression()) : null);
-    }
+        this.types.put(ctx, stringToClass(((SolParser.DeclarationContext) ctx.parent).TYPE().getText()));
 
-    private boolean isValidConversion(Class<?> left, Class<?> right)
-    {
-        return (left == int.class || right == int.class) && (left == double.class || right == double.class);
     }
 
     @Override
