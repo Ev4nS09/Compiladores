@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P4/src/Antlr/Tasm.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Tasm.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -40,7 +40,7 @@ public class TasmParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'\\n'", "'\\r'", "','", "':'", "'halt'", null, null, null, null, 
+			null, "'\\r'", "'\\n'", "','", "':'", "'halt'", null, null, null, null, 
 			"'iconst'", "'iprint'", "'iuminus'", "'iadd'", "'isub'", "'imult'", "'idiv'", 
 			"'imod'", "'ieq'", "'ineq'", "'ilt'", "'ileq'", "'itod'", "'itos'", "'dconst'", 
 			"'dprint'", "'duminus'", "'dadd'", "'dsub'", "'dmult'", "'ddiv'", "'deq'", 
@@ -169,10 +169,18 @@ public class TasmParser extends Parser {
 			setState(32);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==T__0) {
+			if (_la==T__0 || _la==T__1) {
 				{
 				setState(31);
-				match(T__0);
+				_la = _input.LA(1);
+				if ( !(_la==T__0 || _la==T__1) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
 				}
 			}
 
@@ -247,6 +255,7 @@ public class TasmParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__0:
+			case T__1:
 			case HALT:
 			case ICONST:
 			case IPRINT:
@@ -421,6 +430,7 @@ public class TasmParser extends Parser {
 	public final InstructionContext instruction() throws RecognitionException {
 		InstructionContext _localctx = new InstructionContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_instruction);
+		int _la;
 		try {
 			setState(65);
 			_errHandler.sync(this);
@@ -492,7 +502,15 @@ public class TasmParser extends Parser {
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(62);
-				match(T__0);
+				_la = _input.LA(1);
+				if ( !(_la==T__0 || _la==T__1) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
 				}
 				break;
 			case 11:
@@ -1291,7 +1309,7 @@ public class TasmParser extends Parser {
 		"\u0018d\u0001\u0000\u0000\u0000\u001a\u001c\u0003\u0002\u0001\u0000\u001b"+
 		"\u001a\u0001\u0000\u0000\u0000\u001c\u001d\u0001\u0000\u0000\u0000\u001d"+
 		"\u001b\u0001\u0000\u0000\u0000\u001d\u001e\u0001\u0000\u0000\u0000\u001e"+
-		" \u0001\u0000\u0000\u0000\u001f!\u0005\u0001\u0000\u0000 \u001f\u0001"+
+		" \u0001\u0000\u0000\u0000\u001f!\u0007\u0000\u0000\u0000 \u001f\u0001"+
 		"\u0000\u0000\u0000 !\u0001\u0000\u0000\u0000!\"\u0001\u0000\u0000\u0000"+
 		"\"#\u0005\u0000\u0000\u0001#\u0001\u0001\u0000\u0000\u0000$%\u0003\u0004"+
 		"\u0002\u0000%&\u0007\u0000\u0000\u0000&4\u0001\u0000\u0000\u0000\',\u0005"+
@@ -1303,7 +1321,7 @@ public class TasmParser extends Parser {
 		"\u0000\u00004\u0003\u0001\u0000\u0000\u00005B\u0003\u0006\u0003\u0000"+
 		"6B\u0003\b\u0004\u00007B\u0003\n\u0005\u00008B\u0003\f\u0006\u00009B\u0003"+
 		"\u000e\u0007\u0000:B\u0003\u0010\b\u0000;B\u0003\u0012\t\u0000<B\u0003"+
-		"\u0014\n\u0000=B\u0003\u0016\u000b\u0000>B\u0005\u0001\u0000\u0000?B\u0005"+
+		"\u0014\n\u0000=B\u0003\u0016\u000b\u0000>B\u0007\u0000\u0000\u0000?B\u0005"+
 		"\u0005\u0000\u0000@B\u0003\u0018\f\u0000A5\u0001\u0000\u0000\u0000A6\u0001"+
 		"\u0000\u0000\u0000A7\u0001\u0000\u0000\u0000A8\u0001\u0000\u0000\u0000"+
 		"A9\u0001\u0000\u0000\u0000A:\u0001\u0000\u0000\u0000A;\u0001\u0000\u0000"+

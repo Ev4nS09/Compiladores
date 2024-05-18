@@ -1,6 +1,6 @@
 grammar Tasm;
 
-tasm: line+ '\n'? EOF;
+tasm: line+ ( '\r' | '\n')? EOF;
 
 line:       instruction ('\n'|'\r')                         #Inst
            | TAG(',' TAG)* ':' instruction ('\n'|'\r')      #TagInstruction

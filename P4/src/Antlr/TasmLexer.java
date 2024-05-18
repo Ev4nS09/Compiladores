@@ -1,4 +1,4 @@
-// Generated from /home/rio/Compiladores/P4/src/Antlr/Tasm.g4 by ANTLR 4.13.1
+// Generated from C:/Users/afons/Desktop/Compiladores/P4/src/Antlr/Tasm.g4 by ANTLR 4.13.1
 package Antlr;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -50,7 +50,7 @@ public class TasmLexer extends Lexer {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'\\n'", "'\\r'", "','", "':'", "'halt'", null, null, null, null, 
+			null, "'\\r'", "'\\n'", "','", "':'", "'halt'", null, null, null, null, 
 			"'iconst'", "'iprint'", "'iuminus'", "'iadd'", "'isub'", "'imult'", "'idiv'", 
 			"'imod'", "'ieq'", "'ineq'", "'ilt'", "'ileq'", "'itod'", "'itos'", "'dconst'", 
 			"'dprint'", "'duminus'", "'dadd'", "'dsub'", "'dmult'", "'ddiv'", "'deq'", 
@@ -261,8 +261,8 @@ public class TasmLexer extends Lexer {
 		"\u0000\u0000s\u01c8\u0001\u0000\u0000\u0000u\u01cf\u0001\u0000\u0000\u0000"+
 		"w\u01d3\u0001\u0000\u0000\u0000y\u01d8\u0001\u0000\u0000\u0000{\u01df"+
 		"\u0001\u0000\u0000\u0000}\u01e3\u0001\u0000\u0000\u0000\u007f\u01eb\u0001"+
-		"\u0000\u0000\u0000\u0081\u0082\u0005\n\u0000\u0000\u0082\u0002\u0001\u0000"+
-		"\u0000\u0000\u0083\u0084\u0005\r\u0000\u0000\u0084\u0004\u0001\u0000\u0000"+
+		"\u0000\u0000\u0000\u0081\u0082\u0005\r\u0000\u0000\u0082\u0002\u0001\u0000"+
+		"\u0000\u0000\u0083\u0084\u0005\n\u0000\u0000\u0084\u0004\u0001\u0000\u0000"+
 		"\u0000\u0085\u0086\u0005,\u0000\u0000\u0086\u0006\u0001\u0000\u0000\u0000"+
 		"\u0087\u0088\u0005:\u0000\u0000\u0088\b\u0001\u0000\u0000\u0000\u0089"+
 		"\u008a\u0005h\u0000\u0000\u008a\u008b\u0005a\u0000\u0000\u008b\u008c\u0005"+

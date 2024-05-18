@@ -1,6 +1,6 @@
-// Variable test
+// solUtils.Variable test
 
-print "Variable test";
+print "solUtils.Variable test";
 int x = 0, c;
 real b;
 b = 11;

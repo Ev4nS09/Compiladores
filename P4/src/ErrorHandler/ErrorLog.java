@@ -1,8 +1,6 @@
 package ErrorHandler;
 
-import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.Interval;
 
 import java.util.ArrayList;
 

@@ -1,12 +1,48 @@
-call 4
-halt
-iconst 1
-retval 2
-lalloc 1
-dconst 1.0
-iconst 2
-call 2
-itod
-lstore 2
-lload 2
-dprint
+L0: galloc 2
+L1: iconst 0
+L2: gstore 1
+L3: call L32
+L4: halt
+L5: lalloc 1
+L6: lload -1
+L7: iconst 0
+L8: ieq
+L9: jumpf L12
+L10: sconst "N"
+L11: lstore 2
+L12: lload -1
+L13: iconst 1
+L14: ieq
+L15: jumpf L18
+L16: sconst "E"
+L17: lstore 2
+L18: lload -1
+L19: iconst 2
+L20: ieq
+L21: jumpf L24
+L22: sconst "S"
+L23: lstore 2
+L24: lload -1
+L25: iconst 3
+L26: ieq
+L27: jumpf L30
+L28: sconst "W"
+L29: lstore 2
+L30: lload 2
+L31: retval 1
+L32: gload 1
+L33: iconst 5
+L34: ilt
+L35: jumpf L46
+L36: gload 1
+L37: call L5
+L38: gstore 0
+L39: gload 1
+L40: iconst 1
+L41: iadd
+L42: gstore 1
+L43: gload 0
+L44: sprint
+L45: jump L32
+L46: sconst "Acabou"
+L47: sprint

@@ -1,11 +1,29 @@
-int max(real x, int y)
+string posicao;
+int i = 0;
+
+string change(int i)
 begin
-    return 1;
+string posicao;
+    if i == 0 then
+        posicao = "N";
+    if i == 1 then
+        posicao = "E";
+    if i == 2 then
+        posicao = "S";
+    if i == 3 then
+        posicao = "W";
+
+    return posicao;
 end
+
 
 void main()
 begin
-    real a = max(1.0, 2);
-
-    print a;
+    while i < 5 do
+    begin
+        posicao = change(i);
+        i = i + 1;
+        print posicao;
+    end
+    print "Acabou";
 end
