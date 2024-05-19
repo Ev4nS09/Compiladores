@@ -1,0 +1,6 @@
+L0: call L2
+L1: halt
+L2: lalloc 1
+L3: lload 2
+L4: iprint
+L5: ret 0

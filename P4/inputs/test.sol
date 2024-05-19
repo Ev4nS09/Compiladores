@@ -1,3 +1,6 @@
+void main()
+begin
+
 int x = 0;
 int i;
 while x < 10 do
@@ -22,3 +25,5 @@ while x < 10 do
         break;
     end
 print "program is over";
+
+end

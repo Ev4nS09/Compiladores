@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.*;
 
 import Antlr.*;
 
+import java.lang.foreign.MemorySegment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import solUtils.*;
@@ -28,19 +29,6 @@ public class FunctionRecord extends SolBaseListener
     public FunctionRecord()
     {
         this(new ErrorLog());
-    }
-
-    private Class<?> stringToClass(String type)
-    {
-        return switch (type)
-        {
-            case "int" -> int.class;
-            case "real" -> double.class;
-            case "string" -> String.class;
-            case "bool" -> boolean.class;
-            case "void" -> void.class;
-            default -> null;
-        };
     }
 
     @Override
@@ -111,22 +99,12 @@ public class FunctionRecord extends SolBaseListener
 
         if(!hasValidReturn && !ctx.rtype.getText().equals("void"))
             this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText()  + "' may noy return");
-
-        if(ctx.fname.getText().equals("main") && stringToClass(ctx.rtype.getText()) != void.class)
+        if(ctx.fname.getText().equals("main") && TypeRecord.stringToClass(ctx.rtype.getText()) != void.class)
             this.errorLog.throwError(ctx, "Invalid return type for main.");
-
         if(ctx.fname.getText().equals("main") && ctx.LABEL().size() > 1)
             this.errorLog.throwError(ctx, "Invalid number of arguments for main, main has no arguments");
 
-
-        ArrayList<Class<?>> functionTypes = new ArrayList<>();
-
-        for(int i = ctx.rtype.getText().equals("void") ? 0 : 1; i < ctx.TYPE().size(); i++)
-            functionTypes.add(stringToClass(ctx.TYPE(i).getText()));
-
-        this.functionCache.put(ctx.fname.getText(),
-                new Function(ctx.fname.getText(), ctx.LABEL().size() - 1, stringToClass(ctx.rtype.getText())
-                , functionTypes));
+        this.functionCache.put(ctx.fname.getText(), Function.getCurrentFunction(ctx));
     }
 
     public HashMap<String, Function> getFunctions(ParseTree tree)

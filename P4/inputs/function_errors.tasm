@@ -1,0 +1,8 @@
+L0: call L5
+L1: halt
+L2: lload -1
+L3: itod
+L4: retval 1
+L5: iconst 1
+L6: call L2
+L7: dprint

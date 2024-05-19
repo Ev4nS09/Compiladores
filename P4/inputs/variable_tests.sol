@@ -1,3 +1,6 @@
+
+void main()
+begin
 int _integer = 1;
 real _double = 2.2;
 string _string = "STRING";
@@ -20,3 +23,5 @@ _integer = 1 + 2;
 _double = 1 + 2.0;
 _string = _string + " STRING";
 _boolean = false;
+
+end

@@ -1,4 +1,8 @@
-// solUtils.Variable test
+
+void main()
+begin
+
+//Variable test
 
 print "solUtils.Variable test";
 int x = 0, c;
@@ -67,4 +71,6 @@ print "i = " + i
         print "i * j =" + i * j;
         
     end
+end
+
 end

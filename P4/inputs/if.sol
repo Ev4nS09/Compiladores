@@ -1,3 +1,6 @@
+
+void main()
+begin
 int _integer = 1;
 real _double = 2.2;
 string _string = "STRING";
@@ -19,5 +22,7 @@ if _integer == 1 then
                 print "nested ifs, true";
 else
     print "O.o";
+
+end
 
 

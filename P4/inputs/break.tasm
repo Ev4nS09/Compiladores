@@ -1,25 +1,63 @@
-galloc 4
-iconst 1
-gstore 0
-dconst 0
-gstore 1
-sconst 1
-gstore 2
-tconst
-gstore 3
-Tag_10: tconst
-jumpf Tag_25
-iconst 456785
-gload 0
-ileq
-jumpf Tag_18
-jump Tag_25
-jump Tag_20
-Tag_18: gload 0
-iprint
-Tag_20: gload 0
-iconst 1
-iadd
-gstore 0
-jump Tag_10
-Tag_25: halt
+L0: galloc 4
+L1: iconst 1
+L2: gstore 0
+L3: dconst 2.2
+L4: gstore 1
+L5: sconst "STRING"
+L6: gstore 2
+L7: tconst
+L8: gstore 3
+L9: call L15
+L10: halt
+L11: lalloc 1
+L12: iconst 45648658
+L13: lstore 2
+L14: ret 0
+L15: tconst
+L16: jumpf L62
+L17: iconst 123
+L18: gload 0
+L19: ileq
+L20: jumpf L57
+L21: iconst 124
+L22: gload 0
+L23: ileq
+L24: jumpf L57
+L25: iconst 125
+L26: gload 0
+L27: ileq
+L28: jumpf L57
+L29: iconst 126
+L30: gload 0
+L31: ileq
+L32: jumpf L57
+L33: iconst 127
+L34: gload 0
+L35: ileq
+L36: jumpf L57
+L37: iconst 128
+L38: gload 0
+L39: ileq
+L40: jumpf L57
+L41: iconst 129
+L42: gload 0
+L43: ileq
+L44: jumpf L57
+L45: iconst 133
+L46: gload 0
+L47: ileq
+L48: jumpf L57
+L49: iconst 183
+L50: gload 0
+L51: ileq
+L52: jumpf L55
+L53: jump L62
+L54: jump L57
+L55: gload 0
+L56: iprint
+L57: gload 0
+L58: iconst 1
+L59: iadd
+L60: gstore 0
+L61: jump L15
+L62: ret 0

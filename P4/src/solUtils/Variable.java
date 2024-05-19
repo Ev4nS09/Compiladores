@@ -6,25 +6,18 @@ public class Variable
     public Class<?> type;
     public int memoryValue;
     public boolean isGlobal;
-    public boolean isFunctionArgument;
 
-    public Variable(String name, Class<?> type, boolean isInitialized, int memoryValue, boolean isGlobal, boolean isFunctionArgument)
+    public Variable(String name, Class<?> type, int memoryValue, boolean isGlobal)
     {
         this.name = name;
         this.type = type;
         this.memoryValue = memoryValue;
         this.isGlobal = isGlobal;
-        this.isFunctionArgument = isFunctionArgument;
     }
 
-    public Variable(String name, Class<?> type, boolean isInitialized, boolean isFunctionArgument)
+    public Variable(String name, Class<?> type)
     {
-        this(name, type, isInitialized, 0, true, isFunctionArgument);
-    }
-
-    public Variable(String name, Class<?> type, boolean isInitialized)
-    {
-       this(name, type, isInitialized, 0, true, false);
+       this(name, type, 0, false);
     }
 
     @Override

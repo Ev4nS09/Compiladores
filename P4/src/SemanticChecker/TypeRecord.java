@@ -8,59 +8,57 @@ import Antlr.*;
 
 import java.util.HashMap;
 
+import org.stringtemplate.v4.compiler.STParser;
 import solUtils.*;
 public class TypeRecord extends SolBaseListener
 {
     private final ParseTreeProperty<Class<?>> types;
     private final HashMap<String, Function> functionCache;
-    private final ParseTreeProperty<HashMap<String, Variable>> variableScopeCache;
+    private final ScopeTree scopeTree;
     private final ErrorLog errorLog;
 
-    public TypeRecord(HashMap<String, Function> functionCache, ParseTreeProperty<HashMap<String, Variable>> variableScopeCache, ErrorLog errorLog)
+    public TypeRecord(HashMap<String, Function> functionCache, ScopeTree scopeTree, ErrorLog errorLog)
     {
         this.types = new ParseTreeProperty<>();
         this.functionCache = functionCache;
-        this.variableScopeCache = variableScopeCache;
+        this.scopeTree = scopeTree;
         this.errorLog = errorLog;
     }
 
     public TypeRecord()
     {
-        this(new HashMap<>(), new ParseTreeProperty<>(), new ErrorLog());
+        this(new HashMap<>(), new ScopeTree(), new ErrorLog());
     }
 
-    private SolParser.FunctionContext getFunction(RuleContext ctx)
+    public static String getSolType(String javaType)
     {
-        while(ctx != null && !(ctx instanceof SolParser.FunctionContext))
-            ctx = ctx.parent;
-
-        return ctx != null ? (SolParser.FunctionContext) ctx : null;
+        if(javaType.equals(int.class.getName()))
+            return "int";
+        else if(javaType.equals(double.class.getName()))
+            return "real";
+        else if(javaType.equals(String.class.getName()))
+            return "string";
+        else if(javaType.equals(boolean.class.getName()))
+            return "bool";
+        else
+            return "void";
     }
 
-    private SolParser.ScopeContext getScope(RuleContext ctx)
+    public static String getSolType(Class<?> javaType)
     {
-        while(ctx != null && !(ctx instanceof SolParser.ScopeContext))
-            ctx = ctx.parent;
-
-        return ctx != null ? (SolParser.ScopeContext) ctx : null;
+        if(javaType == int.class)
+            return "int";
+        else if(javaType == double.class)
+            return "real";
+        else if(javaType == String.class)
+            return "string";
+        else if(javaType == boolean.class)
+            return "bool";
+        else
+            return "void";
     }
 
-    private Variable getVariable(String variableName, SolParser.ScopeContext currentScope)
-    {
-        Variable result = null;
-
-        while(currentScope != null)
-        {
-            if(this.variableScopeCache.get(currentScope) != null && this.variableScopeCache.get(currentScope).get(variableName) != null)
-                break;
-
-            currentScope = getScope(currentScope.parent);
-        }
-
-        return this.variableScopeCache.get(currentScope).get(variableName);
-    }
-
-    private Class<?> stringToClass(String type)
+    public static Class<?> stringToClass(String type)
     {
         return switch (type)
         {
@@ -68,6 +66,7 @@ public class TypeRecord extends SolBaseListener
             case "real" -> double.class;
             case "string" -> String.class;
             case "bool" -> boolean.class;
+            case "void" -> void.class;
             default -> null;
         };
     }
@@ -91,14 +90,19 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitReturn(SolParser.ReturnContext ctx)
     {
-        Function function = this.functionCache.get(getFunction(ctx).fname.getText());
+        Function function = Function.getCurrentFunction(ctx);
 
-        if(ctx.expression() == null && function.returnType() != void.class)
+        boolean isExpressionNull = ctx.expression() == null;
+        boolean isNumberConversionPossible = !isExpressionNull && function.returnType() == double.class && this.types.get(ctx.expression()) == int.class;
+        boolean returnTypeEqualsFunctionType = !isExpressionNull && function.returnType() == this.types.get(ctx.expression());
+
+        if(isExpressionNull && function.returnType() != void.class)
             this.errorLog.throwError(ctx, "Invalid return type 'void' for function '"
                     + function.name() + "' with return type '" + function.returnType() + "'");
-        else if(ctx.expression() != null && (function.returnType() != this.types.get(ctx.expression())))
-            this.errorLog.throwError(ctx, "Invalid return type '" + this.types.get(ctx.expression()) +
-                    "' for function '" + function.name() + "' with return type '" + function.returnType() + "'");
+
+        else if(!isNumberConversionPossible && !returnTypeEqualsFunctionType)
+            this.errorLog.throwError(ctx, "Invalid return type '" + getSolType(this.types.get(ctx.expression())) +
+                    "' for function '" + function.name() + "' with return type '" + getSolType(function.returnType()) + "'");
     }
 
     @Override
@@ -113,7 +117,7 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != boolean.class)
             this.errorLog.throwError(ctx,
-                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to " + boolean.class.getName());
+                    "Incompatible types, " + getSolType(this.types.get(ctx.expression())) + " cannot be converted to bool");
     }
 
     @Override
@@ -121,7 +125,7 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != boolean.class)
             this.errorLog.throwError(ctx,
-                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to " + boolean.class.getName());
+                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to bool");
 
     }
 
@@ -130,18 +134,18 @@ public class TypeRecord extends SolBaseListener
     {
         if(this.types.get(ctx.expression()) != int.class || this.types.get(ctx.affectation()) != int.class)
             this.errorLog.throwError(ctx,
-                    "Incompatible types, " + this.types.get(ctx.expression()).getName() + " cannot be converted to " + int.class.getName());
+                    "Incompatible types, " + getSolType(this.types.get(ctx.expression())) + " cannot be converted to int");
 
     }
 
     @Override
     public void exitAffectation(SolParser.AffectationContext ctx)
     {
-        Class<?> labelType = this.getVariable(ctx.LABEL().getText(), getScope(ctx)).type;
+        Class<?> labelType = this.scopeTree.getVariable(ctx, ctx.LABEL().getText()).type;
         Class<?> valueType = this.types.get(ctx.expression());
 
         if(!(labelType == double.class && valueType == int.class) && labelType != valueType)
-            this.errorLog.throwError(ctx, "Incompatible types, " + labelType.getName() + " cannot be converted to " + valueType.getName());
+            this.errorLog.throwError(ctx, "Incompatible types, " + getSolType(labelType) + " cannot be converted to " + getSolType(valueType));
 
 
         this.types.put(ctx, labelType);
@@ -150,23 +154,17 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitLabelExpression(SolParser.LabelExpressionContext ctx)
     {
-        Class<?> labelType =  stringToClass(((SolParser.DeclarationContext) ctx.parent).TYPE().getText());
+        Class<?> labelType = stringToClass(((SolParser.DeclarationContext) ctx.parent).TYPE().getText());
 
         String label = ctx.LABEL().getText();
         Class<?> valueType = this.types.get(ctx.expression());
 
-        boolean isValidConversion = (labelType == int.class || valueType == int.class) &&
-                (labelType == double.class || valueType == double.class);
+        boolean isValidConversion = labelType == double.class && valueType == int.class;
 
         if(valueType != null && !isValidConversion && labelType != valueType)
-            this.errorLog.throwError(ctx, "Incopatible types, " + valueType.getName() + " cannot be converted to " + labelType.getName());
+            this.errorLog.throwError(ctx, "Incopatible types, " + getSolType(valueType) + " cannot be converted to " + getSolType(labelType));
 
         this.types.put(ctx, labelType);
-    }
-
-    @Override
-    public void exitDeclaration(SolParser.DeclarationContext ctx)
-    {
     }
 
     @Override
@@ -178,7 +176,7 @@ public class TypeRecord extends SolBaseListener
     @Override
     public void exitLabel(SolParser.LabelContext ctx)
     {
-        Variable variable = this.getVariable(ctx.getText(), getScope(ctx));
+        Variable variable = this.scopeTree.getVariable(ctx, ctx.LABEL().getText());
 
         this.types.put(ctx, variable != null ? variable.type: null);
     }
@@ -188,11 +186,21 @@ public class TypeRecord extends SolBaseListener
     {
         Function function = this.functionCache.get(ctx.fname.getText());
 
-        if(ctx.expression().size() == function.numberOfArgs() && ctx.expression().size() == function.argumentTypes().size())
-            for (int i = 0; i < ctx.expression().size(); i++)
-                if (this.types.get(ctx.expression(i)) != function.argumentTypes().get(i))
-                    this.errorLog.throwError(ctx, "Invalid type '" + this.types.get(ctx.expression(i)) +
-                            "' for argument with type '" + function.argumentTypes().get(i) + "'");
+        if(ctx.expression().size() != function.numberOfArgs() || ctx.expression().size() != function.argumentTypes().size())
+        {
+            this.types.put(ctx, function.returnType());
+            return;
+        }
+
+        for (int i = 0; i < ctx.expression().size(); i++)
+        {
+            boolean isNumberConversionPossible = this.types.get(ctx.expression(i)) == int.class && function.argumentTypes().get(i) == double.class;
+
+            if (!isNumberConversionPossible && this.types.get(ctx.expression(i)) != function.argumentTypes().get(i))
+                this.errorLog.throwError(ctx, "Invalid type '" + getSolType(this.types.get(ctx.expression(i))) +
+                        "' for argument with type '" + getSolType(function.argumentTypes().get(i)) + "'");
+        }
+
 
         this.types.put(ctx, function.returnType());
     }
@@ -218,7 +226,7 @@ public class TypeRecord extends SolBaseListener
         boolean isNodeValidForNot = !ctx.op.getText().equals("not") || nodeType == boolean.class;
 
         if(!(isNodeValidForSub && isNodeValidForNot))
-            this.errorLog.throwError(ctx, "Invalid type " + nodeType.getName() +
+            this.errorLog.throwError(ctx, "Invalid type " + getSolType(nodeType)+
                     " for unary operator '" + ctx.op.getText() + "'");
 
 
@@ -237,7 +245,7 @@ public class TypeRecord extends SolBaseListener
 
         if(!isLeftNodeIntOrDouble || !isRightNodeIntOrDouble)
             this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
-                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+                    "'. Types" + getSolType(leftNodeType) + " and " + getSolType(rightNodeType));
 
 
         if(leftNodeType == double.class || rightNodeType == double.class)
@@ -260,7 +268,7 @@ public class TypeRecord extends SolBaseListener
 
         if(isLeftAndRightNotString && isLeftOrRightBoolean)
             this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
-                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+                    "'. Types" + getSolType(leftNodeType) + " and " + getSolType(rightNodeType));
 
 
         if(leftNodeType == String.class || rightNodeType == String.class)
@@ -284,7 +292,7 @@ public class TypeRecord extends SolBaseListener
 
         if(isLeftOrRightString || isLeftOrRightBoolean)
             this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
-                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+                    "'. Types" + getSolType(leftNodeType) + " and " + getSolType(rightNodeType));
 
         this.types.put(ctx, boolean.class);
     }
@@ -301,8 +309,8 @@ public class TypeRecord extends SolBaseListener
         boolean isRightAndLeftNumber = isLeftNodeIntOrDouble && isRightNodeIntOrDouble;
 
         if(leftNotEqualsRight && !(isRightAndLeftNumber))
-            this.errorLog.throwError(ctx,  "Incopatible types, " + rightNodeType.getName()
-                    + " cannot be converted to " + leftNodeType.getName());
+            this.errorLog.throwError(ctx,  "Incopatible types, " + getSolType(rightNodeType)
+                    + " cannot be converted to " + getSolType(leftNodeType));
 
 
 
@@ -317,7 +325,7 @@ public class TypeRecord extends SolBaseListener
 
         if(leftNodeType != boolean.class || rightNodeType != boolean.class)
             this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
-                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+                    "'. Types" + getSolType(leftNodeType )+ " and " + getSolType(rightNodeType));
 
 
         this.types.put(ctx, boolean.class);
@@ -331,7 +339,7 @@ public class TypeRecord extends SolBaseListener
 
         if(leftNodeType != boolean.class || rightNodeType != boolean.class)
             this.errorLog.throwError(ctx,  "Invalid types for binary operator '" + ctx.op.getText() +
-                    "'. Types" + leftNodeType.getName() + " and " + rightNodeType.getName());
+                    "'. Types" + getSolType(leftNodeType) + " and " + getSolType(rightNodeType));
 
 
 

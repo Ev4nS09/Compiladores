@@ -8,6 +8,8 @@ import java.util.*;
 import solUtils.*;
 public class tVM
 {
+    private static final int MEMORY_LIMIT = 10_000_000;
+
     private static final String PRINT_NIL_ERROR = "Can't print a NIL value";
     private static final String CAST_NIL_ERROR = "Can't cast a NIL value";
     private static final String ADDITION_NIL_ERROR = "Can't effectuate an addition with a NIL value";
@@ -63,6 +65,9 @@ public class tVM
             System.out.println("                " +  "FramePointer: " + this.framePointer);
             System.out.println(this.instructionPointer + ": " + this.instructions.get(instructionPointer));
         }
+
+        if(this.stack.size() + this.globalMemory.length > MEMORY_LIMIT)
+            ErrorLog.fatalError("Virtual machine memory limit exceeded");
 
         this.instructionPointer++;
 
@@ -396,7 +401,7 @@ public class tVM
     private void imult()
     {
         if(isNIL(stack.peek()) || isNIL(stack.get(stack.size() - 2)))
-            ErrorLog.fatalError("Can't do a multiplication with a NIL value");
+            ErrorLog.fatalError(MULTIPLICATION_NIL_ERROR);
 
         int right = this.stack.pop().getInteger();
         int left = this.stack.pop().getInteger();
