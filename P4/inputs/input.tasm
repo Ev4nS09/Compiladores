@@ -1,0 +1,36 @@
+L0: call L32
+L1: halt
+L2: lalloc 2
+L3: lload -1
+L4: itos
+L5: sconst ""
+L6: sadd
+L7: lstore 2
+L8: sconst ""
+L9: lstore 3
+L10: iconst 0
+L11: lload -1
+L12: ilt
+L13: jumpf L28
+L14: lload 3
+L15: lload -1
+L16: iconst 10
+L17: imod
+L18: itos
+L19: sadd
+L20: sconst ""
+L21: sadd
+L22: lstore 3
+L23: lload -1
+L24: iconst 10
+L25: idiv
+L26: lstore -1
+L27: jump L10
+L28: lload 3
+L29: lload 2
+L30: seq
+L31: retval 1
+L32: iconst 4353
+L33: call L2
+L34: bprint
+L35: ret 0

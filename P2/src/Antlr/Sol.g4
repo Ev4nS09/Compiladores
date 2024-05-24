@@ -1,6 +1,6 @@
 grammar Sol;
 
-sol : declaration+ ;
+sol : instruction+ ;
 
 declaration : TYPE LABEL '=' expression
             ;

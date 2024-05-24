@@ -17,8 +17,6 @@ public class ScopeTree
         this.variableCache.put(null, new HashMap<>());
     }
 
-
-
     public SolParser.ScopeContext getScope(RuleContext ctx)
     {
         while(ctx != null && !(ctx instanceof SolParser.ScopeContext))
@@ -38,7 +36,7 @@ public class ScopeTree
 
         while(currentScope != null)
         {
-            if(this.variableCache.get(currentScope) != null && this.variableCache.get(currentScope).get(variableName) != null)
+            if(this.variableCache.get(currentScope).get(variableName) != null)
                 break;
 
             currentScope = getScope(currentScope.parent);

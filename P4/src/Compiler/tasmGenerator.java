@@ -24,6 +24,7 @@ public class tasmGenerator {
             Instruction instruction = instructions.get(i);
             String line = "L" + i + ": ";
 
+
             if (instruction.getInstruction() == OpCode.dconst)
                 line += "dconst " + pool.getPoolValue(instruction.getArgument().getInteger());
             else if (instruction.getInstruction() == OpCode.sconst)

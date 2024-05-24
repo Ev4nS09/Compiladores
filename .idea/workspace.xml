@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8ef3d49c-8c37-488e-a01c-30ec3f8f3aa4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/P2/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/P2/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2/src/ErrorHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/P4/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/inputs/fib.tasm" beforeDir="false" afterPath="$PROJECT_DIR$/P4/inputs/fib.tasm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/inputs/fib.tbc" beforeDir="false" afterPath="$PROJECT_DIR$/P4/inputs/fib.tbc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/inputs/memory_bomb.tasm" beforeDir="false" afterPath="$PROJECT_DIR$/P4/inputs/memory_bomb.tasm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/inputs/memory_bomb.tbc" beforeDir="false" afterPath="$PROJECT_DIR$/P4/inputs/memory_bomb.tbc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/out/production/P4/tVM/tVM$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/P4/out/production/P4/tVM/tVM$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/out/production/P4/tVM/tVM.class" beforeDir="false" afterPath="$PROJECT_DIR$/P4/out/production/P4/tVM/tVM.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P4/src/tVM/tVM.java" beforeDir="false" afterPath="$PROJECT_DIR$/P4/src/tVM/tVM.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +37,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/afons/Desktop/Compiladores/P3"
+    "last_opened_file_path": "/home/rio/Compiladores/P2"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

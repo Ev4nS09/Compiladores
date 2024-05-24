@@ -350,8 +350,6 @@ public class solCompiler extends SolBaseVisitor<Void>
         TypeRecord typeRecord = new TypeRecord();
         this.types = typeRecord.getTypes(tree);
 
-        //Iterate through the tree
-        this.visit(tree);
 
         //Checks if type errors existed, if yes it exits the program
         if(typeRecord.getNumberOfErrors() > 0)
@@ -359,6 +357,9 @@ public class solCompiler extends SolBaseVisitor<Void>
             System.err.println(inputFile + " has " + typeRecord.getNumberOfErrors() + " type cheking errors");
             System.exit(1);
         }
+
+        //Iterate through the tree
+        this.visit(tree);
 
         if(asm)
             asm();

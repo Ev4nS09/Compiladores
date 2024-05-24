@@ -42,14 +42,9 @@ L40: lalloc 1
 L41: iconst 20
 L42: call L5
 L43: lstore 2
-L44: gload 0
-L45: iconst 2
-L46: iadd
-L47: gstore 0
-L48: lload 2
-L49: iprint
-L50: iconst 46
-L51: call L5
-L52: iprint
-L53: gload 0
-L54: iprint
+L44: lload 2
+L45: iprint
+L46: iconst 46
+L47: call L5
+L48: iprint
+L49: ret 0

@@ -55,7 +55,7 @@ public class VariableRecord extends SolBaseListener
             if(this.scopeTree.variableExistsInCurrentScope(ctx.scope(), ctx.LABEL(i).getText()))
                 this.errorLog.throwError(ctx, "Function Argument '" + ctx.LABEL(i).getText() + "' was already defined");
 
-            this.scopeTree.addVariable(ctx.scope(), new Variable(
+            this.scopeTree.addVariable(ctx, new Variable(
                     ctx.LABEL(i).getText(),
                     TypeRecord.stringToClass(ctx.TYPE(i + voidException).getText())
             ));

@@ -144,7 +144,7 @@ public class solCompiler extends SolBaseVisitor<Void>
         this.instructions.add(null);
 
         visit(ctx.line(0));
-        int afterIfIndex =this.instructions.size();
+        int afterIfIndex = this.instructions.size();
         this.instructions.set(jumpInstructionIndex, new Instruction(OpCode.jumpf, new Value(afterIfIndex)));
 
         //else exists

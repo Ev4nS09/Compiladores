@@ -1,0 +1,4 @@
+L0: call L2
+L1: halt
+L2: call L2
+L3: ret 0

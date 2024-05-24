@@ -86,19 +86,12 @@ public class FunctionRecord extends SolBaseListener
     @Override
     public void exitFunction(SolParser.FunctionContext ctx)
     {
-        boolean hasValidReturn = false;
+        boolean hasValidReturn = this.hasReturnCache.get(ctx.scope());
 
-        for(SolParser.InstructionContext instruction: ctx.scope().block().instruction())
-        {
-            if(instruction.return_() != null || this.hasReturnCache.get(ctx.scope()))
-            {
-                hasValidReturn = true;
-                break;
-            }
-        }
-
+        if(this.functionCache.containsKey(ctx.fname.getText()))
+            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText() + "' already exists");
         if(!hasValidReturn && !ctx.rtype.getText().equals("void"))
-            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText()  + "' may noy return");
+            this.errorLog.throwError(ctx, "Function '" + ctx.fname.getText()  + "' may not return");
         if(ctx.fname.getText().equals("main") && TypeRecord.stringToClass(ctx.rtype.getText()) != void.class)
             this.errorLog.throwError(ctx, "Invalid return type for main.");
         if(ctx.fname.getText().equals("main") && ctx.LABEL().size() > 1)

@@ -1,0 +1,41 @@
+L0: call L32
+L1: halt
+L2: lload -2
+L3: iconst 0
+L4: itod
+L5: deq
+L6: jumpf L10
+L7: lload -1
+L8: retval 3
+L9: jump L32
+L10: lload -1
+L11: lload -3
+L12: lload -2
+L13: iconst 1
+L14: itod
+L15: dsub
+L16: lload -3
+L17: lload -2
+L18: dadd
+L19: iconst 1
+L20: itod
+L21: dsub
+L22: lload -3
+L23: lload -2
+L24: dadd
+L25: iconst 1
+L26: itod
+L27: dsub
+L28: dmult
+L29: call L2
+L30: dadd
+L31: retval 3
+L32: iconst 6
+L33: itod
+L34: iconst 2
+L35: itod
+L36: iconst 0
+L37: itod
+L38: call L2
+L39: dprint
+L40: ret 0

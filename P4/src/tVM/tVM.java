@@ -8,7 +8,8 @@ import java.util.*;
 import solUtils.*;
 public class tVM
 {
-    private static final int MEMORY_LIMIT = 10_000_000;
+    private static final long  MEMORY_LIMIT = 83_000_000;
+
 
     private static final String PRINT_NIL_ERROR = "Can't print a NIL value";
     private static final String CAST_NIL_ERROR = "Can't cast a NIL value";
@@ -24,7 +25,6 @@ public class tVM
     private static final Value NIL = new Value(null);
 
     private final Stack<Value> stack;
-    private final Stack<Integer> localMemorySizeStack;
     private Value[] globalMemory;
     private ByteCodeBuffer byteCodeBuffer;
     private final LinkedList<Instruction> instructions;
@@ -39,7 +39,6 @@ public class tVM
     {
         this.byteCodeBuffer = null;
         this.stack = new Stack<>();
-        this.localMemorySizeStack = new Stack<>();
         this.trace = trace;
         this.constPool = new LinkedList<>();
 
