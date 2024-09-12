@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class Instruction {
 
     private final OpCode instruction;
@@ -36,8 +34,7 @@ public class Instruction {
     {
         if(hasArgument())
             ErrorHandler.throwError("Instruction already as an argument.");
-        ArrayList<?> a;
-        LinkedList<?> b;
+
         this.argument = argument;
     }
 
